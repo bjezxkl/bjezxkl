@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<title>北京二中下课铃投稿平台</title>
+		<meta name="description" content="北京二中下课铃投稿平台">
+		<meta name="viewport" content='width=device-width, initial-scale=1'>
+		<script type="text/javascript">
+			// 防止未授权的访问
+			if (localStorage.type != "admin" && localStorage.type != "super")
+			{
+				alert('您不是管理员，无法进行管理')
+				window.location.href='./'
+			}
+			$.ajax({
+				url: "https://bjezxkl.azurewebsites.net/api/proxy?path=user",
+				async: false,	// 强制不异步执行，保证先进行访问权限筛选
+				type: 'POST',
+				data: JSON.stringify(
+					{
+						req: { operator: "check"},
+						session: {
+							uid: localStorage.getItem("uid"),
+							username: localStorage.getItem("username"),
+							type: localStorage.getItem("type"),
+							expire_time: localStorage.getItem("expire_time"),
+							class_of: localStorage.getItem("class_of")
+						}
+					}),
+				success: function (data, err)
+				{
+					if (data.code != 0)
+					{
+						if (data.code == -6)
+						{
+							alert("用户未登录，请重新登录！");
+							localStorage.setItem("uid", "");
+							localStorage.setItem("username", "");
+							localStorage.setItem("type", "");
+							localStorage.setItem("expire_time", "");
+							localStorage.setItem("class_of", "");
+							return window.location.href='./'
+						}
+						else if (data.code == -7)
+						{
+							alert("用户登录过期，请重新登录！");
+							localStorage.setItem("uid", "");
+							localStorage.setItem("username", "");
+							localStorage.setItem("type", "");
+							localStorage.setItem("expire_time", "");
+							localStorage.setItem("class_of", "");
+							return window.location.href='./'
+						}
+						else if (data.code == -14) 
+						{
+							alert('用户不存在！');
+							window.location.href='./'
+						}
+						else
+						{
+							alert('未知原因检测登录状态失败，请联系网站管理员');
+							console.log(data);
+							window.location.href='./'
+							return -5;
+						}
+					}
+					if (localStorage.type != "admin" && localStorage.type != "super")
+					{
+						alert('您不是管理员，无法进行管理')	// return -18;
+						window.location.href='./'
+					}
+				},
+				error: function (data, err)
+				{
+					alert('未知原因检测登录状态失败，请联系网站管理员');
+					console.log(err);
+					window.location.href='./'
+					return -5;
+				}
+			})
+
+			// 用户信息统计
+			var _hmt = _hmt || [];
+			(function() {
+				var hm = document.createElement("script");
+				hm.src = "https://hm.baidu.com/hm.js?53885f2694f2aadf5dc7c0e0232fceea";
+				var s = document.getElementsByTagName("script")[0]; 
+				s.parentNode.insertBefore(hm, s);
+			})();
+
+			// 设备重定向
+			var userAgentInfo = window.navigator.userAgent;
+			var Agents = ["Android", "iPhone", "SymbianOS", "Windows Phone", "iPod"];
+			var machine = 'PC';
+			for (var v = 0; v < Agents.length; v++)
+			{
+				if (userAgentInfo.indexOf(Agents[v]) > 0)
+				{
+				machine = 'mobile';
+				break;
+				}
+			}
+			if (machine == 'PC')
+				window.location.href = "../pc/administration";
+
+			// 显示登录状态
+			function onLogin()
+			{
+				/* 显示登录状态 */	
+				refreshLoginStatus()
+				getUnreadMessageNumber()
+			}
+		</script>
+		<script type="text/javascript" src="../../package/APlayer/APlayer-1.10.1.min.js" charset="utf-8"></script>
+		<link rel="stylesheet" href="../../package/APlayer/APlayer-1.10.1.min.css">
+		<link rel="stylesheet" href="../../package/font-awesome/css/font-awesome.min.css">	<!-- 一个图标包 -->
+		<link rel="stylesheet" type='text/css' href='../../css/mobile/header.css'>
+		<link rel="stylesheet" type='text/css' href='../../css/mobile/basic.css'>
+		<link rel="stylesheet" type='text/css' href='../../css/mobile/administration.css'>
+		<script type="text/javascript" src="../../js/jquery/jquery.min.js" charset="utf-8"></script>
+		<script type="text/javascript" src="../../js/header.js" charset="utf-8"></script>
+		<!--<script type="text/javascript">
+		var mobile = mobileTest();
+		if (mobile == true) {
+		window.location.href = window.location.href.replace("//www", "//m");
+		}
+		function mobileTest() {
+		var userAgentInfo = window.navigator.userAgent;
+		var Agents = ["Android", "iPhone", "SymbianOS", "Windows Phone", "iPod"];
+		var mobile = false;
+		for (var v = 0; v < Agents.length; v++) {
+			if (userAgentInfo.indexOf(Agents[v]) > 0) {
+			mobile = true;
+			break;
+			}
+		}
+		return mobile;
+		}
+	</script>-->
+		<!--[if IE]>
+		<script src='http://html5shiv.googlecode.com/svn/trunk/html5.js'></script>
+		<![endif]-->
+
+	</head>
+
+	<body onload="onLogin()">
+		<header class="international-header">
+			<div class="header-content">
+				<div class="nav-link">
+					<div class="nav-link-open">
+						<i class="menu-icon fa fa-fw fa-bars fa-lg"></i>
+					</div>
+				<ul class="home-link-ul">
+					<li class="home-link-item">
+						<a href="./" class="link">
+							<i class="menu-icon fa fa-home" aria-hidden="true"><span>主页</span></i>
+						</a>
+					</li>
+				</ul>
+			</div>
+			<div class="wrapper-nav-popup" style="display: none;">
+				<div class="nav-popup hide">
+					<div class="nav-link-close">
+						<i class="menu-icon fa fa-fw fa-chevron-left fa-lg"></i>
+					</div>
+						<ul class="nav-link-ul">
+							<li class="nav-link-item">
+								<a href="./" class="link">
+									<i class="menu-icon fa fa-home" aria-hidden="true"><span>主页</span></i>
+								</a>
+							</li>
+							<li class="nav-link-item">
+								<a href="./plan" class="link">
+									<i class="menu-icon fa fa-calendar-check-o" aria-hidden="true"><span>安排</span></i>
+								</a>
+							</li>
+							<li class="nav-link-item">
+								<a href="./history" class="link">
+									<i class="menu-icon fa fa-history" aria-hidden="true"><span>历史</span></i>
+								</a>
+							</li>
+							<li class="nav-link-item">
+								<a href="./contribute" class="link">
+									<i class="menu-icon fa fa-upload" aria-hidden="true"><span>投稿</span></i>
+								</a>
+							</li>
+							<li class="nav-link-item">
+								<a class="link administration">
+									<i class="menu-icon fa fa-edit" aria-hidden="true"><span>管理</span></i>
+								</a>
+							</li>
+							<li class="nav-link-item">
+								<a href="./about" class="link">
+									<i class="menu-icon fa fa-info" aria-hidden="true"><span>关于</span></i>
+								</a>
+							</li>
+						</ul>
+					</div>
+				</div>
+				<div class='nav-user-center'>
+					<div class='user-content'>
+						<div class='nav-user-item nav-user-infos'>
+							<div class='login'>
+								<a href='javascript:;' class='link link-login' onclick='showLoginPanel()'>
+									<span class='user-msg' style='display: none;'>还未登陆呦，点击登录</span>
+								</a>
+							</div>
+							<div class='user-infos hided'>
+								<a class='link link-user'>
+									<span class='username' title='用户中心' style='display: none;'></span>
+								</a>
+								<div class='user-tool-wrap' style='display: none;'>
+									<div class='user-tool user-center'>
+										<a href='./user' class='link link-user-center' target='_blank'>
+											<i class='menu-icon fa fa-user-circle-o' aria-hidden='true'><span class='user-center'>用户中心</span></i>
+										</a>
+									</div>
+									<div class='user-tool logout'>
+										<a href='javascript:;' class='link link-logout'>
+											<i class='menu-icon fa fa-sign-out' aria-hidden='true'><span class='logout'>点击登出</span></i>
+										</a>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class='nav-user-item nav-msg' style='display: none;'>
+							<a class='link link-msg' href='./message#' target='_blank'>
+								<div class='msg-remind'></div>
+								<i class='menu-icon fa fa-envelope' aria-hidden='true'><span class='msg'>消息</span></i>
+								<!--这里如果<span>标签前有换行，会使得显示的时候多一个空格，但发现加上空格之后显示数字更舒服些，不显示数字的时候不加空格又舒服些，所以就先收起来，然后靠span标签的margin-left属性来调节好了-->
+								<a class='open-msg-page' href='./message#' target='_blank' style='display: none;'>
+							</a>
+						</div>
+					</div>
+				</div>
+			</div>
+		</header>
+		<div class="container">
+			<div class="option-wrap">
+				<div class="option" id="con-check" onclick="window.open('../pc/concheck','_self')">
+					<div class="option-icon-wrap">
+						<i class="fa fa-pencil-square-o fa-3x"></i>
+					</div>
+					<div class="option-text-wrap">
+						<p class="option-text">投稿初审</p>
+					</div>
+				</div>
+				<div class="option" id="con-check-ins" onclick="window.open('../pc/concheckins','_self')">
+					<div class="option-icon-wrap">
+						<i class="fa fa-check-square-o fa-3x"></i>
+					</div>
+					<div class="option-text-wrap">
+						<p class="option-text">投稿终审</p>
+					</div>
+				</div>
+				<div class="option" id="make-plan" onclick="window.open('../pc/makeplan','_self')">
+					<div class="option-icon-wrap">
+						<i class="fa fa-calendar-plus-o fa-3x"></i>
+					</div>
+					<div class="option-text-wrap">
+						<p class="option-text">下课铃安排</p>
+					</div>
+				</div>
+				<div class="option" id="past-con" onclick="//window.open('./pastcon','_self')" title="此功能正在构建中......">
+					<div class="option-icon-wrap">
+						<i class="fa fa-history fa-3x"></i>
+					</div>
+					<div class="option-text-wrap">
+						<p class="option-text">历史投稿</p>
+					</div>
+				</div>
+				<div class="option" id="archive" onclick="//window.open('./archive','_self')" title="此功能也许不会构建......">
+					<div class="option-icon-wrap">
+						<i class="fa fa-archive fa-3x"></i>
+					</div>
+					<div class="option-text-wrap">
+						<p class="option-text">高级管理</p>
+					</div>
+				</div>
+				<div class="option" id="com-check" onclick="//window.open('./comcheck','_self')" title="此功能正在构建中......">
+					<div class="option-icon-wrap">
+						<i class="fa fa-comments-o fa-3x"></i>
+					</div>
+					<div class="option-text-wrap">
+						<p class="option-text">评论审核</p>
+					</div>
+				</div>
+				<div class="option" id="notice" onclick="//window.open('./notice','_self')" title="此功能正在构建中......">
+					<div class="option-icon-wrap">
+						<i class="fa fa-bullhorn fa-3x"></i>
+					</div>
+					<div class="option-text-wrap">
+						<p class="option-text">公告管理</p>
+					</div>
+				</div>
+				<div class="option" id="statistics" onclick="//window.open('./statistics','_self')" title="此功能也许不会构建......">
+					<div class="option-icon-wrap">
+						<i class="fa fa-bar-chart fa-3x"></i>
+					</div>
+					<div class="option-text-wrap">
+						<p class="option-text">数据统计</p>
+					</div>
+				</div>
+				<div class="option" id="database" onclick="//window.open('./database','_self')" title="此功能也许不会构建......">
+					<div class="option-icon-wrap">
+						<i class="fa fa-database fa-3x"></i>
+					</div>
+					<div class="option-text-wrap">
+						<p class="option-text">数据管理</p>
+					</div>
+				</div>
+			</div>
+		</div>
+	<!--
+		<script type="text/javascript" src="/js/common/input.js" charset="utf-8"></script>
+		<script type="text/javascript" src="/js/common/common.js" charset="utf-8"></script>
+		<script type="text/javascript" src="/js/common/header.js" charset="utf-8"></script>
+	-->
+	</body>
+
+</html>

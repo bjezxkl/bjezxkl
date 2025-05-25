@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<title>北京二中下课铃投稿平台</title>
+		<meta name="description" content="北京二中下课铃投稿平台">
+		<meta name="viewport" content='width=device-width, initial-scale=1'>
+		<script type="text/javascript">
+			// 用户信息统计
+			var _hmt = _hmt || [];
+			(function() {
+				var hm = document.createElement("script");
+				hm.src = "https://hm.baidu.com/hm.js?53885f2694f2aadf5dc7c0e0232fceea";
+				var s = document.getElementsByTagName("script")[0]; 
+				s.parentNode.insertBefore(hm, s);
+			})();
+
+			// 设备重定向
+			var userAgentInfo = window.navigator.userAgent;
+			var Agents = ["Android", "iPhone", "SymbianOS", "Windows Phone", "iPod"];
+			var machine = 'PC';
+			for (var v = 0; v < Agents.length; v++)
+			{
+				if (userAgentInfo.indexOf(Agents[v]) > 0)
+				{
+				machine = 'mobile';
+				break;
+				}
+			}
+			if (machine == 'PC')
+			{
+				window.location.href = "../pc/about";
+			}
+
+			// 定义 onLogin() 供登录后使用
+			function onLogin()
+			{
+				refreshLoginStatus();
+				getUnreadMessageNumber();
+			}
+		</script>
+	<!--
+		<link rel="stylesheet" href="/css/cdn/APlayer-1.10.1.min.css">
+		<link rel="stylesheet" href='/font-awesome/css/font-awesome.min.css'>
+	-->
+		<link rel="stylesheet" href="../../package/font-awesome/css/font-awesome.min.css">	<!-- 一个图标包 -->
+		<link rel="stylesheet" type='text/css' href='../../css/mobile/header.css'>
+		<link rel="stylesheet" type='text/css' href='../../css/mobile/basic.css'>
+		<link rel="stylesheet" type='text/css' href='../../css/mobile/about.css'>
+
+	<!--
+		<script type="text/javascript" src="/js/cdn/APlayer-1.10.1.min.js" charset="utf-8"></script>
+	-->
+
+		<!--[if IE]>
+		<script src='http://html5shiv.googlecode.com/svn/trunk/html5.js'></script>
+		<![endif]-->
+		<!-- 创建get申请 -->
+		<script type="text/javascript" src="../../js/jquery/jquery.min.js" charset="utf-8"></script>
+		<script type="text/javascript" src="../../js/header.js" charset="utf-8"></script>
+	</head>
+
+	<body onload="refreshLoginStatus();getUnreadMessageNumber()">
+		<header class="international-header">
+			<div class="header-content">
+				<div class="nav-link">
+					<div class="nav-link-open">
+						<i class="menu-icon fa fa-fw fa-bars fa-lg"></i>
+					</div>
+				<ul class="home-link-ul">
+					<li class="home-link-item">
+						<a href="./" class="link">
+							<i class="menu-icon fa fa-home" aria-hidden="true"><span>主页</span></i>
+						</a>
+					</li>
+				</ul>
+			</div>
+			<div class="wrapper-nav-popup" style="display: none;">
+				<div class="nav-popup hide">
+					<div class="nav-link-close">
+						<i class="menu-icon fa fa-fw fa-chevron-left fa-lg"></i>
+					</div>
+						<ul class="nav-link-ul">
+							<li class="nav-link-item">
+								<a href="./" class="link">
+									<i class="menu-icon fa fa-home" aria-hidden="true"><span>主页</span></i>
+								</a>
+							</li>
+							<li class="nav-link-item">
+								<a href="./plan" class="link">
+									<i class="menu-icon fa fa-calendar-check-o" aria-hidden="true"><span>安排</span></i>
+								</a>
+							</li>
+							<li class="nav-link-item">
+								<a href="./history" class="link">
+									<i class="menu-icon fa fa-history" aria-hidden="true"><span>历史</span></i>
+								</a>
+							</li>
+							<li class="nav-link-item">
+								<a href="./contribute" class="link">
+									<i class="menu-icon fa fa-upload" aria-hidden="true"><span>投稿</span></i>
+								</a>
+							</li>
+							<li class="nav-link-item">
+								<a class="link administration">
+									<i class="menu-icon fa fa-edit" aria-hidden="true"><span>管理</span></i>
+								</a>
+							</li>
+							<li class="nav-link-item">
+								<a href="./about" class="link">
+									<i class="menu-icon fa fa-info" aria-hidden="true"><span>关于</span></i>
+								</a>
+							</li>
+						</ul>
+					</div>
+				</div>
+				<div class='nav-user-center'>
+					<div class='user-content'>
+						<div class='nav-user-item nav-user-infos'>
+							<div class='login'>
+								<a href='javascript:;' class='link link-login' onclick='showLoginPanel()'>
+									<span class='user-msg' style='display: none;'>还未登陆呦，点击登录</span>
+								</a>
+							</div>
+							<div class='user-infos hided'>
+								<a class='link link-user'>
+									<span class='username' title='用户中心' style='display: none;'></span>
+								</a>
+								<div class='user-tool-wrap' style='display: none;'>
+									<div class='user-tool user-center'>
+										<a href='./user' class='link link-user-center' target='_blank'>
+											<i class='menu-icon fa fa-user-circle-o' aria-hidden='true'><span class='user-center'>用户中心</span>
+											</i>
+										</a>
+									</div>
+									<div class='user-tool logout'>
+										<a href='javascript:;' class='link link-logout'>
+											<i class='menu-icon fa fa-sign-out' aria-hidden='true'><span class='logout'>点击登出</span></i>
+										</a>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class='nav-user-item nav-msg' style='display: none;'>
+							<a class='link link-msg' href='./message#' target='_blank'>
+								<div class='msg-remind'></div>
+								<i class='menu-icon fa fa-envelope' aria-hidden='true'><span class='msg'>消息</span></i>
+								<!--这里如果<span>标签前有换行，会使得显示的时候多一个空格，但发现加上空格之后显示数字更舒服些，不显示数字的时候不加空格又舒服些，所以就先收起来，然后靠span标签的margin-left属性来调节好了-->
+								<a class='open-msg-page' href='./message#' target='_blank' style='display: none;'>
+							</a>
+						</div>
+					</div>
+				</div>
+			</div>
+		</header>
+		<div class="container">
+			<div class="staff-wrap">
+				<h2>STAFF们</h2>
+				<h3>前/后端开发：@Eling</h3>
+				<h3>UI设计/管理：@alawang</h3>
+				<h3>网站重构：@洁若雪</h3>
+				<h3>
+					<div style="display: inline-block; vertical-align: top;">投稿审核：</div>
+					<div style="display: inline-block; vertical-align: top;">
+					<!--<p>@fenggh</p>
+						<p>@yaotongyuannvv</p>
+						<p>@老范桶</p>
+						<p>@</p>
+						<p>@</p>
+						<p>@</p>--->
+					</div>
+				</h3>
+			</div>
+			<div class="report-wrap">
+				<h2>问题反馈</h2>
+				<p style="color: #888;margin-bottom: 5px;">如果遇到任何问题，都不要怕，微笑着面对亻…（被拖走）</p>
+				<p>请将问题反馈至 <a href="mailto:2586812958@qq.com">2586812958@qq.com</a>（洁若雪）</p>
+				<p>我们会在第一时间对您的问题进行反馈。因为该问题造成了不好的使用体验非常抱歉orz</p>
+			</div>
+			</div>
+			<div class="bg-img"></div>
+		</div>
+	</body>
+
+</html>

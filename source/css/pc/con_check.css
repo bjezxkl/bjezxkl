@@ -1,0 +1,669 @@
+.contribution-wrap
+{
+  background-color: #fff;
+  padding: 0;
+  display: flex;
+  -webkit-box-orient: horizontal;
+  -webkit-box-direction: normal;
+  -ms-flex-direction: row;
+  flex-direction: row;
+  height: calc(100vh - 120px);
+  width: 900px;
+  box-shadow: 0 2px 4px 0 rgba(121, 146, 185, 0.54);
+  margin: 96px auto 10px auto; /* 40px + header的56px */
+  border-radius: 4px;
+}
+.list
+{
+  width: 600px;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+  -ms-flex-direction: column;
+  flex-direction: column;
+  border-right: 1px solid #ededed;
+}
+.list-title
+{
+  text-align: center;
+  line-height: 35px;
+  height: 36px;
+  overflow: hidden;
+  border-bottom: 1px solid #ededed;
+  color: #174071;
+  /*font-weight: 500;*/
+  -ms-flex-negative: 0;
+  flex-shrink: 0;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  overflow: hidden;
+}
+.contribution-wrap .list .search-wrap
+{
+  min-height: 36px;
+  border-top: 1px;
+  border-bottom: 1px solid #ededed;
+}
+.contribution-wrap .list .search-wrap-title
+{
+  height: 30px;
+  margin-top: 1.667px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.contribution-wrap .list .show-search-btn
+{
+  margin-top: 2.667px;
+  line-height: 30px;
+  color: #174071;
+  font-size: 12px;
+  float: right;
+  padding: 3px 10px 3px 0;
+  user-select: none;
+}
+.contribution-wrap .list .show-search-btn:hover
+{
+  cursor: pointer;
+}
+.contribution-wrap .list .show-search-btn div
+{
+  float: right;
+}
+.contribution-wrap .list .order-method-wrap
+{
+  float: left;
+  margin: 1.667px 10px 0 15px;
+  line-height: 28px;
+  width: 100px;
+  text-align: center;
+  color: #1565c0;
+  background-color: transparent;
+  border-radius: 3px;
+  border: 1px solid #ededed;
+}
+.contribution-wrap .list .order-method-wrap .order-text-wrap
+{
+	font-size: 12px;
+	margin-left:4px;
+}
+.contribution-wrap .list .order-method-wrap:hover
+{
+  color: #fff;
+  background-color: rgba(21, 101, 192, 0.5);
+  cursor: pointer;
+}
+
+.contribution-wrap .list .grade-wrap
+{
+  margin: 1.667px 45.667px 0 0px;
+  line-height: 28px;
+  font-size: 13px;
+  width: 100px;
+  text-align: center;
+  color: #1565c0;
+  background-color: transparent;
+  border-radius: 3px;
+  border: 1px solid #ededed;
+}
+.contribution-wrap .list .grade-wrap:hover
+{
+  color: #fff;
+  background-color: rgba(21, 101, 192, 0.5);
+  cursor: pointer;
+}
+.selector .month-selector
+{
+  /*display: none;*/
+  position: absolute;
+  width: 180px;
+  border-radius: 5px;
+  box-shadow: 0 2px 2px 0 rgba(21, 101, 192, 0.1),
+    0 4px 8px 0 rgba(21, 101, 192, 0.2);
+  color: #1565c0;
+  font-size: 0.9em;
+  background-color: rgba(255, 255, 255, 0.95);
+  padding: 2px 5px 5px 5px;
+  z-index: 3;
+}
+.selector .month-selector span
+{
+  display: inline-block;
+  margin: 1px 1px;
+  padding: 4px 4px;
+  width: 50px;
+  text-align: center;
+}
+.selector .month-selector span:hover,
+.selector .month-selector span.chosen
+{
+  background-color: rgba(21, 101, 192, 0.5);
+  color: #fff;
+  cursor: pointer;
+}
+.month-selector .option-label
+{
+  font-size: 0.8em;
+  margin: 2px 4px;
+}
+
+.list-content
+{
+  position: relative;
+  overflow-x: hidden;
+  overflow-y: auto;
+  -webkit-box-flex: 1;
+  -ms-flex: 1;
+  flex: 1;
+  padding: 0 0 35px;
+}
+.list-year-text
+{
+  line-height: 40px;
+  font-size: 1.4em;
+  color: #1565c0;
+  border-bottom: 1px solid #ededed;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background-color: white;
+/*  box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 0.08);*/
+}
+.list-tips-text
+{
+  line-height: 40px;
+  font-size: 1.4em;
+  color: #1565c0;
+  border-bottom: 1px solid #ededed;
+/*  text-align: center;
+  font-size: 1em;*/ /* 看起来原网站这里不显示这个元素，如果显示的话会是年份下的二级标题。所以这里先仿照./history做一下样式好了 *//* 这个class的元素同时被无搜索结果(父元素具有#error)和无待审核投稿(父元素具有#empty)使用，但两者的格式不同。鉴于#error的需要和/history中的以及。list-year-text保持一致，所以让它使用主元素，#empty的下面重新定义一下样式好了 */
+}
+#empty .list-tips-text  /* 以及，我想给#empty的加一个<b>标签 ，获取看起来会更舒服一些*/
+{
+  font-size: 1.1em; /* 看起来大一点会好看些🤔 */
+  text-align: center;
+}
+.list-item
+{
+  position: relative;
+  height: 80px;
+  width: 100%;
+  border-bottom: 1px solid #ededed;
+  background-color: #fff;
+}
+.list-item:hover
+{
+  background-color: #e0ebf9;
+  cursor: pointer;
+}
+.list-item div
+{
+  position: relative;
+}
+.list-item .con-time
+{
+  position: relative;
+  top: 12px;
+  left: 10px;
+}
+.list-item .con-time .con-month
+{
+  position: absolute;
+  top: 0px;
+  left: 10px;
+  font-size: 1em;
+  color: #1565c0;
+}
+.list-item .con-time .con-line
+{
+  position: absolute;
+  top: 20px;
+  left: 0px;
+  width: 50px;
+  height: 1.5px;
+  background-color: #1565c0;
+  transform: rotate(45deg);
+  -ms-transform: rotate(-45deg);
+  -moz-transform: rotate(-45deg);
+  -webkit-transform: rotate(-45deg);
+  -o-transform: rotate(-45deg);
+}
+.list-item .con-time .con-day
+{
+  position: absolute;
+  top: 15px;
+  left: 25px;
+  font-size: 1.8em;
+  color: #1565c0;
+}
+.list-item .con-time .con-time-text
+{
+	position: absolute;
+	top: 50px;
+	left: 4px;
+	font-size: 0.9em;
+	color: #1565c0;
+}
+.list-item .con-hope-showname
+{
+  position: absolute;
+  top: 15px;
+  left: 90px;
+  width: 52%;
+  color: #174071;
+  font-size: 1.2em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.list-item .con-hope-showname .con-infos-empty
+{
+	color:#888;
+}
+.list-item .con-realname
+{
+  position: absolute;
+  top: 47px;
+  left: 90px;
+  width: 52%;
+  color: #6999d3;
+  font-size: 1em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.list-item .con-state
+{
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 28%;
+  height: 40px;
+  font-size: 1em;
+  text-align: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.list-item .con-state .state-ok
+{
+	color: green;
+}
+.list-item .con-state .state-vip
+{
+	color: darkorange;
+}
+.list-item .con-state .state-error
+{
+	color: red;
+}
+.list-item .con-state .state-unknown
+{
+	color: #888;
+  position: relative;
+  right: -2px;  /* 为了让那五个字看起来不超过下面的字 */
+}
+.list-item .con-user
+{
+  position: absolute;
+  bottom: 3px;
+  right: 10px;
+  width: 20%;
+  font-size: 0.8em;
+  color: #888;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.contribution-wrap .check-wrap
+{
+  -webkit-box-flex: 1;
+  flex: 1;
+  height: 100%;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+  -ms-flex-direction: column;
+  flex-direction: column;
+  -webkit-box-align: stretch;
+  -ms-flex-align: stretch;
+  align-items: stretch;
+}
+.check-wrap .con-title
+{
+  height: 36px;
+  -ms-flex-negative: 0;
+  flex-shrink: 0;
+  display: flex;
+  -webkit-box-pack: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  border-bottom: 1px solid #ededed;
+  position: relative;
+  text-align: center;
+  color: #174071;
+}
+.check-wrap .con-infos-wrap
+{
+  position: relative;
+  border-bottom: 1px solid #ededed;
+  background-color: #fff;
+  height: calc(100% - 35px);
+}
+.contribution-wrap .con-infos-wrap .aplayer-wrap
+{
+  width: 280px;
+  margin: 10px auto 5px auto;
+}
+.check-wrap .con-infos-wrap .open-in-ncm,
+.check-wrap .con-infos-wrap .open-in-qqm,
+.check-wrap .con-infos-wrap .open-in-kgm,
+.check-wrap .con-infos-wrap .open-in-bilibili,
+.check-wrap .con-infos-wrap .open-in-ytb
+{
+  display:inline-block;
+  line-height: 20px;
+  color: #174071;
+  font-size: 12px;
+  text-align: left;
+  cursor: pointer;
+}
+.check-wrap .con-infos-wrap .open-in-ncm
+{
+  padding: 7px 10px 0 10px;
+}
+.check-wrap .con-infos-wrap .open-in-qqm
+{
+  padding: 7.333px 10.333px 0 9.667px;
+}
+.check-wrap .con-infos-wrap .open-in-kgm
+{
+  padding: 6.333px 11px 0 9px;
+}
+.check-wrap .con-infos-wrap .open-in-bilibili
+{
+  padding: 5.333px 11.333px 0 8.667px;
+}
+.check-wrap .con-infos-wrap .open-in-ytb
+{
+  padding: 5.167px 12.5px 0 7.5px;
+}
+.check-wrap .con-infos-wrap .open-in-ncm path,
+.check-wrap .con-infos-wrap .open-in-qqm path,
+.check-wrap .con-infos-wrap .open-in-kgm path,
+.check-wrap .con-infos-wrap .open-in-bilibili path,
+.check-wrap .con-infos-wrap .open-in-ytb path
+{
+  fill: #174071;
+}
+.check-wrap .con-infos-wrap .open-in-ncm:hover path,
+.check-wrap .con-infos-wrap .open-in-qqm:hover path,
+.check-wrap .con-infos-wrap .open-in-kgm:hover path,
+.check-wrap .con-infos-wrap .open-in-bilibili:hover path,
+.check-wrap .con-infos-wrap .open-in-ytb:hover path
+{
+  fill: #6999d3;
+}
+.check-wrap .con-infos-wrap .coninfos-placeholder
+{
+  display: inline-block;
+  float: right;
+  padding-right: 5px;	/* 只要有就可以控制下方元素的位置 */
+  height: 32px;	/* 固定32px，避免因为 .open-in-xxx 的高度导致下方内容上下跳动 */
+}
+.coninfos-wrap{
+	overflow-x: hidden;
+  overflow-y: auto;
+	height: calc(100% - 81px - 32px - 3px); /* 81px的APlayer, 32px的.open-in-xxx, 3px的下方留白 */
+  width: 100%;  /* 避免上一个元素挤压这个元素的宽度而非限制高度 */
+}
+.coninfos {
+  color: #1565c0;
+  font-size: 15px;  /* 为了 textarea 的格式可以直接套用，这里稍微缩小一点 */
+  max-height: 220px;
+}
+.coninfos h4 {
+  text-align: center;
+  font-size: 16px;  /* 大标题保持和 /history 一样，还是16px。这么换算一下 /history 中下课铃信息的字体大小实际为 0.85em */
+}
+.coninfos span{
+ font-size: 0.98em;
+}
+.coninfos-text {
+  text-align: left;
+  margin: 10px 15px;
+}
+.coninfos-text p {
+  margin: 2px 0;
+  color: #6999d3;
+}
+.coninfos-text .date-selector p {
+  margin: 0;
+}
+.coninfos-text span.coninfos {
+  margin: 3px 0;
+  color: #1565c0;
+}
+.coninfos-text span {
+  display: inline-block;
+}
+.coninfos-text span#week,
+.coninfos-text span#date,
+.coninfos-text span#ncmid,
+.coninfos-text span#qqmid,
+.coninfos-text span#songtype,
+.coninfos-text span#kgmid,
+.coninfos-text span#BV,
+.coninfos-text span#ytmid,
+.coninfos-text span#ncrid,
+.coninfos-text span#links {
+  display: inline-block;
+  margin: 3px 0;
+}
+.coninfos-text .con-infos-empty{
+	color: #888;
+}
+.play-date-wrap p{
+	margin: 0;
+}
+.coninfos-text .state-ok{
+	color: green;
+}
+.coninfos-text .state-vip{
+	color: darkorange;
+}
+.coninfos-text .state-error{
+	color: red;
+}
+.coninfos-text .state-unknown{
+	color: #888;
+}
+.coninfos-text .type-wrap {
+	text-align: center;
+	margin: 8px 0;
+}
+.coninfos-text .type-wrap .type-span{
+	font-size: 0.92em;
+	line-height: 25px;
+	padding: 0px 8px;
+	background-color: rgba(21,101,192,.15);
+	border: 2px solid rgba(21,101,192,.4) ;
+	color: rgba(21,101,192,.5);
+}
+.coninfos-text .type-wrap .type-span:hover{
+	border: 2px solid #1565C0;
+	cursor: pointer;
+}
+.coninfos-text .type-wrap .type-span.choosing{
+	border: 2px solid #1565C0;
+	background-color: rgba(21,101,192,.7);
+	color: #fff;
+	cursor: pointer;
+}
+.coninfos-text .type-wrap .type-span.choosing#accepted{
+	border: 2px solid #228B22;
+	background-color: rgba(34,139,34,.7);
+}
+/*.coninfos-text .type-wrap .type-span.choosing#success{
+	border: 2px solid #228B22;
+	background-color: rgba(34,139,34,.7);
+}*/
+.coninfos-text .type-wrap .type-span.choosing#fail{
+	border: 2px solid #FF4500;
+	background-color: #FF6347;
+}
+
+.coninfos-text .input-wrap-btn{
+	margin: 20px 0;
+}
+.btn-check-cancel.grey .input-wrap-btn input[type="button"]{
+	border: 1.5px solid #ccc;
+    background-color: #ededed;
+    color: #888;
+}
+.btn-check-cancel.grey .input-wrap-btn input[type="button"]:hover{
+    background-color: #ccc;
+    color: #888;
+}
+.date-selector.date{
+  position: absolute;
+  top: 30px;
+  width: 200px;
+  height: 220px;
+  box-shadow: 0 2px 2px 0 rgba(21, 101, 192, 0.1),
+  0 4px 8px 0 rgba(21, 101, 192, 0.2);
+  background-color: #fff;
+  border-radius: 5px;
+  z-index: 10;
+  padding: 8px;
+  left: -8px; /* 修正上面padding造成的元素向左偏移 */
+  font-size: 14px;
+  -moz-user-select: none;
+  -khtml-user-select: none;
+  user-select: none;
+}
+.date-selector.date .year-and-month{
+  text-align: center;   
+}
+.date-selector.date .year-and-month span.btn{
+  display: inline-block;
+  font-size: 1.3em;
+  width: 25px;
+  line-height: 25px;
+}
+.date-selector.date .year-and-month span.btn:hover{
+  cursor: not-allowed;
+}
+.date-selector.date .year-and-month span.btn.active:hover{
+  background-color: #6999d3;
+  color: #fff;
+  cursor: pointer;
+}
+.date-selector.date.future .year-and-month .text#year-month{
+  margin: 0 5px;
+}
+.date-selector.date .calendar-content{
+  text-align: center;
+  margin-top: 3px;
+}
+
+.date-selector.date .calendar-content span.calendar-item,
+.date-selector.date .calendar-content span.calendar-row-title{
+  display: inline-block;
+  line-height: 25px;
+  width: 25px;
+  text-align: center;
+  margin: 0;
+  padding: 1px;
+  background-color: #fff;
+}
+.date-selector.date .calendar-content span.calendar-item{
+  background-color: #ededed;
+  color: #888;
+}
+.date-selector.date .calendar-content span.calendar-item.this:hover{
+  cursor: not-allowed;
+}
+.date-selector.date .calendar-content span.calendar-item.this.optional{
+  background-color: #fff;
+  color: #1565C0;
+}
+.date-selector.date .calendar-content span.calendar-item.this.optional:hover{
+  background-color: #6999d3;
+  color: #fff;
+  cursor: pointer;
+}
+.date-selector.date .calendar-content span.calendar-item.this.selected{
+  background-color: #1565C0;
+  color: #fff;
+}
+.date-selector.date .calendar-content span.calendar-item.prev:hover,
+.date-selector.date .calendar-content span.calendar-item.next:hover{
+  cursor: pointer;
+}
+.date-selector.date .calendar-content span.calendar-item.prev.not-allow:hover{
+  cursor: not-allowed;
+}
+
+.plan-description-wrap
+{
+  margin-top: 4px;
+}
+
+.wrapper-popup .content .title{
+  margin-top: 5px;
+  padding-right: 35px;
+}
+.wrapper-popup .content .same-cons-wrap{
+  border: 2px solid #ededed;
+  margin: 12px 10px 12px 0;
+  overflow-y: scroll;
+  max-height: 220px;
+  border-radius: 5px;
+}
+.wrapper-popup .content .same-cons-wrap .coninfos{
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid #ededed;
+  padding: 3px 0;
+  position: relative;
+}
+.wrapper-popup .content .same-cons-wrap .coninfos:last-child {
+  border: none;
+}
+.wrapper-popup .content .same-cons-wrap .coninfos .fa.fa-check-square{
+  margin: 0 12px; /* 在span标签中，具有0.98em属性，36.604px */
+}
+.wrapper-popup .content .same-cons-wrap .coninfos .fa.fa-square-o{
+  font-size: 1.08em;
+  margin: 0px 11.875px 0px 12px; /* 在span标签中，具有0.98em属性，36.604px */
+  padding-top: 1px;
+}
+.wrapper-popup .content .same-cons-wrap .coninfos .con-infos-label{
+  padding: 1.5px 0;
+  color: #6999d3;
+  display: inline-block;
+}
+.wrapper-popup .content .same-cons-wrap .coninfos .con-infos-content{
+  padding: 1.5px 0;
+  color: #1565c0;
+  display: inline-block;
+}
+.wrapper-popup .content .same-cons-wrap .coninfos .con-user {
+  position: absolute;
+  bottom: 5px;
+  right: 10px;
+  width: 25%;
+  font-size: 0.8em;
+  color: #888;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

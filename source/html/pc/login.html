@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="zh-CN">
+
+<!-- 本网站目前仅有这一种登录方式，因此去除原文件名中的"quick"字样，但对本页面中类名等中的"quick"进行保留 -->
+	<head>
+		<title>快捷登录</title>
+		<meta name='viewport' content='width=device-width, initial-scale=1.0, minimun-scale=1.0, maximum-scale=1.0, user-scalable=no'>
+		<link rel="stylesheet" href="../../package/font-awesome/css/font-awesome.min.css">
+		<link rel="stylesheet" type='text/css' href='../../css/pc/basic.css'>
+		<link rel="stylesheet" type='text/css' href='../../css/pc/login.css'>
+		<script type="text/javascript" src="../../js/jquery/jquery.min.js" charset="utf-8"></script>
+		<script type="text/javascript" src="../../package/crypto-js/crypto-js.js" charset="utf-8"></script>
+		<script type="text/javascript" src="../../js/login.js" charset="utf-8"></script>
+	</head>
+
+	<body onload="loadYearSelector()">
+		<div class="wrapper-quicklogin">
+			<div class="content">
+				<div class="nav-quicklogin clearfix">
+					<div class="tab active" id="login">登录</div>
+					<div class="tab" id="register">注册</div>
+				</div>
+				<div class="close">×</div>
+				<div class="panel active" id="login">
+					<div class="login-container">
+						<div class="row username-row sername-row-login">
+							<div class="input-wrap middle username-wrap">
+								<span class="input-span">
+									<input type="text" class="editable" id='username' autocomplete="on"
+										placeholder="用户名" onkeyup="value=value.replace(/[^\a-\z\A-\Z0-9\u4E00-\u9FA5\_]/g,'')"/>
+								</span>
+							</div>
+							<p class="message" id="username"></p>
+						</div>
+						<div class="row pwd-row pwd-row-login">
+							<div class="input-wrap middle pwd-wrap">
+								<span class="input-span">
+									<input type="password" class="editable" id='pwd' autocomplete="on"
+										placeholder="密码" onkeyup="value=value.replace(/[^\a-\z\A-\Z0-9\_]/g,'')"/>
+								</span>
+							</div>
+							<p class="message" id="pwd"></p>
+						</div>
+						<div class="row class-row class_of-row-reg" style="display: none;">
+							<div class="input-wrap middle class_of-wrap">
+								<span class="input-span">
+									<input type="text" class="readonly" id='search-year-edit' autocomplete="off"
+										readonly="readonly" placeholder="届别（毕业年份）" /></span>
+								<span class="clear-span search-year-clear">×</span>
+								<div class="selector" id="year-selector-edit"></div>
+							</div>
+							<p class="message" id="class_of"></p>
+						</div>
+						<div class="row captcha-row" style="display: none;"></div>
+						<div class="row link-row clearfix">
+							<p><a href="javascript:;">忘记密码？</a></p>
+						</div>
+						<div class="row btn-row clearfix">
+							<div class="input-wrap-btn middle">
+								<input type="button" class="btn btn-login" value="登录" id="submit"/>
+							</div>
+							<div class="input-wrap-btn middle" style="display: none;">
+								<input type="button" class="btn btn-edit" value="补充信息" id="submit-edit"/>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="panel" id="register">
+					<div class="register-container">
+						<div class="row username-row username-row-reg">
+							<div class="input-wrap middle username-wrap">
+								<span class="input-span">
+									<input type="text" class="editable" id='username-reg' autocomplete="on"
+										placeholder="用户名" oninput="usernameCheck()"/>
+								</span>
+							</div>
+							<p class="message" id="username"></p>
+						</div>
+						<div class="row pwd-row pwd-row-reg">
+							<div class="input-wrap middle pwd-wrap">
+								<span class="input-span">
+									<input type="password" class="editable" id='pwd-reg' autocomplete="on"
+										placeholder="密码（请使用未关联重要账号的密码）" oninput="pwdCheck();rePwdCheck()" />
+								</span>
+							</div>
+							<p class="message" id="pwd"></p>
+						</div>
+						<div class="row re-pwd-row re-pwd-row-reg">
+							<div class="input-wrap middle re-pwd-wrap">
+								<span class="input-span">
+									<input type="password" class="editable" id='re-pwd-reg' autocomplete="on"
+										placeholder="重复输入密码" oninput="pwdCheck();rePwdCheck()"/>
+								</span>
+							</div>
+							<p class="message" id="re-pwd"></p>
+						</div>
+						<div class="row email-row email-row-reg">
+							<div class="input-wrap middle email-wrap">
+								<span class="input-span">
+									<input type="text" class="editable" id='email-reg' autocomplete="on"
+										placeholder="邮箱（通知审核结果用）" oninput="emailCheck()" />
+								</span>
+							</div>
+							<p class="message" id="email"></p>
+						</div>
+						<div class="row phone-row phone-row-reg">
+							<div class="input-wrap middle phone-wrap">
+								<span class="input-span">
+									<input type="text" class="editable" id='phone-reg' autocomplete="on"
+										placeholder="微信号（与邮箱二选一填写即可）" oninput="phoneCheck()" />
+								</span>
+							</div>
+							<p class="message" id="phone"></p>
+						</div>
+						<div class="row class-row class_of-row-reg">
+							<div class="input-wrap middle class_of-wrap">
+								<span class="input-span">
+									<input type="text" class="readonly" id='search-year' autocomplete="off"
+										readonly="readonly" placeholder="届别（毕业年份）" /></span>
+								<span class="clear-span search-year-clear">×</span>
+								<div class="selector" id="year-selector"></div>
+							</div>
+							<p class="message" id="class_of"></p>
+						</div>
+						<div class="row captcha-row" style="display: none;"></div>
+						<div class="row link-row clearfix">
+							<p><a href="javascript:;" class="link-tologin">已注册？点击登录</a></p>
+						</div>
+						<div class="row btn-row clearfix">
+							<div class="input-wrap-btn middle">
+								<input type="button" class="btn btn-register" value="注册" id="submit-reg"/>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<script type="text/javascript">
+			// 回车登录
+			$(function () {
+				$(document).keydown(function (event) {
+					if (event.keyCode == 13) {
+						if($('.wrapper-quicklogin .panel#login').hasClass("active")){
+							$('.wrapper-quicklogin .panel.active#login input.btn.btn-login').trigger('click')
+						}
+					}
+				});
+			})
+		</script>
+	</body>
+
+</html>

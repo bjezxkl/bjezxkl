@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<script type="text/javascript">
+			// 用户信息统计
+			var _hmt = _hmt || [];
+			(function() {
+				var hm = document.createElement("script");
+				hm.src = "https://hm.baidu.com/hm.js?53885f2694f2aadf5dc7c0e0232fceea";
+				var s = document.getElementsByTagName("script")[0]; 
+				s.parentNode.insertBefore(hm, s);
+			})();
+
+			const req = window.location.search;
+			const params = new URLSearchParams(req);
+			var port = params.get('port');
+			if (port != 2233 && port != 1234)
+				window.location.href// = "https://localhost";
+			else
+			{
+				var mobile = mobileTest();
+				if (mobile == true)
+					window.location.href = "./html/mobile/index.html";
+				else
+					window.location.href = "./html/pc/index.html";
+				function mobileTest()
+				{
+					var userAgentInfo = window.navigator.userAgent;
+					var Agents = ["Android", "iPhone", "SymbianOS", "Windows Phone", "iPod"];
+					var mobile = false;
+					for (var v = 0; v < Agents.length; v++)
+					{
+						if (userAgentInfo.indexOf(Agents[v]) > 0)
+						{
+							mobile = true;
+							break;
+						}
+					}
+					return mobile;
+				}
+			}
+		</script>
+	</head>
+	<body>
+		<h1>404 Page Not Found</h1>
+	</body>	
+</html>

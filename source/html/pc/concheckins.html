@@ -1,0 +1,420 @@
+<!doctype html>
+<html lang="zh-CN">
+
+	<head>
+		<title>北京二中下课铃投稿平台</title>
+		<meta name="description" content="北京二中下课铃投稿平台">
+		<meta name="viewport" content='width=device-width, initial-scale=1'>
+		<script type="text/javascript" src="../../js/jquery/jquery.min.js" charset="utf-8"></script>
+		<script type="text/javascript">
+			// 防止未授权的访问
+			if (localStorage.type != "admin" && localStorage.type != "super")
+			{
+				alert('您不是管理员，无法进行管理')
+				window.location.href='./'
+			}
+			$.ajax({
+				url: "https://bjezxkl.azurewebsites.net/api/proxy?path=user",
+				async: false,	// 强制不异步执行，保证先进行访问权限筛选
+				type: 'POST',
+				data: JSON.stringify(
+					{
+						req: { operator: "check"},
+						session: {
+							uid: localStorage.getItem("uid"),
+							username: localStorage.getItem("username"),
+							type: localStorage.getItem("type"),
+							expire_time: localStorage.getItem("expire_time"),
+							class_of: localStorage.getItem("class_of")
+						}
+					}),
+				success: function (data, err)
+				{
+					if (data.code != 0)
+					{
+						if (data.code == -6)
+						{
+							alert("用户未登录，请重新登录！");
+							localStorage.setItem("uid", "");
+							localStorage.setItem("username", "");
+							localStorage.setItem("type", "");
+							localStorage.setItem("expire_time", "");
+							localStorage.setItem("class_of", "");
+							return window.location.href='./'
+						}
+						else if (data.code == -7)
+						{
+							alert("用户登录过期，请重新登录！");
+							localStorage.setItem("uid", "");
+							localStorage.setItem("username", "");
+							localStorage.setItem("type", "");
+							localStorage.setItem("expire_time", "");
+							localStorage.setItem("class_of", "");
+							return window.location.href='./'
+						}
+						else if (data.code == -14) 
+						{
+							alert('用户不存在！');
+							window.location.href='./'
+						}
+						else
+						{
+							alert('未知原因检测登录状态失败，请联系网站管理员');
+							console.log(data);
+							window.location.href='./'
+							return -5;
+						}
+					}
+					if (localStorage.type != "admin" && localStorage.type != "super")
+					{
+						alert('您不是管理员，无法进行管理')	// return -18;
+						window.location.href='./'
+					}
+				},
+				error: function (data, err)
+				{
+					alert('未知原因检测登录状态失败，请联系网站管理员');
+					console.log(err);
+					window.location.href='./'
+					return -5;
+				}
+			})
+
+			// 用户信息统计
+			var _hmt = _hmt || [];
+			(function() {
+				var hm = document.createElement("script");
+				hm.src = "https://hm.baidu.com/hm.js?53885f2694f2aadf5dc7c0e0232fceea";
+				var s = document.getElementsByTagName("script")[0]; 
+				s.parentNode.insertBefore(hm, s);
+			})();
+
+			// 定义machine
+			var userAgentInfo = window.navigator.userAgent;
+			var Agents = ["Android", "iPhone", "SymbianOS", "Windows Phone", "iPod"];
+			var machine = 'PC';
+			for (var v = 0; v < Agents.length; v++)
+			{
+				if (userAgentInfo.indexOf(Agents[v]) > 0)
+				{
+				machine = 'mobile';
+				break;
+				}
+			}
+
+			// 获取grade
+			const req = window.location.search;
+			const params = new URLSearchParams(req);
+			var grade = params.get('grade');
+			if (!grade)
+				grade = localStorage.getItem("class_of");
+		</script>
+		<link rel="stylesheet" href="../../package/APlayer/APlayer-1.10.1.min.css">
+		<link rel="stylesheet" href="../../package/font-awesome/css/font-awesome.min.css">	<!-- 一个图标包 -->
+		<link rel="stylesheet" type='text/css' href='../../css/pc/header.css'>
+		<link rel="stylesheet" type='text/css' href='../../css/pc/basic.css'>
+		<link rel="stylesheet" type='text/css' href='../../css/pc/con_check_ins.css'>
+		<script type="text/javascript" src="../../package/APlayer/APlayer-1.10.1.min.js" charset="utf-8"></script>
+		<script type="text/javascript" src="../../js/header.js" charset="utf-8"></script>
+		<script type="text/javascript" src="../../js/concheckins.js" charset="utf-8"></script>
+		<!--[if IE]>
+		<script src='http://html5shiv.googlecode.com/svn/trunk/html5.js'></script>
+		<![endif]-->
+	</head>
+
+	<body onload="initialize()">
+		<header class="international-header">
+			<div class='header-content'>
+				<div class='nav-link'>
+					<ul class='nav-link-ul'>
+						<li class='nav-link-item'>
+							<a href='./' class='link'>
+								<i class='menu-icon fa fa-home' aria-hidden='true'><span>主页</span></i>
+							</a>
+						</li>
+						<li class='nav-link-item'>
+							<a href='./plan' class='link'>
+								<i class='menu-icon fa fa-calendar-check-o' aria-hidden='true'><span>安排</span></i>
+							</a>
+						</li>
+						<li class='nav-link-item'>
+							<a href='./history' class='link'>
+								<i class='menu-icon fa fa-history' aria-hidden='true'><span>历史</span></i>
+							</a>
+						</li>
+						<li class='nav-link-item'>
+							<a href='./contribute' class='link'>
+								<i class='menu-icon fa fa-upload' aria-hidden='true'><span>投稿</span></i>
+							</a>
+						</li>
+						<li class='nav-link-item'>
+							<a class='link administration'>
+								<i class='menu-icon fa fa-edit' aria-hidden='true'><span>管理</span></i>
+							</a>
+						</li>
+						<li class='nav-link-item'>
+							<a href='./about' class='link'>
+								<i class='menu-icon fa fa-info' aria-hidden='true'><span>关于</span></i>
+							</a>
+						</li>
+					</ul>
+				</div>
+				<div class='nav-user-center'>
+					<div class='user-content'>
+						<div class='nav-user-item nav-user-infos'>
+							<div class='login'>
+								<a href='javascript:;' class='link link-login' onclick='showLoginPanel()'>
+									<span class='user-msg' style='display: none;'>还未登陆呦，点击登录</span>
+								</a>
+							</div>
+							<div class='user-infos'>
+								<a href='./user' class='link link-user' target='_blank'>
+									<span class='username' title='用户中心' style='display: none;'></span>
+								</a>
+								<div class='user-tool-wrap' style='display: none;'>
+									<div class='user-tool user-center'>
+										<a href='./user' class='link link-user-center' target='_blank'>
+											<i class='menu-icon fa fa-user-circle-o' aria-hidden='true'><span class='user-center'>用户中心</span></i>
+										</a>
+									</div>
+									<div class='user-tool logout'>
+										<a href='javascript:;' class='link link-logout'>
+											<i class='menu-icon fa fa-sign-out' aria-hidden='true'><span class='logout'>点击登出</span></i>
+										</a>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class='nav-user-item nav-msg' style='display: none;'>
+							<a class='link link-msg' href='./message#' target='_blank'>
+								<div class='msg-remind'></div>
+								<i class='menu-icon fa fa-envelope' aria-hidden='true'><span class='msg'>消息</span></i>
+								<!--这里如果<span>标签前有换行，会使得显示的时候多一个空格，但发现加上空格之后显示数字更舒服些，不显示数字的时候不加空格又舒服些，所以就先收起来，然后靠span标签的margin-left属性来调节好了-->
+								<a class='open-msg-page' href='./message#' target='_blank' style='display: none;'>
+							</a>
+						</div>
+					</div>
+				</div>
+			</div>
+		</header>
+		<div class="container">
+			<div class="contribution-wrap">
+				<div class="list">
+					<div class="list-title">
+						<div class="list-title-text">待插入审核数据投稿</div>
+					</div>
+					<div class="search-wrap">
+						<div class="search-wrap-title">
+							<div class="order-method-wrap" title="点击切换排列顺序">
+								<span class="order-icon-wrap">
+									<i class="fa fa-sort-numeric-asc fa-lg"></i>
+								</span>
+								<span class="order-text-wrap">按时间正序</span>
+							</div>
+							<div class="grade-wrap" title="点击切换至高三铃声" style="display: none;">
+								<span class="grade-text-wrap all">全校铃声</span>
+							</div>
+							<div class="show-search-btn">
+								<div class="text">展开搜索框</div>
+								<div class="icon"><i class="fa fa-chevron-down" aria-hidden="true"></i></div>
+							</div>
+						</div>
+						<div class="search-box" style="display: none;">
+							<div class="input-wrap small search-by-month-wrap">
+								<span class="icon-span"><i class="input-icon fa fa-calendar-check-o"></i></span>
+								<span class="input-span">
+									<input type="text" class="readonly" id='search-month' autocomplete="off"
+										oninput="filterList($('.list-content'))" onchange="filterList($('.list-content'))"
+										readonly="readonly" placeholder="按月份筛选" /></span>
+								<span class="clear-span search-month-clear">×</span>
+								<div class="selector" id="selector"></div>
+							</div>
+							<div class="input-wrap small search-by-keyword-wrap">
+								<span class="icon-span"><i class="input-icon fa fa-search"></i></span>
+								<span class="input-span">
+									<input type="text" class="editable" id='search-keyword' autocomplete="off"
+										oninput="filterList($('.list-content'))" onchange="filterList($('.list-content'))"
+										placeholder="关键词搜索" /></span>
+								<span class="clear-span search-keyword-clear">×</span>
+							</div>
+						</div>
+					</div>
+
+					<div class="list-content">
+						<div class="loading-icon">
+							<i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i>
+						</div>
+					</div>
+				</div>
+				<div class="check-wrap" style="display: none;">
+					<div class="con-title">投稿详情</div>
+					<div class="con-infos-wrap">
+						<div class="aplayer-wrap">
+							<div class="aplayer" id="aplayer"></div>
+							<script>
+								const ap = new APlayer({
+									container: document.getElementById('aplayer'),
+									loop: 'none',
+									theme: '#e9e9e9',
+									listMaxHeight: '100px',
+								});
+							</script>
+						</div>
+						<div class="open-in-ncm" style="display: none;">
+							<span class="icon-ncm"><svg xmlns="http://www.w3.org/2000/svg"
+									xmlns:xlink="http://www.w3.org/1999/xlink" preserveAspectRatio="xMidYMid" width="15.525"
+									height="17" viewBox="0 0 31.031 34">
+									<path
+										d="M21.279,-0.015 C21.630,0.041 21.985,0.081 22.333,0.156 C23.553,0.419 24.646,0.948 25.611,1.723 C26.244,2.231 26.502,2.894 26.319,3.679 C26.154,4.385 25.693,4.861 24.981,5.064 C24.307,5.256 23.699,5.110 23.146,4.677 C22.445,4.127 21.667,3.747 20.735,3.828 C19.945,3.897 19.190,4.710 19.258,5.436 C19.288,5.761 19.407,6.078 19.491,6.398 C19.640,6.962 19.794,7.525 19.945,8.089 C19.971,8.186 19.996,8.263 20.135,8.271 C22.258,8.384 24.171,9.060 25.876,10.313 C27.552,11.545 28.924,13.024 29.844,14.882 C30.519,16.246 30.897,17.686 30.997,19.197 C31.130,21.206 30.889,23.171 30.090,25.026 C28.232,29.338 24.965,32.119 20.371,33.397 C18.623,33.884 16.832,34.074 15.019,33.973 C11.250,33.763 7.985,32.370 5.235,29.851 C2.521,27.367 0.829,24.312 0.241,20.726 C-0.560,15.848 0.668,11.475 3.917,7.682 C5.701,5.598 7.928,4.097 10.525,3.128 C11.420,2.793 12.399,3.105 12.890,3.869 C13.392,4.650 13.274,5.655 12.579,6.276 C12.383,6.452 12.135,6.591 11.887,6.690 C7.928,8.271 5.313,11.056 4.274,15.118 C3.266,19.058 4.157,22.665 6.730,25.843 C8.343,27.835 10.427,29.173 12.949,29.830 C14.579,30.255 16.226,30.282 17.886,30.031 C19.599,29.772 21.199,29.221 22.634,28.260 C24.608,26.937 26.015,25.174 26.718,22.930 C27.325,20.993 27.346,19.037 26.596,17.115 C25.992,15.568 24.924,14.378 23.585,13.396 C22.870,12.871 22.102,12.462 21.226,12.261 C21.186,12.252 21.145,12.247 21.073,12.236 C21.193,12.684 21.304,13.110 21.419,13.535 C21.697,14.559 21.981,15.582 22.254,16.608 C22.847,18.838 22.273,20.791 20.704,22.455 C19.252,23.995 17.404,24.665 15.285,24.464 C12.925,24.240 11.240,22.987 10.141,20.958 C9.565,19.896 9.317,18.751 9.271,17.553 C9.198,15.645 9.653,13.884 10.770,12.309 C11.970,10.618 13.631,9.533 15.595,8.859 C15.749,8.806 15.906,8.758 16.087,8.699 C15.981,8.306 15.871,7.923 15.776,7.537 C15.645,7.005 15.477,6.476 15.411,5.936 C15.217,4.338 15.718,2.949 16.846,1.785 C17.770,0.833 18.890,0.229 20.232,0.048 C20.380,0.028 20.527,0.006 20.675,-0.015 C20.876,-0.015 21.077,-0.015 21.279,-0.015 ZM17.088,12.387 C15.925,12.749 14.921,13.301 14.168,14.219 C13.161,15.449 12.960,16.862 13.281,18.363 C13.448,19.143 13.838,19.810 14.522,20.276 C15.377,20.858 16.542,20.833 17.436,20.228 C18.350,19.608 18.757,18.609 18.490,17.585 C18.198,16.463 17.887,15.345 17.584,14.225 C17.421,13.623 17.258,13.019 17.088,12.387 Z"
+										class="cls-1" />
+								</svg></span>
+						</div>
+						<div class="open-in-qqm" style="display: none;">
+							<span class="icon-qqm"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" preserveAspectRatio="xMidYMid" viewBox="72 72 952 952" width="18" height="18">
+							<path xmlns="http://www.w3.org/2000/svg" d="M747.434667 85.333333l13.738666 83.712A429.056 429.056 0 0 1 938.666667 515.669333c0 235.776-191.232 426.666667-426.666667 426.666667-235.776 0-426.666667-191.232-426.666667-426.666667 0-235.776 191.232-426.666667 426.666667-426.666666 55.125333 0 107.989333 10.538667 156.416 29.568l13.610667 5.632-10.496 5.077333c-32.682667 15.274667-74.752 31.018667-123.733334 40.789333-119.509333 23.765333-187.52 15.061333-187.52 15.061334l-2.986666 36.181333 211.882666 357.333333-1.578666-0.170666c-4.949333-0.426667-20.309333-1.621333-40.234667-1.706667h-7.125333c-30.08 0.128-68.266667 2.986667-96.64 13.952-58.282667 22.4-108.842667 82.688-96.810667 160.426667 11.648 75.946667 74.197333 131.669333 165.589333 132.992h0.341334l9.898666-0.042667c108.842667-3.029333 165.461333-39.893333 193.578667-99.84 23.04-48.981333 7.509333-101.077333 6.144-105.514667l-0.128-0.298666-190.549333-329.856s81.066667-45.909333 126.933333-87.765334c96.853333-88.106667 108.245333-170.496 108.8-175.274666L747.434667 85.333333z" fill="#ffffff" p-id="619"></path>
+								</svg></span>
+						</div>
+						<div class="open-in-kgm" style="display: none;">
+							<span class="icon-kgm"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" t="1723020815934" class="icon" viewBox="132 132 762 762" version="1.1" p-id="1486" width="18" height="18"><path d="M890.88 509.66528C892.74368 721.7152 717.29152 894.976 504.66816 890.88 300.89216 886.8864 129.024 718.52032 133.2224 503.41888 137.216 300.8512 305.152 127.95904 522.24 133.24288c203.24352 4.93568 367.59552 171.66336 368.64 376.4224z m-710.81984 2.048c-0.6144 182.80448 147.2512 330.89536 329.3184 332.3904 185.99936 1.51552 336.5888-149.99552 334.86848-335.58528-1.67936-179.85536-148.62336-329.54368-333.824-328.78592-181.73952 0.8192-330.9568 148.93056-330.40384 332.04224z" fill="#3A3A3A" p-id="1487"></path><path d="M456.704 508.66176q-4.89472 47.616-9.80992 95.232-4.23936 40.79616-8.66304 81.57184c-0.32768 2.9696-0.3072 6.47168-5.2224 6.4512-27.17696-0.14336-54.35392 0-83.0464 0 0.7168-8.99072 1.24928-17.53088 2.048-26.05056q3.87072-39.13728 7.90528-78.2336c3.072-30.4128 6.144-60.80512 9.15456-91.2384s5.79584-60.86656 8.8064-91.29984c2.19136-22.17984 4.46464-44.35968 7.168-66.49856 0.28672-2.27328 3.74784-5.91872 5.79584-5.95968 27.58656-0.38912 55.296-0.26624 84.29568-0.26624-5.59104 53.78048-11.10016 106.9056-16.62976 160.03072l0.77824 0.28672c1.57696-4.3008 2.94912-8.704 4.77184-12.92288 8.192-19.31264 22.6304-33.87392 37.4784-48.08704q49.54112-47.47264 99.14368-94.90432c2.048-1.92512 4.87424-4.23936 7.35232-4.25984 33.62816-0.28672 67.25632-0.18432 102.54336-0.18432a38.48192 38.48192 0 0 1-4.096 6.656q-65.86368 64.94208-131.7888 129.82272a160.5632 160.5632 0 0 0-16.19968 18.75968c-9.97376 13.45536-9.44128 27.97568-0.38912 41.14432 15.72864 22.87616 32.41984 45.056 49.152 67.29728 22.528 29.9008 45.2608 59.51488 67.85024 89.31328a20.02944 20.02944 0 0 1 2.048 4.83328 18.90304 18.90304 0 0 1-5.46816 1.76128c-33.1776 0-66.3552-0.1024-99.55328 0.1024-4.77184 0-6.90176-2.53952-9.09312-5.77536l-53.248-78.0288c-12.0832-17.63328-24.576-34.97984-36.41344-52.75648-9.29792-14.1312-15.62624-29.45024-16.67072-46.7968z" fill="#3A3A3A" p-id="1488"></path>
+								</svg></span>
+						</div>
+						<div class="open-in-bilibili" style="display: none;">
+							<span class="icon-bilibili"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" t="1723021989758" class="icon" viewBox="112 162 802 722" version="1.1" p-id="1472" width="19" height="19"><path d="M776.18 239.54h-135.4l61.35-61.35c10.58-10.58 10.58-25.39 0-35.97-10.58-10.58-25.39-10.58-35.97 0L562.5 245.89H460.95L357.28 142.23c-8.46-10.58-21.16-12.69-33.85-6.35-2.12 0-2.12 2.12-4.23 4.23-10.58 10.58-10.58 25.39 0 35.97l63.47 63.47h-135.4c-74.05 0-135.4 61.35-135.4 135.4v336.38c0 71.93 61.35 133.28 135.4 133.28h21.16c0 25.39 21.16 44.43 44.43 44.43s44.43-21.16 44.43-44.43H670.4c2.12 25.39 23.27 44.43 48.66 42.31 23.27-2.12 40.2-19.04 42.31-42.31h16.92c74.05 0 135.4-61.35 135.4-135.4V372.83c-2.11-74.05-63.47-133.29-137.51-133.29z m-4.23 522.56H255.74c-27.5 0-48.66-23.27-50.77-50.77l-2.12-342.73c0-27.5 23.27-50.77 50.77-50.77h516.21c27.5 0 48.66 23.27 50.77 50.77l2.12 342.73c-2.12 29.61-23.27 50.77-50.77 50.77z" fill="#2C2C2C" p-id="1473"></path><path d="M422.87 434.18l12.69 63.47-169.25 31.73-12.69-63.47 169.25-31.73z m162.9 63.47l12.69-63.47 169.25 31.73-12.69 63.47-169.25-31.73z m33.85 133.28c0 2.12 0 6.35-2.12 8.46-10.58 23.27-33.85 38.08-61.35 40.2-16.92 0-33.85-8.46-44.43-21.16-12.69 12.69-27.5 21.16-44.43 21.16-25.39-2.12-48.66-16.92-61.35-40.2 0-2.12-2.12-4.23-2.12-8.46 0-8.46 6.35-14.81 14.81-16.92h2.12c6.35 0 10.58 2.12 12.69 8.46 0 0 16.92 23.27 31.73 23.27 29.62 0 29.62-25.39 46.54-44.43 19.04 21.16 19.04 44.43 46.54 44.43 19.04 0 31.73-23.27 31.73-23.27 2.12-4.23 8.46-8.46 12.69-8.46 8.46-2.12 14.81 4.23 16.92 12.69v4.23h0.03z" fill="#2C2C2C" p-id="1474"></path>
+								</svg></span>
+						</div>
+						<div class="open-in-ytb" style="display: none;">
+							<span class="icon-ytb"><svg xmlns="http://www.w3.org/2000/svg" fill="#000000" width="21" height="21" viewBox="4 4 24 24"><path d="M24.325 8.309s-2.655-.334-8.357-.334c-5.517 0-8.294.334-8.294.334A2.675 2.675 0 0 0 5 10.984v10.034a2.675 2.675 0 0 0 2.674 2.676s2.582.332 8.294.332c5.709 0 8.357-.332 8.357-.332A2.673 2.673 0 0 0 27 21.018V10.982a2.673 2.673 0 0 0-2.675-2.673zM13.061 19.975V12.03L20.195 16l-7.134 3.975z"></path>
+								</svg></span>
+						</div>
+						<div class="download-wrap" title="导出数据并下载本下课铃的音频文件">
+							<span class="download-text-wrap all">数据下载</span>
+						</div>
+						<div class="coninfos-placeholder"></div>
+						<div class="coninfos-wrap">
+							<div class="coninfos">
+								<h4>投稿信息</h4>
+								<div class="coninfos-text">
+									<p><span class="coninfos" id="infos" style="display: none;"></span>
+									<p><span class="coninfos-label" id="hope-date">希望播放日期：</span><span class="coninfos"
+											id="hope-date"></span></p>
+									<p><span class="coninfos-label" id="plan-week">预计播放周：</span><span class="coninfos"
+											id="plan-week"></span><span class="coninfos"
+											id="plan-term-database" style="display: none;"></span></p>
+									<p><span class="coninfos-label" id="plan-date">预计播放日期：</span></p>
+									<div class="plan-date-wrap">
+										<div class="input-wrap small plan-date-wrap">
+											<span class="input-span">
+												<input type="text" class="onlyread date-selector" id='plan-date' autocomplete="off" readonly="readonly" placeholder="预计播放日期" /></span>
+											<span class=" clear-span plan-date-clear">×</span>
+											<div class="plan-date-picker" id="plan-date-picker"></div>
+										</div>		
+										<p class="message" id="plan-date"></p>
+									</div>
+									<p><span class="coninfos-label" id="ncmid">网易云id：</span><span class="coninfos"
+											id="ncmid"></span></p>
+									<p><span class="coninfos-label" id="qqmid">QQ音乐id：</span><span class="coninfos"
+											id="qqmid"></span></p>
+									<p><span class="coninfos-label" id="songtype">QQ音乐类型：</span><span class="coninfos"
+											id="songtype"></span></p>
+									<p><span class="coninfos-label" id="kgmid">酷狗音乐id：</span><span class="coninfos"
+											id="kgmid"></span></p>
+									<p><span class="coninfos-label" id="BV">BV号：</span><span class="coninfos"
+											id="BV"></span></p>
+									<p><span class="coninfos-label" id="ytmid">Youtube id：</span><span class="coninfos"
+											id="ytmid"></span></p>
+									<p><span class="coninfos-label" id="ncrid">网易云声音id：</span><span class="coninfos"
+											id="ncrid"></span></p>
+									<p><span class="coninfos-label" id="links">特殊链接：</span><span class="coninfos"
+											id="links"></span></p>
+									<p><span class="coninfos-label" id="state">版权状态：</span><span class="coninfos"
+											id="state"></span></p>
+									<p><span class="coninfos-label" id="realname">实际名称：</span><span class="coninfos"
+											id="realname"></span></p>
+									<p><span class="coninfos-label" id="hope-showname">希望显示名称：</span><span class="coninfos"
+											id="hope-showname"></span></p>
+									<p><span class="coninfos-label" id="showname">预计显示名称：</span></p>
+									<div class="showname-wrap">
+										<div class="input-wrap small showname-wrap">
+											<span class="input-span">
+												<input type="text" class="editable" id='showname' autocomplete="off" placeholder="预计显示名称" /></span>
+											<span class=" clear-span showname-clear">×</span>
+										</div>
+											<p class="message" id="showname"></p>
+									</div>
+									<p><span class="coninfos-label" id="artist">音乐人：</span><span class="coninfos"
+											id="artist"></span></p>
+									<p><span class="coninfos-label" id="hope-artist">希望显示音乐人：</span><span class="coninfos"
+											id="hope-artist"></span></p>
+									<p><span class="coninfos-label" id="plan-artist">预计显示音乐人：</span></p>
+									<div class="plan-artist-wrap">
+										<div class="input-wrap small plan-artist-wrap">
+											<span class="input-span">
+												<input type="text" class="editable" id='plan-artist' autocomplete="off" placeholder="预计显示音乐人" /></span>
+											<span class=" clear-span plan-artist-clear">×</span>
+										</div>
+											<p class="message" id="plan-artist"></p>
+									</div>
+									<p><span class="coninfos-label" id="plan-description">预计简介：</span></p>
+									<div class="plan-description-wrap">
+										<div class="input-wrap small plan-description-wrap">
+											<span class="input-span">
+												<textarea class="editable" id='plan-description' autocomplete="off" placeholder="预计简介" rows="4"></textarea>
+											</span>
+											<span class=" clear-span plan-description-clear">×</span>
+										</div>
+											<p class="message" id="plan-description"></p>
+									</div>
+									<p><span class="coninfos-label" id="con-user">投稿人：</span><span class="coninfos"
+											id="con-user"></span></p>
+									<p><span class="coninfos-label" id="con-time">投稿时间：</span><span class="coninfos"
+											id="con-time"></span></p>
+									<p><span class="coninfos-label" id="con-note">投稿备注：</span><span class="coninfos"
+											id="con-note"></span></p>
+									<p><span class="coninfos-label" id="check-user">审核人：</span><span class="coninfos"
+											id="check-user"></span></p>
+									<p><span class="coninfos-label" id="check-type">审核结果：</span></p>
+									<div class="type-wrap">
+										<span class="type-span choosing" id="accepted">已录用</span>
+										<span class="type-span" id="success">已过审</span>
+										<span class="type-span" id="fail">未过审</span>
+									</div>
+									<p><span class="coninfos-label" id="check-note">审核备注：</span><span class="coninfos"
+											id="check-note"></span></p>
+									<div class="check-note-wrap">
+										<div class="input-wrap small check-note-wrap">
+											<span class="input-span">
+												<input type="text" class="editable" id='check-note' autocomplete="off" placeholder="审核备注" /></span>
+											<span class=" clear-span check-note-clear">×</span>
+										</div>
+											<p class="message" id="check-note"></p>
+									</div>
+									<p><span class="coninfos-label" id="keyword">稿件关键词：（如有多个以"$"分割）</span><span class="coninfos"
+											id="keyword"></span></p>
+									<div class="keyword-wrap">
+										<div class="input-wrap small keyword-wrap">
+											<span class="input-span">
+												<input type="text" class="editable" id='keyword' autocomplete="off" placeholder="用于筛选同一稿件" /></span>
+											<span class=" clear-span keyword-clear">×</span>
+										</div>
+											<p class="message" id="keyword"></p>
+									</div>
+									<div class="btn-check-cancel grey clearfix">
+										<div class="input-wrap-btn middle">
+												<input type="button" class="btn btn-check-cancel" value="取消审核" id="cancel" />
+										</div>
+									</div>
+									<div class="btn-check-submit clearfix">
+										<div class="input-wrap-btn middle">
+												<input type="button" class="btn btn-check-submit" value="写入审核结果" id="submit" />
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</body>
+
+</html>
