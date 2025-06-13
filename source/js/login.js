@@ -164,7 +164,7 @@ function rePwdCheck() {
 // 邮箱格式检查
 function emailCheck()
 {
-	var re_email = /^[a-z0-9.]+@[a-z0-9]+\.[a-z]{2,4}$/
+	var re_email = /^[a-z0-9._]+@[a-z0-9]+\.[a-z]{2,4}$/
 	if ($('.panel.active#register input#email-reg').val() == "" && $('.panel.active#register input#phone-reg').val() == "")
 		$('.panel.active#register p.message#email').html('请输入邮箱')
 	else if (re_email.test($(".panel.active#register input#email-reg").val()))

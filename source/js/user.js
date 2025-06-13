@@ -772,7 +772,7 @@ function usernameCheck(type) {
 // 邮箱格式检查
 function emailCheck()
 {
-	var re_email = /^[a-z0-9.]+@[a-z0-9]+\.[a-z]{2,4}$/
+	var re_email = /^[a-z0-9._]+@[a-z0-9]+\.[a-z]{2,4}$/
 	if (re_email.test($(".panel.active input#email-edit").val()))
 		$('.panel.active p.message#email').html('')
 	else if ($('.panel.active input#email-edit').val() != "")
