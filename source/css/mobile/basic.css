@@ -359,3 +359,16 @@ input.readonly{
   margin: 50px auto;
   color: #1565C0;
 }
+.notice-contnent .music-name,
+.msg-content .music-name
+{
+  color: #6999d3;
+}
+.notice-contnent .music-name:hover
+{
+  color: #1565C0;
+}
+.msg-content .music-name:hover
+{
+  color: #174071;
+}

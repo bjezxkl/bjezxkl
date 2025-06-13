@@ -367,3 +367,16 @@ input.readonly{
 .wrapper-popup .content .btn#cancel:hover{
   background-color: #ccc;
 }
+.notice-contnent .music-name,
+.msg-content .music-name
+{
+  color: #6999d3;
+}
+.notice-contnent .music-name:hover
+{
+  color: #1565C0;
+}
+.msg-content .music-name:hover
+{
+  color: #174071;
+}
