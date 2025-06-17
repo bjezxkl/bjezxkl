@@ -507,6 +507,10 @@
 	color: #fff;
 	cursor: pointer;
 }
+.coninfos-text .type-wrap .type-span.choosing#waiting{
+	border: 2px solid #3abbf0;
+	background-color: rgba(58,187,240,.7);
+}
 .coninfos-text .type-wrap .type-span.choosing#success{
 	border: 2px solid #228B22;
 	background-color: rgba(34,139,34,.7);

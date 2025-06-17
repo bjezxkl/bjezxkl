@@ -1685,8 +1685,24 @@ $(document).on('click', '.type-span', function () {
 		$(".revisable-item .revisable-text").addClass("unselected")
 		$(".revisable-item .revisable-text").removeClass("selected")
 	}
-	else
+	else if	(check_type == "waiting")
+	{
+		$(".revisable-item .fa").addClass("fa-check-square")
+		$(".revisable-item .fa").removeClass("fa-square-o")
+		$(".revisable-item .fa").attr("id", "enable")
 		$(".revisable-item .fa").removeClass("disable")
+		$(".revisable-item .revisable-text").addClass("selected")
+		$(".revisable-item .revisable-text").removeClass("unselected")
+	}
+	else
+	{
+		$(".revisable-item .fa").addClass("fa-square-o")
+		$(".revisable-item .fa").removeClass("fa-check-square")
+		$(".revisable-item .fa").attr("id", "enable")
+		$(".revisable-item .fa").removeClass("disable")	
+		$(".revisable-item .revisable-text").addClass("unselected")
+		$(".revisable-item .revisable-text").removeClass("selected")
+	}
 })
 
 //排序方式切换
@@ -1789,12 +1805,20 @@ function confirmCheckIns(same_cons_string)
 		$('.wrapper-popup .infos').html('是否确定 <b>暂存</b> 已填写的内容')
 		$('.wrapper-popup .btn#ok').attr("onclick", "submitContributionCheckInsert('" + same_cons_string + "')");
 	}
-	else if (check_type == "success") {
+	else if (check_type == "success")
+	{
 		$('.wrapper-popup .infos').html('是否确定将该投稿标记为 <b style="color: #228B22;">已过审</b>')
 		$('.wrapper-popup .btn#ok').attr("onclick", "submitContributionCheckInsert('" + same_cons_string + "')");
-	} else if (check_type == 'fail') {
+	}
+	else if (check_type == 'fail')
+	{
 		$('.wrapper-popup .infos').html('是否确定将该投稿标记为 <b style="color: #FF4500;">未过审</b>')
 		$('.wrapper-popup .btn#ok').attr("onclick", "submitContributionCheckInsert('" + same_cons_string + "')");	// 待测试
+	}
+	else if (check_type == "waiting")
+	{
+		$('.wrapper-popup .infos').html('是否确定将该投稿回退至 <b style="color: #1565C0;">待审核</b>')
+		$('.wrapper-popup .btn#ok').attr("onclick", "submitContributionCheckInsert('" + same_cons_string + "')");
 	}
 }
 
@@ -2039,7 +2063,7 @@ function resetConInfo()
 	$('.coninfos-text span.coninfos#revise-time').html("");
 
 	// check_type
-	$('.type-wrap .type-span#waiting').trigger("click");
+	$('.type-wrap .type-span#accepted').trigger("click");
 
 	// revisable
 	$(".revisable-item .fa").removeClass("disable")
