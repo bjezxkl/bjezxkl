@@ -667,3 +667,22 @@
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+
+.revisable-wrap .revisable-item .fa.fa-square-o {
+  margin: 4px 3px 0px 3px;
+  font-size: 1.08em;
+  padding-top: 1px;
+}
+.revisable-wrap .revisable-item .revisable-text {
+  position: relative;
+  top: -1px;
+}
+.revisable-wrap .revisable-item .fa.fa-check-square {
+  margin: 2px 3.125px 4px 3px;
+  font-size: 0.98em;
+  padding-top: 1px;
+}
+.coninfos-label#revisable {
+  top: -1px;
+  position: relative;
+}

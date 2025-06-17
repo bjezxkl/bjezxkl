@@ -290,8 +290,11 @@ function getContent()
 					var hope_artist = data[i].hope_artist
 					var hope_description = data[i].hope_description
 					var con_time_timestamp = data[i].con_time
-					var con_time = timestampToTime(con_time_timestamp);
+					var con_time = timestampToTime(con_time_timestamp)
 					var con_remark = data[i].con_remark
+					var revised = data[i].revised
+					var revise_time_timestamp = data[i].revise_time
+					var revise_time = timestampToTime(parseInt(revise_time_timestamp))
 					var check_type = data[i].check_type
 					var check_timestamp = data[i].check_time
 					var check_time = timestampToTime(parseInt(check_timestamp))
@@ -363,15 +366,26 @@ function getContent()
 						con_title = showname
 					con_content +=
 						"<div class='list-item contribution' id='" + cid + "'>" +
+							"<div class='data' style='display: none;'>" + JSON.stringify(data[i]) + "</div>"
+					if (revisable == 1)
+					{
+						var revisable_text = "<span class='revisable true'>是</span>"
+						con_content +=
+							"<div class='con-title' style='display: inline-block'>投稿：《" + con_title + "》</div>" +
+							"<input type='button' class='revise-contribute' value='修改投稿' id='" + cid + "'/>" +
+							"<div class='con-content'>" +
+								"<p class='cid'>投稿ID：" + cid + "</p>" +
+								"<p class='revisable'>是否可修改：" + revisable_text + "</p>"
+					}
+					else
+					{
+						var revisable_text = "<span class='revisable false'>否</span>"
+						con_content +=
 							"<div class='con-title'>投稿：《" + con_title + "》</div>" +
 							"<div class='con-content'>" +
-								"<p class='cid'>投稿ID：" + cid + "</p>"
-					if (revisable == 1)
-						var revisable_text = "<span class='revisable true'>是</span>"
-					else
-						var revisable_text = "<span class='revisable false'>否</span>"
-					con_content +=
+								"<p class='cid'>投稿ID：" + cid + "</p>" +
 								"<p class='revisable'>是否可修改：" + revisable_text + "</p>"
+					}
 					if (hope_date == null || hope_date == "" || hope_date == undefined)
 						con_content +=
 								"<p class='hope-date'>希望播放日期：" +
@@ -466,6 +480,9 @@ function getContent()
 					if (con_remark != "" && con_remark != undefined)
 						con_content +=
 								"<p class='con-remark'>投稿备注：" + con_remark + "</p>"
+					if (revised == 1)
+						con_content +=
+								"<p class='con-remark'>修改时间：" + revise_time + "</p>"
 					if (check_type == "waiting")
 						var check_type_text = "<span class='check-type-text' id='waiting'>待审核</span>"
 					else if (check_type == "accepted")
@@ -898,4 +915,35 @@ $(document).on('click', '.btn.btn-login#submit', function ()
 			return console.log(err);
 		}
 	})
+})
+
+$(document).on('click', '.revise-contribute', function ()
+{
+	var con_info = JSON.parse($(this).siblings(".data").html())
+	if (machine == "mobile")
+	{
+		alert("目前手机页面不支持修改投稿，请在电脑页面中修改");
+		//$('body').append("<iframe class='quickrevise-wrap' src='../../html/mobile/login.html' frameborder='0' width='100%' height='100%' style='display: none; position: fixed; top: 0px; left: 0px; width: 100%; height: 100%; z-index: 99999;'></iframe>");
+		//$('.quickrevise-wrap').fadeIn('fast')
+	}
+	else
+	{
+		if ($('body iframe.quickrevise-wrap').length == 0)
+		{
+			$('body').append("<iframe class='quickrevise-wrap' src='../../html/pc/conrevise.html' frameborder='0' width='100%' height='100%' style='display: none; position: fixed; top: 0px; left: 0px; width: 100%; height: 100%; z-index: 99999;'></iframe>");
+			$('.quickrevise-wrap').on('load', function ()
+			{
+				try
+				{
+					this.contentWindow.autofill(con_info)
+				}
+				catch (error)
+				{
+					alert("修改页面加载失败，请稍后再试")
+					return console.log(error);
+				}
+			})
+			$('.quickrevise-wrap').fadeIn('fast')
+		}
+	}
 })
