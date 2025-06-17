@@ -1984,7 +1984,7 @@ function submitContributionCheckInsert(same_cons_string)
 					alert("站内信发送失败，请检查")
 					hidePopup()
 					resetConInfo()
-					return getWaitingContribution()
+					return getAcceptedContribution()
 				}
 			}
 			localStorage.setItem("expire_time", data.session.expire_time);	// 其他三项都没变，所以只修改这个
