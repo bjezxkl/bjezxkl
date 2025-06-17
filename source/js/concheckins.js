@@ -296,14 +296,18 @@ function sortWaitingContribution()
 	{
 		con_data.sort(function (a, b)
 		{
-			return a.cid - b.cid;	// 时间正序
+			const a_update_time = a.revised ? a.revise_time : a.con_time;
+			const b_update_time = b.revised ? b.revise_time : b.con_time;
+			return a_update_time - b_update_time;	// 时间正序
 		});
 	}
 	else if (order_method === "reverse")
 	{
 		con_data.sort(function (a, b)
 		{
-			return b.cid - a.cid;	// 时间倒序
+			const a_update_time = a.revised ? a.revise_time : a.con_time;
+			const b_update_time = b.revised ? b.revise_time : b.con_time;
+			return b_update_time - a_update_time;	// 时间倒序
 		});
 	}
 
@@ -368,6 +372,10 @@ function sortWaitingContribution()
 					var con_time = timestampToTime(parseInt(con_time_timestamp)).split(' ')[1]
 					var con_date = timestampToTime(parseInt(con_time_timestamp)).split(' ')[0].split('-')
 					var con_remark = data[i].con_remark
+					var revised = data[i].revised
+					var revise_time_timestamp = data[i].revise_time
+					var revise_time = timestampToTime(parseInt(con_time_timestamp)).split(' ')[1]
+					var revise_date = timestampToTime(parseInt(con_time_timestamp)).split(' ')[0].split('-')
 					var check_type = data[i].check_type
 		
 					if (ncmid != "" && ncmid != undefined)
@@ -976,6 +984,18 @@ function fillConInfo(con_info, mid_type)
 		$('.coninfos-text span.coninfos#con-note').html(con_info.con_remark);
 	else
 		$('.coninfos-text span.coninfos#con-note').html("<span class='con-infos-empty'>（无备注）</span>");
+	// revise_time
+	if (con_info.revised == 1)
+	{
+		$('.coninfos-text span.coninfos#revise-time').parent().css('display', '');
+		var revise_time_text = timestampToTime(parseInt(con_info.revise_time));
+		$('.coninfos-text span.coninfos#revise-time').html(revise_time_text);
+	}
+	else
+	{
+		$('.coninfos-text span.coninfos#revise-time').parent().css('display', 'none');
+		$('.coninfos-text span.coninfos#revise-time').html("");
+	}
 
 	// check_user
 	$('.coninfos-text span.coninfos#check-user').html(con_info.check_user);
@@ -1656,6 +1676,17 @@ $(document).on('click', '.type-span', function () {
 	check_type = $(this).attr('id')
 	$('.type-wrap .type-span').removeClass('choosing')
 	$('.type-span#' + check_type).addClass('choosing')
+	if (check_type == "success")
+	{
+		$(".revisable-item .fa").addClass("fa-square-o")
+		$(".revisable-item .fa").removeClass("fa-check-square")
+		$(".revisable-item .fa").attr("id", "disable")
+		$(".revisable-item .fa").addClass("disable")
+		$(".revisable-item .revisable-text").addClass("unselected")
+		$(".revisable-item .revisable-text").removeClass("selected")
+	}
+	else
+		$(".revisable-item .fa").removeClass("disable")
 })
 
 //排序方式切换
@@ -1805,11 +1836,12 @@ function submitContributionCheckInsert(same_cons_string)
 	var plan_description = $('.coninfos-text textarea#plan-description').val();
 	var check_remark = $('.coninfos-text input#check-note').val();
 	var keyword = $('.coninfos-text input#keyword').val();
+	var revisable = ($('.hope-class-of-wrap .fa.fa-check-square').attr('id') == "enable")? 1: 0
 
 	var data =
 	{
 		cid: con_info.cid,
-//		revisable,
+		revisable: revisable,
 //		hope_date,
 //		ncmid,
 //		qqmid,
@@ -2002,9 +2034,15 @@ function resetConInfo()
 	$('.coninfos-text span.coninfos#con-time').html("");
 	// con_remark
 	$('.coninfos-text span.coninfos#con-note').html("");
+	// revise_time
+	$('.coninfos-text span.coninfos#revise-time').parent().css('display', 'none');
+	$('.coninfos-text span.coninfos#revise-time').html("");
 
 	// check_type
 	$('.type-wrap .type-span#waiting').trigger("click");
+
+	// revisable
+	$(".revisable-item .fa").removeClass("disable")
 
 	// check_remark
 	$('.coninfos-text input#check-note').val("");
@@ -2089,18 +2127,26 @@ function showSameConsWrap()
 }
 
 $(document).on('click', ".fa.fa-check-square", function () {
-    $(this).addClass("fa-square-o")
-    $(this).removeClass("fa-check-square")
+	$(this).addClass("fa-square-o")
+	$(this).removeClass("fa-check-square")
+	$(this).attr("id", "enable")
+	$(this).siblings().addClass("unselected")
+	$(this).siblings().removeClass("selected")
 })
 $(document).on('click', ".fa.fa-square-o", function () {
-    $(this).removeClass("fa-square-o")
-    $(this).addClass("fa-check-square")
+	if ($(this).hasClass("disable"))
+		return
+	$(this).addClass("fa-check-square")
+	$(this).removeClass("fa-square-o")
+	$(this).attr("id", "disable")
+	$(this).siblings().addClass("selected")
+	$(this).siblings().removeClass("unselected")
 })
 
 function getSameCons()
 {
 	var same_cons = [JSON.parse($('.coninfos-text .coninfos#infos').html()).cid];
-	$('.fa-check-square').each(function() {
+	$('.wrapper-popup .coninfos .fa-check-square').each(function() {
 		same_cons.push($(this).attr('id'));	// 存储所有cid
 	});
 	var same_cons_string = same_cons.join(',');

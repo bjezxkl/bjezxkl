@@ -183,3 +183,22 @@
 .user-center-content .list .revise .panel .input-wrap input{
 	width: calc(100% - 40px);	/* 两侧的padding各5px, left为15px, 对应假设right也为15px */
 }
+
+.list-item.contribution input.revise-contribute[type="button"]
+{
+	float: right;
+	margin: 10px 30px 0 0px;
+	line-height: 28px;
+	font-size: 13px;
+	width: 100px;
+	text-align: center;
+	color: #fff;
+	background-color: #1565C0;
+	border-radius: 3px;
+	border: 1px solid #ededed;
+}
+.list-item.contribution input.revise-contribute[type="button"]:hover
+{
+	background-color: #6999d3;
+	cursor: pointer;
+}

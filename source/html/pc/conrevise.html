@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="zh-CN">
+
+	<head>
+		<title>北京二中下课铃投稿平台</title>
+		<meta name='viewport' content='width=device-width, initial-scale=1.0, minimun-scale=1.0, maximum-scale=1.0, user-scalable=no'>
+		<link rel="stylesheet" href="../../package/font-awesome/css/font-awesome.min.css">	<!-- 一个图标包 -->
+		<link rel="stylesheet" type='text/css' href='../../css/pc/basic.css'>
+		<link rel="stylesheet" type='text/css' href='../../css/pc/conrevise.css'>
+		<script type="text/javascript" src="../../js/jquery/jquery.min.js" charset="utf-8"></script>
+		<script type="text/javascript" src="../../js/conrevise.js" charset="utf-8"></script>
+		<link rel="stylesheet" href="../../package/APlayer/APlayer-1.10.1.min.css">
+		<script type="text/javascript" src="../../package/APlayer/APlayer-1.10.1.min.js" charset="utf-8"></script>
+	</head>
+
+	<body>
+		<div class="container">
+			<div class="con-box">
+				<div class="close">×</div>
+				<div class="murl-wrap">
+					<div class="input-wrap large murl-wrap">
+						<span class="input-span">
+							<input type="text" class="editable" id='murl' autocomplete="off"
+								placeholder="请在此粘贴音乐平台链接" /></span>
+						<span class="clear-span murl-clear">×</span>
+					</div>
+					<p class="message" id="murl"></p>
+					<div class="btn-get clearfix">
+						<div class="input-wrap-btn large">
+							<input type="button" class="btn btn-get" value="搜索" id="submit"/>
+						</div>
+					</div>
+				</div>
+				<div class="infos-content">
+					<div class="infos-wrap">
+						<div class="aplayer" id="aplayer"></div>
+						<script>
+							const ap = new APlayer({
+								container: document.getElementById('aplayer'),
+								loop: 'one',
+								theme: '#e9e9e9',
+							});
+						</script>
+						<div class="con-infos">
+							<p class="con-infos-row" id="data" style="display: none;"><span class='data'></span></p>
+							<p class="con-infos-row" id="murl" style="display: none;">
+								<span class="infos-lab" id="murl">校验用链接：</span>
+								<a class="infos-text" href="" target="_blank"></a>
+							</p>
+							<p class="con-infos-row" id="ncmid" style="display: none;">
+								<span class="infos-lab" id="ncmid">网易云ID：</span>
+								<span class="infos-text"></span>
+							</p>
+							<p class="con-infos-row" id="qqmid" style="display: none;">
+								<span class="infos-lab" id="qqmid">QQ音乐ID：</span>
+								<span class="infos-text"></span>
+							</p>
+							<p class="con-infos-row" id="songtype" style="display: none;">
+								<span class="infos-lab" id="qqmid">QQ音乐类型：</span>
+								<span class="infos-text"></span>
+							</p>
+							<p class="con-infos-row" id="kgmid" style="display: none;">
+								<span class="infos-lab" id="kgmid">酷狗音乐ID：</span>
+								<span class="infos-text"></span>
+							</p>
+							<p class="con-infos-row" id="BV" style="display: none;">
+								<span class="infos-lab" id="BV">BV号：</span>
+								<span class="infos-text"></span>
+							</p>
+							<p class="con-infos-row" id="ytmid" style="display: none;">
+								<span class="infos-lab" id="ytmid">Youtube ID：</span>
+								<span class="infos-text"></span>
+							</p>
+							<p class="con-infos-row" id="ncrid" style="display: none;">
+								<span class="infos-lab" id="ncrid">网易云声音ID：</span>
+								<span class="infos-text"></span>
+							</p>
+							<p class="con-infos-row" id="realname">
+								<span class="infos-lab" id="realname">实际名称：</span>
+								<span class="infos-text"></span>
+							</p>
+							<p class="con-infos-row" id="artist">
+								<span class="infos-lab" id="artist">音乐人：</span>
+								<span class="infos-text"></span>
+							</p>
+							<p class="con-infos-row" id="state" style="display: none;">
+								<span class="infos-lab" id="artist">版权状态：</span>
+								<span class="infos-text"></span>
+							</p>
+							<div class="con-infos-row" id="hope-showname">
+								<span class="infos-lab" id="hope-showname">希望显示名称（限15字）：</span>
+								<div class="hope-showname-wrap">
+									<div class="input-wrap large hope-showname-wrap">
+										<span class="input-span">
+											<input type="text" class="editable" id='hope-showname' autocomplete="off"
+												placeholder="是显示在大屏幕上的中文曲名哦~" maxlength=30 /></span>
+										<span class=" clear-span hope-showname-clear">×</span>
+									</div>
+								<p class="message" id="hope-showname"></p>
+								</div>
+							</div>
+							<div class="con-infos-row" id="hope-artist">
+								<span class="infos-lab" id="hope-artist">希望显示音乐人：</span>
+								<div class="hope-artist-wrap">
+									<div class="input-wrap large hope-artist-wrap">
+										<span class="input-span">
+											<input type="text" class="editable" id='hope-artist' autocomplete="off"
+												placeholder="是显示在大屏幕上的音乐人名称哦~" maxlength=15 /></span>
+										<span class=" clear-span hope-artist-clear">×</span>
+									</div>
+								<p class="message" id="hope-artist"></p>
+								</div>
+							</div>
+							<div class="con-infos-row" id="hope-date">
+								<span class="infos-lab" id="hope-date">希望播放日期：</span>
+								<div class="hope-date-wrap">
+									<div class="input-wrap large hope-date-wrap">
+										<span class="input-span">
+											<input type="text" class="onlyread date-selector" id='hope-date' autocomplete="off"
+												readonly="readonly" placeholder="点击选择日期（仅可选择未来日期）" /></span>
+										<span class="clear-span hope-date-clear">×</span>
+										<div class="hope-date-picker" id="hope-date-picker"></div>
+									</div>
+									<p class="message" id="hope-date"></p>
+								</div>
+							</div>
+							<div class="con-infos-row" id="hope-description">
+								<span class="infos-lab" id="hope-description">投稿简介：</span>
+								<div class="hope-description-wrap">
+									<div class="input-wrap large hope-description-wrap">
+										<span class="input-span">
+											<textarea class="editable" id='hope-description' autocomplete="off"
+												placeholder="50~150字" maxlength="200" rows="4"></textarea></span>
+										<span class="clear-span hope-description-clear">×</span>
+									</div>
+									<p class="message" id="hope-description"></p>
+								</div>
+							</div>
+							<div class="con-infos-row" id="con-note">
+								<span class="infos-lab" id="con-note">投稿备注：</span>
+								<div class="con-note-wrap">
+									<div class="input-wrap large con-note-wrap">
+										<span class="input-span">
+											<input type="text" class="editable" id='con-note' autocomplete="off"
+												placeholder="限100字以内" maxlength=100 /></span>
+										<span class=" clear-span con-note-clear">×</span>
+									</div>
+									<p class="message" id="con-note"></p>
+								</div>
+							</div>
+							<div class="con-infos-row" id="hope-class-of" style="display: none;">
+								<span class="infos-lab" id="hope-class-of">投稿播放日期偏好：</span>
+								<div class="hope-class-of-wrap" >
+									<div class="hope-class-of-selector">
+										<span class="hope-class-of-item">
+											<span class="fa fa-square-o down" id="2027"></span>
+											<span class="hope-class-of-text unselected">优先在周一到周四播放</span>
+										</span>
+										<span class="hope-class-of-item">
+											<span class="fa fa-check-square keep" id="2026"></span>
+											<span class="hope-class-of-text selected">优先在周五和周六播放</span>
+										</span>
+									</div>
+									<p class="message" id="hope-class-of"></p>
+								</div>
+							</div>
+							<div class="btn-revise clearfix">
+								<div class="input-wrap-btn large">
+									<input type="button" class="btn btn-revise" value="确认修改" id="con-revise"/>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</body>
+
+</html>
