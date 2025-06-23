@@ -1877,7 +1877,7 @@ function submitContributionCheckInsert(same_cons_string)
 	var plan_description = $('.coninfos-text textarea#plan-description').val();
 	var check_remark = $('.coninfos-text input#check-note').val();
 	var keyword = $('.coninfos-text input#keyword').val();
-	var revisable = ($('.hope-class-of-wrap .fa.fa-check-square').attr('id') == "enable")? 1: 0
+	var revisable = ($('.revisable-wrap .fa.fa-check-square').attr('id') == "enable")? 1: 0
 
 	var data =
 	{
