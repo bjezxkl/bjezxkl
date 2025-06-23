@@ -1,7 +1,10 @@
 function getPlan()
 {
-	switch (grade)
+    switch (grade)
 	{
+		case "2026":
+			var filePath = "https://bjezxkl.azurewebsites.net/api/proxy?path=music_2026.xml"; // XML文件路径
+			break;
 		case "2025":
 			var filePath = "https://bjezxkl.azurewebsites.net/api/proxy?path=music_2025.xml"; // XML文件路径
 			break;
@@ -36,7 +39,8 @@ function getDataFromXML(xmlContent, operator, limitationDate, limitationGrade)
 	for (let i = 0; i < elements.length; i++) {
 		/* 获取数据 */
 		if ((limitationGrade != '2024' && elements[i].getAttribute('type') == '1') || 
-			(limitationGrade != '2025' && elements[i].getAttribute('type') == '2'))
+			(limitationGrade != '2025' && elements[i].getAttribute('type') == '2') ||
+			(limitationGrade != '2026' && elements[i].getAttribute('type') == '3'))
 			continue;
 		const currentChime = elements[i];
 		var csn = currentChime.getAttribute('csn');
@@ -81,7 +85,7 @@ function getDataFromXML(xmlContent, operator, limitationDate, limitationGrade)
 		switch(compareDate(c.date, limitationDate, operator))
 		{
 			case 1:
-				if (c.type == "1" || c.type == "2" || (c.showname != "" && c.showname != "001钟声1 / 08钟声1" && c.showname != "002钟声2" && c.term != "2014-2015-2-14"))
+				if (c.type == "1" || c.type == "2" || c.type == "3" || (c.showname != "" && c.showname != "001钟声1 / 08钟声1" && c.showname != "002钟声2" && c.term != "2014-2015-2-14"))
 				{
 					data.push(c);
 				}
@@ -190,6 +194,9 @@ function loadPlan(xmlContent)
 		case "2025":
 			var grade_method_int = 2;
 			break;
+		case "2026":
+			var grade_method_int = 3;
+			break;
 		default:
 			var grade_method_int = 0;
 	}
@@ -243,7 +250,7 @@ function loadPlan(xmlContent)
 		{
 			if (music_data[i].date.replace(/\//g, '-') == this_date)
 			{
-				if (parseInt(music_data[i].type) == grade_method_int || music_data[i].type == "-1/0/1" || music_data[i].type == "-1/0/2")	// -1是防止parseInt返回NaN
+				if (parseInt(music_data[i].type) == grade_method_int || music_data[i].type == "-1/0/1" || music_data[i].type == "-1/0/2" || music_data[i].type == "-1/0/3")	// -1是防止parseInt返回NaN
 				{
 					var this_data = music_data[i]
 					if (this_data.showname == "")

@@ -78,7 +78,7 @@ function initialize()
 	getUnreadMessageNumber()
 
 	/* 更新grade显示 */
-	if (grade == "2024" || grade == "2025" || 
+	if (grade == "2024" || grade == "2025" || grade == "2026" ||
 		localStorage.getItem("type") == "admin" || localStorage.getItem("type") == "super")
 		$('.grade-wrap').show()
 	else
@@ -109,6 +109,9 @@ function getMusic()	// 这个函数只负责获取music.xml并转换为js对象
 {
 	switch (grade)
 	{
+		case "2026":
+			var filePath = "https://bjezxkl.azurewebsites.net/api/proxy?path=music_2026.xml"; // XML文件路径
+			break;
 		case "2025":
 			var filePath = "https://bjezxkl.azurewebsites.net/api/proxy?path=music_2025.xml"; // XML文件路径
 			break;
@@ -147,7 +150,8 @@ function getDataFromXML(xmlContent, operator, limitationDate, limitationGrade)
 	{
 		/* 获取数据 */
 		if (((limitationGrade != '2024' && elements[i].getAttribute('type') == '1') || 
-			 (limitationGrade != '2025' && elements[i].getAttribute('type') == '2')) &&
+			 (limitationGrade != '2025' && elements[i].getAttribute('type') == '2') ||
+			 (limitationGrade != '2026' && elements[i].getAttribute('type') == '3')) &&
 			 (localStorage.getItem("type") != "admin" && localStorage.getItem("type") != "super"))	// 这个页面下的要处理全部投稿，所以不能只按照grade获取了
 			continue;
 		const currentChime = elements[i];
@@ -193,7 +197,7 @@ function getDataFromXML(xmlContent, operator, limitationDate, limitationGrade)
 		switch(compareDate(c.date, limitationDate, operator))
 		{
 			case 1:
-				if (c.type == "1" || c.type == "2" || (c.showname != "" && c.showname != "001钟声1 / 08钟声1" && c.showname != "002钟声2" && c.term != "2014-2015-2-14"))
+				if (c.type == "1" || c.type == "2" || c.type == "3" || (c.showname != "" && c.showname != "001钟声1 / 08钟声1" && c.showname != "002钟声2" && c.term != "2014-2015-2-14"))
 				{
 					data.push(c);
 				}
@@ -358,7 +362,7 @@ function sortSchedulingContribution()
 			var date = timestampToTime(parseInt(data[i].con_time));
 			if (date.split('-')[0] == year)
 			{
-				if ((grade_method_list == "senior3" && data[i].check_class_of == "2025") || (grade_method_list == "all" && data[i].check_class_of != "2025"))	// 这里就是分类显示了，高三的显示高三通过的，全校的显示高二通过的
+				if ((grade_method_list == "senior3" && data[i].check_class_of == "2026") || (grade_method_list == "all" && data[i].check_class_of != "2026"))	// 这里就是分类显示了，高三的显示高三通过的，全校的显示高二通过的
 				{
 					k++;	// 有数据写入
 
@@ -660,8 +664,8 @@ function displayPlan()
 		{
 			// 先考虑 planned
 			if ((scheduled_con_data[i].date == days[processing_date_index] && scheduled_con_data[i].check_type == "planned") &&
-				((scheduled_con_data[i].check_class_of == "2025" && grade_method_plan == "senior3") ||
-				 (scheduled_con_data[i].check_class_of != "2025" && grade_method_plan == "all")))	// 在这里新增年级判断语句
+				((scheduled_con_data[i].check_class_of == "2026" && grade_method_plan == "senior3") ||
+				 (scheduled_con_data[i].check_class_of != "2026" && grade_method_plan == "all")))	// 在这里新增年级判断语句
 			{
 				if (scheduled_con_data[i].state == "ok")
 					var state_text = "<span class='state-ok'>正常</span>"
@@ -700,8 +704,8 @@ function displayPlan()
 			}
 			// 再考虑 ready
 			if ((scheduled_con_data[i].date == days[processing_date_index] && scheduled_con_data[i].check_type == "ready") &&
-				((scheduled_con_data[i].check_class_of == "2025" && grade_method_plan == "senior3") ||
-				 (scheduled_con_data[i].check_class_of != "2025" && grade_method_plan == "all")))	// 在这里新增年级判断语句
+				((scheduled_con_data[i].check_class_of == "2026" && grade_method_plan == "senior3") ||
+				 (scheduled_con_data[i].check_class_of != "2026" && grade_method_plan == "all")))	// 在这里新增年级判断语句
 			{
 				if (scheduled_con_data[i].state == "ok")
 					var state_text = "<span class='state-ok'>正常</span>"
@@ -1966,7 +1970,7 @@ $(document).on('click', '.search-wrap .grade-wrap', function ()
 {
 	$('.clear-span.search-month-clear').trigger("click");
 	$('.clear-span.search-keyword-clear').trigger("click");
-	if ($(this).find('span').hasClass('all') && (grade == "2024" || grade == "2025" || localStorage.getItem("type") == "admin" || localStorage.getItem("type") == "super"))
+	if ($(this).find('span').hasClass('all') && (grade == "2024" || grade == "2025" || grade == "2026" || localStorage.getItem("type") == "admin" || localStorage.getItem("type") == "super"))
 	{
 		grade_method_list = "senior3"
 		$(this).find('span').removeClass('all')
@@ -1987,7 +1991,7 @@ $(document).on('click', '.search-wrap .grade-wrap', function ()
 })
 $(document).on('click', '.plan-info-wrap .grade-wrap', function ()
 {
-	if ($(this).find('span').hasClass('all') && (grade == "2024" || grade == "2025" || localStorage.getItem("type") == "admin" || localStorage.getItem("type") == "super"))
+	if ($(this).find('span').hasClass('all') && (grade == "2024" || grade == "2025" || grade == "2026" || localStorage.getItem("type") == "admin" || localStorage.getItem("type") == "super"))
 	{
 		grade_method_plan = "senior3"
 		$(this).find('span').removeClass('all')
@@ -2025,6 +2029,19 @@ function calculateTerm(selectedYearAndMonth, selectedDate)
 		for (var i = month - 1; i >= 2; i--)
 			days += day_of_month[i-1];
 		days -= 16;	//	以到第一周的日子为计数
+		var week_in_term = Math.floor(days / 7) + 1;
+		if (week_in_term < 10)
+			week_in_term = "0" + week_in_term;
+		term += week_in_term;
+	}
+	// 2025-2026-1
+	else if (year == 2025 && month >= 9 && month <= 12)
+	{
+		var term = "2025-2026-1-";
+		var days = date;
+		for (var i = month - 1; i >= 9; i--)
+			days += day_of_month[i-1];
+		days -= 1;	//	以到第一周的日子为计数
 		var week_in_term = Math.floor(days / 7) + 1;
 		if (week_in_term < 10)
 			week_in_term = "0" + week_in_term;
