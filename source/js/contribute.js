@@ -1275,9 +1275,9 @@ function refreshHopeClassOfWrap()
 	if (grade == "")
 		return $(".con-infos-row#hope-class-of").hide()
 	$('.hope-class-of-wrap .keep').attr('id', parseInt(localStorage.getItem("class_of")))
-	$('.hope-class-of-wrap .down').attr('id', Math.max(parseInt(localStorage.getItem("class_of")) + 1, 2026))
+	$('.hope-class-of-wrap .down').attr('id', Math.max(parseInt(localStorage.getItem("class_of")) + 1, 2027))
 
-	if (grade <= 2025)
+	if (grade <= 2026)
 		$(".con-infos-row#hope-class-of").show()
 	else
 		$(".con-infos-row#hope-class-of").hide()
