@@ -9,7 +9,7 @@ function loadYearSelector()
 	var selector = 								"<div class='year-selector' style='display: none;'>" +
 													"<p class='option-label'>届别（毕业年份）</p>" +
 													"<div class='year-option'>"
-	for (var i = 2019; i <= 2028; i++)
+	for (var i = 2019; i <= 2029; i++)
 	{
 		selector += 									"<span class='year-option-span' id=" + i + ">" + i + "</span>"
 	}
@@ -20,7 +20,7 @@ function loadYearSelector()
 	var edit_selector = 								"<div class='year-selector-edit' style='display: none;'>" +
 													"<p class='option-label'>届别（毕业年份）</p>" +
 													"<div class='year-option'>"
-	for (var i = 2019; i <= 2027; i++)
+	for (var i = 2019; i <= 2029; i++)
 	{
 		edit_selector += 								"<span class='year-option-span' id=" + i + ">" + i + "</span>"
 	}
