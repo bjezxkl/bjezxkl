@@ -2055,7 +2055,7 @@ function showSameConsWrap()
 			return
 		var coninfo = 
 					"<div class='coninfos' id='" + coninfos.cid + "'>" +
-						"<span class='fa " + (same_cons.includes(coninfos.cid) ? "fa-check-square" : "fa-square-o") + "' id='" + coninfos.cid + "'></span>" +
+						"<span class='fa " + (same_cons.includes(coninfos.cid.toString()) ? "fa-check-square" : "fa-square-o") + "' id='" + coninfos.cid + "'></span>" +
 						"<div>" +
 							"<div class='con-infos-info'>" +
 								"<div class='con-infos-label'>真实名称：</div>" +
