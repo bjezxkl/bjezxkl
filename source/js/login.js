@@ -296,6 +296,8 @@ $(document).on('click', '.btn.btn-login#submit', function ()
 		return;	// 有空缺的栏，重新填写
 	var username = $(".input-wrap input#username").val();
 	var password_unencrypted = $(".input-wrap input#pwd").val();
+	if (!/^[a-zA-Z0-9\u4E00-\u9FA5_]+$/.test(username) || !/^[A-Za-z0-9_!@$%]+$/.test(password_unencrypted))
+		return $('.panel.active#login p.message#username').html('用户名或密码错误')
 	var password_encrypted_obj = CryptoJS.SHA256(password_unencrypted);
 	var password_encrypted = password_encrypted_obj.toString();
 	console.log(password_encrypted);
