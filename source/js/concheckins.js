@@ -1035,7 +1035,7 @@ async function getMusicLink(con_info, mid_type) { return new Promise((resolve, r
 				dataType: 'json',	// 返回也得是json形式
 				success: function(data)	// 这里data已经是解析后的JSON对象，直接赋值给results
 				{
-					if (data.songs && data.songs.length > 0)	// 获取到了详细信息
+					if (data.songinfo.code == 0)	// 获取到了详细信息
 					{
 						var realname = data.songs[0].name;
 						var artist = data.songs[0].artists[0].name;

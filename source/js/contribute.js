@@ -279,12 +279,12 @@ function getMusicInfo(mid_type, mid, songtype, qqmsl, ncmsl)
 				dataType: 'json',	// 返回也得是json形式
 				success: function(data)
 				{
-					if (data.songList && data.songList.length > 0)	// 获取到了详细信息
+					if (data.songinfo.code == 0)	// 获取到了详细信息
 					{
-						var realname = data.songList[0].title;
-						var artist = data.songList[0].singer[0].title;
-						var music_url = data.songList[0].url;
-						var cover_url = data.metaData.image;
+						var realname = data.songinfo.data.track_info.title;
+						var artist = data.songinfo.data.track_info.singer[0].title;
+						var music_url = data.songinfo.data.track_info.url;
+						var cover_url// = data.metaData.image;
 						displayMusicInfo(mid_type, murl, mid, realname, artist, songtype);
 						playMusic(realname, artist, music_url, cover_url);
 					}
@@ -316,15 +316,15 @@ function getMusicInfo(mid_type, mid, songtype, qqmsl, ncmsl)
 				success: function(data)
 				{
 					// $.ajax是异步函数，如果直接var kgmid会使下面读取的时候仍未undefined，因此就在这里直接处理好了
-					if (data.songList && data.songList.length > 0)	// 获取到了详细信息
+					if (data.songinfo.code == 0)	// 获取到了详细信息
 					{
-						var qqmid = data.songList[0].id;
-						var songtype = data.songList[0].type;
+						var qqmid = data.songinfo.data.track_info.id;
+						var songtype = data.songinfo.data.track_info.type;
 						var murl = "https://y.qq.com/n/ryqq/songDetail/" + qqmid + "?songtype=" + songtype;
-						var realname = data.songList[0].title;
-						var artist = data.songList[0].singer[0].title;
-						var music_url = data.songList[0].url;
-						var cover_url = data.metaData.image;
+						var realname = data.songinfo.data.track_info.title;
+						var artist = data.songinfo.data.track_info.singer[0].title;
+						var music_url = data.songinfo.data.track_info.url;
+						var cover_url// = data.metaData.image;
 						displayMusicInfo(mid_type, murl, qqmid, realname, artist, songtype);
 						playMusic(realname, artist, music_url, cover_url);
 					}

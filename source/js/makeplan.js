@@ -1412,7 +1412,7 @@ async function getMusicLink(con_info, mid_type) { return new Promise((resolve, r
 				dataType: 'json',	// 返回也得是json形式
 				success: function(data)
 				{
-					if (data.songList && data.songList.length > 0)	// 获取到了详细信息
+					if (data.songinfo.code == 0)	// 获取到了详细信息
 					{
 						var realname = data.songList[0].title;
 						var artist = data.songList[0].singer[0].title;
