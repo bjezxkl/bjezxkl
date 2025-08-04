@@ -195,7 +195,7 @@ function getMusicInfo(mid_type, mid, songtype, qqmsl, ncmsl)
 					if (data.songs && data.songs.length > 0)	// 获取到了详细信息
 					{
 						var realname = data.songs[0].name;
-						var artist = data.songs[0].artists[0].name;
+						var artist = data.songs[0].artists.map(artist => artist.name).join(" / ");
 						var music_url = "https://music.163.com/song/media/outer/url?id=" + mid + ".mp3";
 						var cover_url = data.songs[0].album.picUrl;
 						displayMusicInfo(mid_type, murl, mid, realname, artist);
@@ -233,7 +233,7 @@ function getMusicInfo(mid_type, mid, songtype, qqmsl, ncmsl)
 						var mid = data.songs[0].id;
 						var murl = "https://music.163.com/#/song?id=" + mid;
 						var realname = data.songs[0].name;
-						var artist = data.songs[0].artists[0].name;
+						var artist = data.songs[0].artists.map(artist => artist.name).join(" / ");
 						var music_url = "https://music.163.com/song/media/outer/url?id=" + mid + ".mp3";
 						var cover_url = data.songs[0].album.picUrl;
 						displayMusicInfo(mid_type, murl, mid, realname, artist);
@@ -282,7 +282,7 @@ function getMusicInfo(mid_type, mid, songtype, qqmsl, ncmsl)
 					if (data.songinfo.code == 0)	// 获取到了详细信息
 					{
 						var realname = data.songinfo.data.track_info.title;
-						var artist = data.songinfo.data.track_info.singer[0].title;
+						var artist = data.songinfo.data.track_info.singer.map(artist => artist.title).join(" / ");
 						var music_url = data.songinfo.data.track_info.url;
 						var cover_url// = data.metaData.image;
 						displayMusicInfo(mid_type, murl, mid, realname, artist, songtype);
@@ -322,7 +322,7 @@ function getMusicInfo(mid_type, mid, songtype, qqmsl, ncmsl)
 						var songtype = data.songinfo.data.track_info.type;
 						var murl = "https://y.qq.com/n/ryqq/songDetail/" + qqmid + "?songtype=" + songtype;
 						var realname = data.songinfo.data.track_info.title;
-						var artist = data.songinfo.data.track_info.singer[0].title;
+						var artist = data.songinfo.data.track_info.singer.map(artist => artist.title).join(" / ");
 						var music_url = data.songinfo.data.track_info.url;
 						var cover_url// = data.metaData.image;
 						displayMusicInfo(mid_type, murl, qqmid, realname, artist, songtype);

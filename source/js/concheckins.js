@@ -1038,7 +1038,7 @@ async function getMusicLink(con_info, mid_type) { return new Promise((resolve, r
 					if (data.songinfo.code == 0)	// 获取到了详细信息
 					{
 						var realname = data.songs[0].name;
-						var artist = data.songs[0].artists[0].name;
+						var artist = data.songs[0].artists.map(artist => artist.name).join(" / ");
 						var music_url = "https://music.163.com/song/media/outer/url?id=" + con_info.ncmid + ".mp3";
 						var cover_url = data.songs[0].album.picUrl;
 						resolve({ realname, artist, music_url, cover_url, murl, warning: false });
@@ -1084,7 +1084,7 @@ async function getMusicLink(con_info, mid_type) { return new Promise((resolve, r
 					if (data.songList && data.songList.length > 0)	// 获取到了详细信息
 					{
 						var realname = data.songList[0].title;
-						var artist = data.songList[0].singer[0].title;
+						var artist = data.songList[0].singer.map(artist => artist.title).join(" / ");
 						var music_url = data.songList[0].url;
 						var cover_url = data.metaData.image;
 						resolve({ realname, artist, music_url, cover_url, murl, warning: false });
