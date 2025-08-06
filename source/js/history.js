@@ -836,7 +836,7 @@ function getMusicLink(music_info)
 		var link = "https://www.bilibili.com/video/" + music_info.av + "/";
 	}
 	else
-		alert("该下课铃并未存储音频链接信息，请参阅下课铃信息中的备注。错误代码-5");
+		alert("该下课铃并未存储音频链接信息，请参阅下课铃信息中的备注。错误代码-4");
 	return { mid_type, mid, songtype, vid, link };
 }
 
