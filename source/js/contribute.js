@@ -14,8 +14,6 @@ function onLogin()	// 使用这个名字是因为login.js里调用的是onLogin(
 /* 按下搜索时执行程序 */
 $(document).on('click', '.btn-get#submit', function()
 {
-	if (localStorage.getItem("class_of") != 2026)
-		return alert("目前投稿已暂停，开学前夕就会恢复的啦~")
 	refreshHopeClassOfWrap();
 	addDateSelector({
 		container: $('#hope-date-picker')
@@ -1024,8 +1022,6 @@ function clearInputs()
 
 $(document).on('click', '.btn.btn-submit#con-submit', function ()
 {
-	if (localStorage.getItem("class_of") != 2026)
-		return alert("目前投稿已暂停，开学前夕就会恢复的啦~")
 	if (warning == true)	// 提醒，如果仍然坚持的话就强制写入
 	{
 		alert("真的要投稿这个嘛？\n如果你执意要投稿这个的话，那台台我也只好收着交给审核老师啦: (")
@@ -1137,7 +1133,6 @@ $(document).on('click', '.btn.btn-submit#con-submit', function ()
 
 function getContributionNumber()
 {
-	return $(".req-text.con-num").html("<b>目前投稿已暂停，开学前夕就会恢复的啦~</b>");
 	if (localStorage.uid == "")
 	{
 		con_num_text = "<a href='javascript:;' onclick='showLoginPanel()'>登录</a>后可以查看自己的<b>剩余投稿额度</b>哟~"
