@@ -240,7 +240,6 @@ function getMusicInfo(mid_type, mid, songtype, qqmsl, ncmsl)
 			break;
 		case "qqmid-id":
 		case "qqmid-mid":
-			var murl = "https://y.qq.com/n/ryqq/songDetail/" + mid + "?songtype=" + songtype
 			switch (mid_type)
 			{
 				case "qqmid-id":
@@ -264,11 +263,13 @@ function getMusicInfo(mid_type, mid, songtype, qqmsl, ncmsl)
 				{
 					if (data.songinfo.code == 0)	// 获取到了详细信息
 					{
+						var qqmid = data.songinfo.data.track_info.id;
+						var murl = "https://y.qq.com/n/ryqq/songDetail/" + qqmid + "?songtype=" + songtype;
 						var realname = data.songinfo.data.track_info.title;
 						var artist = data.songinfo.data.track_info.singer.map(artist => artist.title).join(" / ");
 						var music_url = data.songinfo.data.track_info.url;
 						var cover_url// = data.metaData.image;
-						displayMusicInfo(mid_type, murl, mid, realname, artist, songtype);
+						displayMusicInfo(mid_type, murl, qqmid, realname, artist, songtype);
 						playMusic(realname, artist, music_url, cover_url);
 					}
 					else
