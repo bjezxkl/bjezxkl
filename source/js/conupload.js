@@ -3,49 +3,311 @@ var warning = false
 /* 页面加载时或登录后刷新状态 */
 function onLogin()	// 使用这个名字是因为login.js里调用的是onLogin()，而这段代码登录后肯定要用，所以函数名就不改了
 {
+	$('.upload-progress-wrap').css('display', 'none');
 	refreshLoginStatus();
 	getUnreadMessageNumber();
 	grade = localStorage.getItem("class_of");
 	getWaitingNumber();
 	getContributionNumber();
 	refreshHopeClassOfWrap();
-}
-
-/* 按下搜索时执行程序 */
-$(document).on('click', '.btn-get#submit', function()
-{
-	refreshHopeClassOfWrap();
 	addDateSelector({
 		container: $('#hope-date-picker')
 	});
-	clear_mid();
-	warning = false;	// 清空警告状态，或许更换了链接呢（）
-	checkMusic();
+}
+
+/* 点击选择文件或上传已选文件 */
+$(document).on('click', '.file-upload-area', function()
+{
+	if ($('.file-upload-area').hasClass('waiting'))
+	{
+		let tempfile = JSON.parse(sessionStorage.getItem('tempfile'));
+		fetch(tempfile.fileurl)
+		.then(response => response.blob())
+		.then(blob => 
+		{
+			const file = new File([blob], tempfile.fileinfo.filename, 
+			{
+				type: tempfile.fileinfo.filetype,
+				lastModified: tempfile.fileinfo.filelastmodified,
+			});
+			URL.revokeObjectURL(tempfile.fileurl);
+			sessionStorage.removeItem('tempfile');
+			$('.file-upload-area').removeClass('waiting');
+			processFile(file);
+		})
+		.catch(error =>
+		{
+			$('.upload-text-wrap').children().html("<span style='color:#f25d64;'>文件恢复失败，请重新选择</span>");
+			sessionStorage.removeItem('tempfile');
+			$('.file-upload-area').removeClass('waiting');
+			URL.revokeObjectURL(tempfile.fileurl);
+		});
+	}
+	else
+		$('input.file-upload').click();
+});
+$(document).on('click', 'input.file-upload', function (e)
+{
+    e.stopPropagation();
+})
+$(document).on('change', 'input.file-upload', function(e) {
+	if (e.target.files.length > 0)
+		processFile(e.target.files[0]);
+	else
+		$('.upload-text-wrap').children().html("<span style='color:#f25d64;'>请选择或拖入有效的文件</span>");
+});
+
+/* 拖拽选择文件 */
+$(document).on('dragover', '.file-upload-area', function(e)
+{
+	e.preventDefault();
+	$(this).addClass('dropping');
+	$(this).children('.upload-text-wrap').children().html("<b>拖拽文件到此处</b>")
+});
+$(document).on('dragleave', '.file-upload-area', function(e)
+{
+	if (this.contains(e.relatedTarget))
+		return
+	$(this).removeClass('dropping');
+	$(this).children('.upload-text-wrap').children().html("<b>点击选择文件</b> 或 <b>拖放文件到此处</b>")
+});
+$(document).on('drop', '.file-upload-area',function(e)
+{
+	e.preventDefault();
+	$(this).removeClass('dropping');
+	if (e.originalEvent.dataTransfer.files.length > 0)
+		processFile(e.originalEvent.dataTransfer.files[0]);
+	else
+		$('.upload-text-wrap').children().html("<span style='color:#f25d64;'>请选择或拖入有效的文件</span>");
+});
+
+async function calculateSHA256(file) { return new Promise((resolve, reject) =>
+{
+	const chunkSize = 1024 * 1024;	// 1 MiB
+	const reader = new FileReader();
+	let offset = 0;
+	const SHA256 = CryptoJS.algo.SHA256.create();
+
+	reader.onload = async function(event) { try
+	{	
+		SHA256.update(CryptoJS.lib.WordArray.create(event.target.result));
+
+		offset += chunkSize;	// 继续读取下一块或完成计算
+		if (offset < file.size)
+			readNextChunk();
+		else
+			resolve(SHA256.finalize().toString(CryptoJS.enc.Hex));
+	}
+	catch (error)
+	{
+		reject(error);
+	}};
+	
+	reader.onerror = function(error)
+	{
+		reject(error);
+	};
+
+	function readNextChunk()
+	{
+		const slice = file.slice(offset, offset + chunkSize);
+		reader.readAsArrayBuffer(slice);
+	}
+
+	readNextChunk();	// 开始读取第一块
+})}
+
+async function processFile(file)
+{
+	/* 文件有效性检验 */
+	if (!file || typeof file != 'object' || !file.name)
+		return $('.upload-text-wrap').children().html("<span style='color:#f25d64;'>请选择或拖入有效的文件</span>");
+	if (file.size > 128*1024*1024)	// 128 MiB
+		return $('.upload-text-wrap').children().html("<span style='color:#f25d64;'>文件过大，请上传小于 128 MiB 的文件</span>");
+	
+	/* 计算SHA256 */
+	$('.upload-text-wrap').children().html("正在处理文件......")
+	const hash = await calculateSHA256(file);
+
+	/* 检查登录状态 */
+	await checkLoginStatus();
+	if (localStorage.uid == undefined || localStorage.uid == "")
+	{
+		alert('上传文件前请先登录');
+		$('.upload-text-wrap').children().html("<b>点击选择文件</b> 或 <b>拖放文件到此处</b>");
+		let fileurl = URL.createObjectURL(file);
+		let fileinfo =
+		{
+			filename: file.name,
+			filetype: file.type,
+			filelastmodified: file.lastModified
+		};
+		sessionStorage.setItem('tempfile', JSON.stringify({fileurl, fileinfo}));
+		$('.file-upload-area').addClass('waiting');
+		$('.upload-text-wrap').children().html("<b>点击此处以继续上传</b>");
+		return showLoginPanel();
+	}
+
+	/* 上传文件 */
+	$('.upload-text-wrap').css('display', 'none');
+	$('.upload-progress-wrap').css('display', '');
+	$('.upload-progress').css('width', 0);
+	var session =
+	{
+		uid: localStorage.getItem('uid'),
+		username: localStorage.getItem('username'),
+		type: localStorage.getItem('type'),
+		expire_time: localStorage.getItem('expire_time'),
+		class_of: localStorage.getItem("class_of")
+	}
+	const formData = new FormData();
+	formData.append('file', file);
+	formData.append('sha256', hash);
+	formData.append('filename', file.name);
+	formData.append('fileext', file.name.indexOf('.') > 0 ? file.name.split('.').pop() : '');	// "."在开头在unix中表示隐藏文件，不作为文件扩展名分隔符
+	formData.append('filesize', file.size);
+	formData.append('filetype', file.type);
+	formData.append('filelastmodified', file.lastModified);
+	formData.append('session', JSON.stringify(session));
+	$.ajax({
+		url: 'https://bjezxkl.azurewebsites.net/api/proxy?path=contribution',
+		type: 'PUT',
+		data: formData,
+		processData: false,
+		contentType: false,
+		xhr: function()
+		{
+			var xhr = new XMLHttpRequest();
+			xhr.upload.onprogress = function(event)
+			{
+				if (event.lengthComputable)
+				{
+					var percentComplete = (event.loaded / event.total) * 100;
+					console.log("上传进度：" + percentComplete + "%");
+					$('.upload-progress').css('width', percentComplete + '%');
+				}
+			};
+			return xhr;
+		},
+		success: function(data)
+		{
+			refreshHopeClassOfWrap();
+			playMusic(file.name, "", URL.createObjectURL(file), undefined, undefined, 1);
+
+			warning = false;	// 重传文件，清空警告状态
+			displayFileInfo(file.name, file.size, data.data.path, data.data.hash);
+			setTimeout(function()
+			{
+				$('.upload-text-wrap').children().html("上传完成！")
+				$('.upload-progress-wrap').css('display', 'none');
+				$('.upload-text-wrap').css('display', '');
+			}, 300);	// 进度条的运动transition是0.3s
+		},
+		error: function(xhr)
+		{
+			$('.upload-text-wrap').html("<span style='color:#f25d64;'>上传失败，请刷新页面重试</span>");
+			$('.upload-progress-wrap').css('display', 'none');
+			$('.upload-text-wrap').css('display', '');
+		}
+	});
+}
+
+/* 切换投稿模式 */
+$(document).on('click', '.infos-wrap .type-span', function()
+{
+	if ($(this).hasClass('choosing'))
+		return;
+	$(this).addClass('choosing');
+	$(this).parent().siblings().children('.type-span').removeClass('choosing');
+	if ($(this).parent().hasClass('original-music'))
+	{
+		$('.infos-wrap .original-music .border-span-right').css('top', '-2px');
+		$('.infos-wrap .original-music .border-span-right').css('bottom', '');
+		$('.infos-wrap .original-music .border-span-right').css('border-top-right-radius', '8px');
+		$('.infos-wrap .original-music .border-span-right').css('border-bottom-right-radius', '');
+		$('.infos-wrap .original-music .border-span-right').css('border-top', '2px dashed rgb(115, 163, 217)');
+		$('.infos-wrap .original-music .border-span-right').css('border-bottom', '');
+		$('.infos-wrap .original-music .border-span-right').css('width', '13px');
+		$('.infos-wrap .original-music .border-span-right').css('height', '22px');
+
+		$('.infos-wrap .processed-music .border-span-left').css('bottom', '0');
+		$('.infos-wrap .processed-music .border-span-left').css('top', '');
+		$('.infos-wrap .processed-music .border-span-left').css('border-top-left-radius', '2px');
+		$('.infos-wrap .processed-music .border-span-left').css('border-bottom-left-radius', '8px');
+		$('.infos-wrap .processed-music .border-span-left').css('border-bottom', '2px dashed rgb(115, 163, 217)');
+		$('.infos-wrap .processed-music .border-span-left').css('border-top', '');
+		$('.infos-wrap .processed-music .border-span-left').css('width', '16px');
+		$('.infos-wrap .processed-music .border-span-left').css('height', '37px');
+
+		$('.infos-wrap .processed-music .border-span-right').css('display', 'none');
+
+		$('.infos-wrap .border-span').css('display', 'none');
+
+		$('.infos-wrap .border-div .border-span-left').css('display', 'none');
+
+		$('.infos-wrap .border-div .border-span-right').css('width', '366px');
+		$('.infos-wrap .border-div .border-span-right').css('height', '9px');
+	}
+	else	// $(this).parent().hasClass('processed-music')
+	{
+		$('.infos-wrap .original-music .border-span-right').css('bottom', '0');
+		$('.infos-wrap .original-music .border-span-right').css('top', '');
+		$('.infos-wrap .original-music .border-span-right').css('border-bottom-right-radius', '8px');
+		$('.infos-wrap .original-music .border-span-right').css('border-top-right-radius', '');
+		$('.infos-wrap .original-music .border-span-right').css('border-bottom', '2px dashed rgb(115, 163, 217)');
+		$('.infos-wrap .original-music .border-span-right').css('border-top', '');
+		$('.infos-wrap .original-music .border-span-right').css('width', '18.5px');
+		$('.infos-wrap .original-music .border-span-right').css('height', '43.5px');
+
+		$('.infos-wrap .processed-music .border-span-left').css('top', '-2px');
+		$('.infos-wrap .processed-music .border-span-left').css('bottom', '');
+		$('.infos-wrap .processed-music .border-span-left').css('border-top-left-radius', '8px');
+		$('.infos-wrap .processed-music .border-span-left').css('border-bottom-left-radius', '');
+		$('.infos-wrap .processed-music .border-span-left').css('border-top', '2px dashed rgb(115, 163, 217)');
+		$('.infos-wrap .processed-music .border-span-left').css('border-bottom', '');
+		$('.infos-wrap .processed-music .border-span-left').css('width', '7px');
+		$('.infos-wrap .processed-music .border-span-left').css('height', '18.5px');
+
+		$('.infos-wrap .processed-music .border-span-right').css('display', '');
+
+		$('.infos-wrap .border-span').css('display', '');
+
+		$('.infos-wrap .border-div .border-span-left').css('display', '');
+
+		$('.infos-wrap .border-div .border-span-right').css('width', '251px');
+		$('.infos-wrap .border-div .border-span-right').css('height', '12px');
+	}
 })
 
-function clear_mid()
+function displayFileInfo(name, size, path, hash)
 {
-	// 按下搜索后清空所有murl和mid，防止没点清除直接修改链接后同时出现多个mid
-	$('.con-infos .con-infos-row#murl .infos-text').html("");
-	$('.con-infos .con-infos-row#murl .infos-text').attr("herf", "");
-	$('.con-infos .con-infos-row#murl').css('display', "none");
-	$('.con-infos .con-infos-row#ncmid .infos-text').html("");
-	$('.con-infos .con-infos-row#ncmid').css('display', "none");
-	$('.con-infos .con-infos-row#qqmid .infos-text').html("");
-	$('.con-infos .con-infos-row#songtype .infos-text').html("");
-	$('.con-infos .con-infos-row#qqmid').css('display', "none");
-	$('.con-infos .con-infos-row#songtype').css('display', "none");
-	$('.con-infos .con-infos-row#kgmid .infos-text').html("");
-	$('.con-infos .con-infos-row#kgmid').css('display', "none");
-	$('.con-infos .con-infos-row#BV .infos-text').html("");
-	$('.con-infos .con-infos-row#BV').css('display', "none");
-//	$('.con-infos .con-infos-row#ytmid .infos-text').html("");
-//	$('.con-infos .con-infos-row#ytmid').css('display', "none");
-	$('.con-infos .con-infos-row#ncrid .infos-text').html("");
-	$('.con-infos .con-infos-row#ncrid').css('display', "none");
-	$('.con-infos .con-infos-row#realname .infos-text').html("");
-	$('.con-infos .con-infos-row#artist .infos-text').html("");
+	$('.con-reqs').hide();
+	clearInputs();
+	$('.infos-wrap .processed-music .type-span').click();
+	$('.infos-wrap').show();
+	$('.con-infos .con-infos-row#filename .infos-text').html(name);
+	$('.con-infos .con-infos-row#filesize .infos-text').html(size);
+	$('.con-infos .con-infos-row#path .infos-text').html(path);
+	$('.con-infos .con-infos-row#hash .infos-text').html(hash);
 }
+
+function clearInputs()
+{
+	$(".clear-span.murl-clear").trigger("click");
+	$(".con-infos .con-infos-row#murl .murl-list").children().remove();
+	$(".con-infos .con-infos-row#murl .murl-list").append("<div class='empty'>请添加链接~</div>");
+	$(".clear-span.hope-showname-clear").trigger("click");
+	$(".clear-span.hope-artist-clear").trigger("click");
+	$(".clear-span.hope-date-clear").trigger("click");
+	$(".clear-span.hope-description-clear").trigger("click");
+	$(".clear-span.con-note-clear").trigger("click");
+}
+
+/* 按下添加时执行程序 */
+$(document).on('click', '.fa.fa-plus-circle', function()
+{
+	checkMusic();
+})
 
 function checkMusic()
 {
@@ -168,7 +430,11 @@ function checkMusic()
 		getMusicInfo(mid_type, undefined, undefined, undefined, ncmsl);
 	}
 	else
+	{
+		var mid_type = "links";
+		addMusicInfoDisplay(mid_type, music_url, music_url);
 		return $('.message#murl').html('<div style="color:red;">链接格式可能有误 推荐直接从电脑端获取链接后重试</div>');
+	}
 }
 
 function getMusicInfo(mid_type, mid, songtype, qqmsl, ncmsl)
@@ -196,7 +462,7 @@ function getMusicInfo(mid_type, mid, songtype, qqmsl, ncmsl)
 						var artist = data.songs[0].artists.map(artist => artist.name).join(" / ");
 						var music_url = "https://music.163.com/song/media/outer/url?id=" + mid + ".mp3";
 						var cover_url = data.songs[0].album.picUrl;
-						displayMusicInfo(mid_type, murl, mid, realname, artist);
+						addMusicInfoDisplay(mid_type, murl, mid, realname, artist);
 						playMusic(realname, artist, music_url, cover_url);
 					}
 					else
@@ -211,7 +477,7 @@ function getMusicInfo(mid_type, mid, songtype, qqmsl, ncmsl)
 				}
 			});
 			if (warning == true)
-				displayMusicInfo(mid_type, murl, mid);
+				addMusicInfoDisplay(mid_type, murl, mid);
 			break;
 		case "ncmsl":
 			var postData =
@@ -234,7 +500,7 @@ function getMusicInfo(mid_type, mid, songtype, qqmsl, ncmsl)
 						var artist = data.songs[0].artists.map(artist => artist.name).join(" / ");
 						var music_url = "https://music.163.com/song/media/outer/url?id=" + mid + ".mp3";
 						var cover_url = data.songs[0].album.picUrl;
-						displayMusicInfo(mid_type, murl, mid, realname, artist);
+						addMusicInfoDisplay(mid_type, murl, mid, realname, artist);
 						playMusic(realname, artist, music_url, cover_url);
 					}
 					else
@@ -251,7 +517,7 @@ function getMusicInfo(mid_type, mid, songtype, qqmsl, ncmsl)
 				}
 			});
 			if (warning == true)
-				displayMusicInfo(mid_type, murl, mid);
+				addMusicInfoDisplay(mid_type, murl, mid);
 			break;
 		case "qqmid-id":
 		case "qqmid-mid":
@@ -283,7 +549,7 @@ function getMusicInfo(mid_type, mid, songtype, qqmsl, ncmsl)
 						var artist = data.songinfo.data.track_info.singer.map(artist => artist.title).join(" / ");
 						var music_url = data.songinfo.data.track_info.url;
 						var cover_url// = data.metaData.image;
-						displayMusicInfo(mid_type, murl, mid, realname, artist, songtype);
+						addMusicInfoDisplay(mid_type, murl, mid, realname, artist, songtype);
 						playMusic(realname, artist, music_url, cover_url);
 					}
 					else
@@ -298,7 +564,7 @@ function getMusicInfo(mid_type, mid, songtype, qqmsl, ncmsl)
 				}
 			});
 			if (warning == true)
-				displayMusicInfo(mid_type, murl, mid);
+				addMusicInfoDisplay(mid_type, murl, mid);
 			break;
 		case "qqmsl":
 			var postData =
@@ -323,7 +589,7 @@ function getMusicInfo(mid_type, mid, songtype, qqmsl, ncmsl)
 						var artist = data.songinfo.data.track_info.singer.map(artist => artist.title).join(" / ");
 						var music_url = data.songinfo.data.track_info.url;
 						var cover_url// = data.metaData.image;
-						displayMusicInfo(mid_type, murl, qqmid, realname, artist, songtype);
+						addMusicInfoDisplay(mid_type, murl, qqmid, realname, artist, songtype);
 						playMusic(realname, artist, music_url, cover_url);
 					}
 					else
@@ -338,7 +604,7 @@ function getMusicInfo(mid_type, mid, songtype, qqmsl, ncmsl)
 				}
 			});
 			if (warning == true)
-				displayMusicInfo(mid_type, murl, mid);
+				addMusicInfoDisplay(mid_type, murl, mid);
 			break;
 		case "kgmid":
 			var murl = "https://m.kugou.com/mixsong/" + mid + ".html";
@@ -365,7 +631,7 @@ function getMusicInfo(mid_type, mid, songtype, qqmsl, ncmsl)
 						var music_url = data.song_info.data.url;
 						var cover_url = data.song_info.data.imgUrl;
 						cover_url = cover_url.replace("{size}", "35876");
-						displayMusicInfo(mid_type, murl, mid, realname, artist, songtype);
+						addMusicInfoDisplay(mid_type, murl, mid, realname, artist, songtype);
 						playMusic(realname, artist, music_url, cover_url);
 					}
 					else
@@ -380,7 +646,7 @@ function getMusicInfo(mid_type, mid, songtype, qqmsl, ncmsl)
 				}
 			})
 			if (warning == true)
-				displayMusicInfo(mid_type, murl, mid);
+				addMusicInfoDisplay(mid_type, murl, mid);
 			break;
 		case "av":
 		case "BV":
@@ -405,7 +671,7 @@ function getMusicInfo(mid_type, mid, songtype, qqmsl, ncmsl)
 					var cover_resource = await fetch(cover_url_https, { method: 'GET', referrerPolicy: 'no-referrer' });	// APlayer直接fetch时会带着referrer，所以只能手动fetch一下然后传给APlayer
 					var cover_resource_blob = await cover_resource.blob();
 					var cover_url = URL.createObjectURL(cover_resource_blob);
-					displayMusicInfo(mid_type, murl, mid, realname, artist);
+					addMusicInfoDisplay(mid_type, murl, mid, realname, artist);
 					playMusic(realname, artist, music_url, cover_url);
 				},
 				error: function(xhr, status, error)
@@ -413,7 +679,7 @@ function getMusicInfo(mid_type, mid, songtype, qqmsl, ncmsl)
 					console.error("Error occurred: " + error);
 				}
 			})
-			displayMusicInfo(mid_type, murl, mid);
+			addMusicInfoDisplay(mid_type, murl, mid);
 			// alert("由于平台目前尚不完全支持Bilibili视频作为投稿，请仔细核对 校验用链接 是否是您想要投稿的曲目，谢谢👉👈");
 			break;
 		case "ytmid":
@@ -433,7 +699,7 @@ function getMusicInfo(mid_type, mid, songtype, qqmsl, ncmsl)
 					var realname = data.realname;
 					var artist = data.artist;
 					var cover_url = data.cover_url;
-					displayMusicInfo(mid_type, murl, mid, realname, artist);
+					addMusicInfoDisplay(mid_type, murl, mid, realname, artist);
 
 					var music_url = data.music_url;
 					if (music_url != "" && music_url != undefined && music_url != null)
@@ -493,7 +759,7 @@ function getMusicInfo(mid_type, mid, songtype, qqmsl, ncmsl)
 					console.error("Error occurred: " + error);
 				}
 			})
-			displayMusicInfo(mid_type, murl, mid);
+			addMusicInfoDisplay(mid_type, murl, mid);
 			// alert("由于平台目前尚不完全支持Youtube视频作为投稿，请仔细核对 校验用链接 是否是您想要投稿的曲目，谢谢👉👈");
 			break;
 		case "ncrid":
@@ -516,7 +782,7 @@ function getMusicInfo(mid_type, mid, songtype, qqmsl, ncmsl)
 						var artist = data.program.mainSong.artists[0].name;
 						var music_url = ""	//"https://music.163.com/song/media/outer/url?id=" + mid + ".mp3";	//这个链接目前还找不到
 						var cover_url = data.program.mainSong.album.picUrl;
-						displayMusicInfo(mid_type, murl, mid, realname, artist);
+						addMusicInfoDisplay(mid_type, murl, mid, realname, artist);
 						playMusic(realname, artist, music_url, cover_url)
 					}
 					else
@@ -531,84 +797,95 @@ function getMusicInfo(mid_type, mid, songtype, qqmsl, ncmsl)
 				}
 			});
 			if (warning == true)
-				displayMusicInfo(mid_type, murl, mid);
+				addMusicInfoDisplay(mid_type, murl, mid);
 			// alert("由于平台目前无法获取网易云电台的音频文件，请仔细核对是否是您想要投稿的曲目，谢谢👉👈");
 			break;
 	}
 }
 
 // 显示详细信息界面
-function displayMusicInfo(mid_type, murl, mid, realname = "", artist = "", songtype = "")
+function addMusicInfoDisplay(mid_type, murl, mid, realname = "", artist = "", songtype = "")
 {
-	$('.con-infos .con-infos-row#murl .infos-text').html(murl);
-	$('.con-infos .con-infos-row#murl .infos-text').attr("href", murl);
-	switch (mid_type)
-	{
-		case "ncmid":
-		case "ncmsl":
-			$('.con-infos .con-infos-row#ncmid .infos-text').html(mid);
-			break;
-		case "qqmid-id":
-		case "qqmid-mid":
-		case "qqmsl":
-			$('.con-infos .con-infos-row#qqmid .infos-text').html(mid);
-			$('.con-infos .con-infos-row#songtype .infos-text').html(songtype);
-			break;
-		case "kgmid":
-			$('.con-infos .con-infos-row#kgmid .infos-text').html(mid);
-			break;
-		case "av":
-		case "BV":
-			$('.con-infos .con-infos-row#BV .infos-text').html(mid);
-			break;
-		case "ytmid":
-			$('.con-infos .con-infos-row#ytmid .infos-text').html(mid);
-			break;
-		case "ncrid":
-			$('.con-infos .con-infos-row#ncrid .infos-text').html(mid);
-			break;
-	}
-	$('.con-infos .con-infos-row#realname .infos-text').html(realname);
-	$('.con-infos .con-infos-row#artist .infos-text').html(artist);
-//	$('.con-infos .con-infos-row#state .infos-text').html(state);
+	$('.con-infos .con-infos-row#murl .murl-list .empty').remove();
 
-	$('.con-infos .con-infos-row#murl').css('display', "");
 	switch (mid_type)
 	{
 		case "ncmid":
 		case "ncmsl":
-			$('.con-infos .con-infos-row#ncmid').css('display', "");
+			var type_text = "网易云ID";
 			break;
 		case "qqmid-id":
 		case "qqmid-mid":
 		case "qqmsl":
-			$('.con-infos .con-infos-row#qqmid').css('display', "");
-			$('.con-infos .con-infos-row#songtype').css('display', "");
+			var type_text = "QQ音乐ID";
 			break;
 		case "kgmid":
-			$('.con-infos .con-infos-row#kgmid').css('display', "");
+			var type_text = "酷狗音乐ID";
 			break;
-		case "av":
 		case "BV":
-			$('.con-infos .con-infos-row#BV').css('display', "");
+			var type_text = "BV号";
 			break;
 		case "ytmid":
-			$('.con-infos .con-infos-row#ytmid').css('display', "");
+			var type_text = "Youtube ID";
 			break;
 		case "ncrid":
-			$('.con-infos .con-infos-row#ncrid').css('display', "");
+			var type_text = "网易云声音ID";
+			break;
+		case "av":
+			var type_text = "av号";
+			break;
+		default:
+			var type_text = "链接";
 			break;
 	}
+	var data = 
+	{
+		mid_type: mid_type,
+		murl: murl,
+		mid: mid,
+		realname: realname,
+		artist: artist,
+		songtype: songtype
+	};
+	var html =							"<div class='murl'>" +
+											"<div class='murl-element'>" +
+												"<div class='murl-info' style='display: none;'>" +
+													"<ul class='infos'>" +
+														"<li class='data'>" + JSON.stringify(data) + "</li>" +
+														"<li class='mid_type'>" + mid_type + "</li>" +
+														"<li class='mid'>" + mid + "</li>" +
+														"<li class='murl'>" + murl + "</li>" +
+														"<li class='realname'>" + realname + "</li>" +
+														"<li class='artist'>" + artist + "</li>" +
+														"<li class='songtype'>" + songtype + "</li>" +
+													"</ul>" +
+												"</div>" +
+												"<div class='murl-info'>" +
+													"<div class='murl-label'>真实名称：</div>" +
+													"<div class='murl-content'>" + realname + "</div>" +
+												"</div>" +
+												"<div class='murl-info'>" +
+													"<div class='murl-label'>音乐人：</div>" +
+													"<div class='murl-content'>" + artist + "</div>" +
+												"</div>" +
+												"<div class='murl-info'>" +
+													"<span class='murl-label'>" + type_text + "：</span>" +
+													"<span class='murl-content'>" +
+														"<a class='mid' href='" + murl + "' target='_blank'>" + mid + "</a>" +
+													"</span>" +
+												"</div>" +
+											"</div>" +
+											"<span class='fa fa-times-circle'></span>" +
+										"</div>"
+	$('.con-infos .con-infos-row#murl .murl-list').append(html);
 
 	$('.con-box .message#murl').html("<span style='color: red'>建议您单击校验用链接检查与您投稿的曲目是否一致~</span>")
-	$('.con-reqs').hide();
-	clearInputs()
-	$('.infos-wrap').show();
 }
 
-function playMusic(realname, artist, music_url, cover_url = "", validCheck = 1)
+function playMusic(realname, artist, music_url, cover_url = "", validCheck = 1, clear = 0)
 {
-	ap.list.clear()
+	if (clear)
+		ap.list.clear();
 	ap.list.add([{
 		name: realname,
 		artist: artist,
@@ -621,9 +898,17 @@ function playMusic(realname, artist, music_url, cover_url = "", validCheck = 1)
 		{
 			$('.aplayer-title').text(realname + " - 该歌曲无法播放")
 		}
-	}, 2500)
-	ap.list.hide()
+	}, 2500);
+	ap.list.hide();
 }
+
+/* 按下移除时执行程序 */
+$(document).on('click', '.fa.fa-times-circle', function()
+{
+	if ($(this).parent().parent().children().length == 1)
+		$(this).parent().parent().append("<div class='empty'>请添加链接~</div>");
+	$(this).parent().remove();
+})
 
 /* 点击时展开日期选择框 */
 $(document).on('click', 'input#hope-date', function ()
@@ -666,7 +951,7 @@ $(document).on('blur', ".input-wrap :text, .input-wrap textarea", function () {
 	}
 });
 
-var input;	// 不知道为什么line 674写入的东西和实际的input不一样，导致无法切换月份，所以直接把container当作全局变量好了
+var input;	// 不知道为什么line 959写入的东西和实际的input不一样，导致无法切换月份，所以直接把container当作全局变量好了
 
 /* 创建选择到日的日期选择框 */
 function addDateSelector(true_input)
@@ -973,19 +1258,6 @@ $(document).on('click', '.date-selector.date.future .calendar-content span.calen
 		$(this).parent().parent().siblings('.year-and-month').children('.btn#prev-month').trigger("click");
 })
 
-/* 按下链接的清空按钮后恢复 */
-$(document).on('click', '.con-box .murl-wrap .clear-span', function ()
-{
-	$('.con-box .message#murl').html('');
-	ap.pause();
-	clear_mid();
-	$('.infos-wrap').hide();
-	$('.con-reqs').show();
-	$(this).parent().removeClass('input-filled');
-	$(this).parent().find('input').val('');
-	clearInputs();
-})
-
 /* 按下其他清空按钮时清空所选框 */
 $(document).on('click', '.clear-span', function ()
 {
@@ -1009,48 +1281,106 @@ $(document).on('click', '.clear-span', function ()
 		$(this).parent().removeClass('input-filled');
 	$(this).parent().find('input').val('');
 	$(this).parent().find('textarea').val('');
-});
 
-function clearInputs()
-{
-	$(".clear-span.hope-showname-clear").trigger("click");
-	$(".clear-span.hope-artist-clear").trigger("click");
-	$(".clear-span.hope-date-clear").trigger("click");
-	$(".clear-span.hope-description-clear").trigger("click");
-	$(".clear-span.con-note-clear").trigger("click");
-}
+	// 清空提示
+	if ($(this).parent().hasClass('murl-input-wrap'))
+		$('.con-box .message#murl').html('');
+});
 
 $(document).on('click', '.btn.btn-submit#con-submit', function ()
 {
 	if (warning == true)	// 提醒，如果仍然坚持的话就强制写入
 	{
-		alert("真的要投稿这个嘛？\n如果你执意要投稿这个的话，那台台我也只好收着交给审核老师啦: (")
+		alert("检查一下是不是有哪个链接输入错误了？\n如果你执意要投稿这个的话，那台台我也只好收着交给审核老师啦: (")
 		warning = false;
 		return;
 	}
-	var hope_date = $(".hope-date-wrap input#hope-date").val()
-	var ncmid = $(".con-infos-row#ncmid .infos-text").html()
-	var qqmid = $(".con-infos-row#qqmid .infos-text").html()
-	var songtype = $(".con-infos-row#songtype .infos-text").html()
-	var kgmid = $(".con-infos-row#kgmid .infos-text").html()
-	var BV_av = $(".con-infos-row#BV .infos-text").html()
-	if (/^\d+$/.test(BV_av))	// 区分mid和id，因为数据库内二者分别存储，且获取信息的API区分二者
-		var av = BV_av;
-	else
-		var BV = BV_av;
-	var ytmid = $(".con-infos-row#ytmid .infos-text").html()
-	var ncrid = $(".con-infos-row#ncrid .infos-text").html()
-	var links = $(".murl-wrap input#murl").val()
-	var state = $(".con-infos-row#state .infos-text").html()
-	var realname = $(".con-infos-row#realname .infos-text").html()
-	var artist = $(".con-infos-row#artist .infos-text").html()
+	if ($(".con-infos .con-infos-row#murl .murl-list").children().hasClass("empty"))
+	{
+		$(".con-infos .con-infos-row#murl .murl-list .empty").css("color", "red");
+		$('.message#murl').html('<div style="color:red;">请添加链接</div>');
+		return;
+	}
+
+	var path = $('.con-infos-row#path .infos-text').html();
+	var hash = $('.con-infos-row#hash .infos-text').html();
+	var mid_seq = "8";
+
+	var hope_date = $(".hope-date-wrap input#hope-date").val();
+
+	var ncmid = "", qqmid = "", songtype = "", kgmid = "", BV = "", ytmid = "", ncrid = "", av = "", links = "", state = "", realname = "", artist = "";
+	$('.murl-list').children().each(function(index, element)
+	{
+		var currentData = JSON.parse($(element).find('.infos .data').text())
+		var current_ncmid = (currentData.mid_type == "ncmid" || currentData.mid_type == "ncmsl") ? currentData.mid : ""
+		var current_qqmid = (currentData.mid_type == "qqmid-id" || currentData.mid_type == "qqmid-mid" || currentData.mid_type == "qqmsl") ? currentData.mid : ""
+		var current_songtype = (currentData.mid_type == "qqmid-id" || currentData.mid_type == "qqmid-mid" || currentData.mid_type == "qqmsl") ? currentData.songtype : ""
+		var current_kgmid = currentData.mid_type == "kgmid" ? currentData.mid : ""
+		var current_BV = currentData.mid_type == "BV" ? currentData.mid : ""
+		var current_ytmid = currentData.mid_type == "ytmid" ? currentData.mid : ""
+		var current_ncrid = currentData.mid_type == "ncrid" ? currentData.mid : ""
+		var current_av = currentData.mid_type == "av" ? currentData.mid : ""
+		var current_links = currentData.mid_type == "links" ? currentData.murl : ""
+		var current_state = ""
+		var current_realname = currentData.realname
+		var current_artist = currentData.artist
+		switch (currentData.mid_type)
+		{
+			case "ncmid":
+			case "ncmsl":
+				mid_seq += "0";
+				ncmid += ncmid ? "$" + current_ncmid : current_ncmid;
+				break;
+			case "qqmid-id":
+			case "qqmid-mid":
+			case "qqmsl":
+				mid_seq += "1";
+				qqmid += qqmid ? "$" + current_qqmid : current_qqmid;
+				songtype += songtype ? "$" + current_songtype : current_songtype;
+				break;
+			case "kgmid":
+				mid_seq += "2";
+				kgmid += kgmid ? "$" + current_kgmid : current_kgmid;
+				break;
+			case "BV":
+				mid_seq += "3";
+				BV += BV ? "$" + current_BV : current_BV;
+				break;
+			case "ytmid":
+				mid_seq += "4";
+				ytmid += ytmid ? "$" + current_ytmid : current_ytmid;
+				break;
+			case "ncrid":
+				mid_seq += "5";
+				ncrid += ncrid ? "$" + current_ncrid : current_ncrid;
+				break;
+			case "av":
+				mid_seq += "6";
+				av += av ? "$" + current_av : current_av;
+				break;
+			default:
+				mid_seq += "7";
+				links += links ? "$" + current_links : current_links;
+				break;
+		}
+		// state += state ? "$" + current_state : current_state;
+		realname += realname ? "$" + current_realname : current_realname;
+		artist += artist ? "$" + current_artist : current_artist;
+	})
+
 	var hope_showname = $(".hope-showname-wrap input#hope-showname").val()
 	var hope_artist = $(".hope-artist-wrap input#hope-artist").val()
 	var hope_description = $(".hope-description-wrap textarea#hope-description").val()
 	var remark = $(".con-note-wrap input#con-note").val()
 	var hope_class_of = $('.hope-class-of-wrap .fa.fa-check-square').attr('id')
+	if ($('.type-wrap .type-span.choosing').attr('id') == "original")
+		var mid_type = "original"
+	else
+		var mid_type = "derivative"
 	var data =
 	{
+		mid_type: mid_type,
+		mid_seq: mid_seq,
 		hope_date: hope_date,
 		ncmid: ncmid,
 		qqmid: qqmid,
@@ -1062,6 +1392,7 @@ $(document).on('click', '.btn.btn-submit#con-submit', function ()
 		av: av,
 		links: links,
 		state: state,
+		hash: hash,
 		realname: realname,
 		artist: artist,
 		hope_showname: hope_showname,
@@ -1120,7 +1451,18 @@ $(document).on('click', '.btn.btn-submit#con-submit', function ()
 			}
 			localStorage.setItem("expire_time", data.session.expire_time);	// 其他三项都没变，所以只修改这个
 			alert('投稿成功，请关注站内消息来获知审核结果呦~')
-			$(".con-box .murl-wrap .clear-span").trigger("click");	// 清空输入、返回初始页面、删除mid信息
+			for (let i = 0; i < ap.list.audios.length; i++)
+				URL.revokeObjectURL(ap.list.audios[i].url)	// 释放资源
+			ap.list.clear();
+			$('.infos-wrap').hide();
+			$('.con-reqs').show();
+			$('.file-upload-area .upload-text-wrap').children().html("<b>点击选择文件</b> 或 <b>拖放文件到此处</b>");	// 返回初始页面
+			clearInputs();	// 清空输入
+			$('.con-box .message#murl').html('');
+			$('.con-infos .con-infos-row#filename .infos-text').html('');
+			$('.con-infos .con-infos-row#filesize .infos-text').html('');
+			$('.con-infos .con-infos-row#path .infos-text').html('');
+			$('.con-infos .con-infos-row#hash .infos-text').html('');	// 清空文件信息
 			getWaitingNumber()
 			getContributionNumber()
 		},

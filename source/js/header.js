@@ -160,8 +160,8 @@ $(document).on('click', '.user-tool .link-logout', function ()
 
 /* 从 user.js 搬到这里，因为下面进入判断能否进入 /administration 要用 */
 /* 刷新用户登录状态 */
-async function checkLoginStatus()
-{
+async function checkLoginStatus() { return new Promise((resolve, reject) =>
+{ 
 	$.ajax({
 		url: "https://bjezxkl.azurewebsites.net/api/proxy?path=user",
 		type: 'POST',
@@ -219,9 +219,13 @@ async function checkLoginStatus()
 			alert('未知原因检测登录状态失败，请联系网站管理员');
 			console.log(err);
 			return -5;
+		},
+		complete: function (data, err)
+		{
+			resolve();
 		}
 	})
-}
+})}
 
 $(document).on('click', '.international-header .link.administration', async function ()
 {
