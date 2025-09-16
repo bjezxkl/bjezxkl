@@ -980,6 +980,8 @@ function fillConInfo(con_info, mid_type)
 
 	// con_user
 	$('.coninfos-text span.coninfos#con-user').html(con_info.con_user);
+	// con_class_of
+	$('.coninfos-text span.coninfos#con-class-of').html(con_info.con_class_of);
 	// con_time
 	var con_time_text = timestampToTime(parseInt(con_info.con_time));
 	$('.coninfos-text span.coninfos#con-time').html(con_time_text);
@@ -2071,6 +2073,8 @@ function resetConInfo()
 
 	// con_user
 	$('.coninfos-text span.coninfos#con-user').html("");
+	// con_class_of
+	$('.coninfos-text span.coninfos#con-class-of').html("");
 	// con_time
 	$('.coninfos-text span.coninfos#con-time').html("");
 	// con_remark
