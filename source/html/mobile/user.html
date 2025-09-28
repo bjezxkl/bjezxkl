@@ -24,8 +24,11 @@
 			{
 				if (userAgentInfo.indexOf(Agents[v]) > 0)
 				{
-				machine = 'mobile';
-				break;
+					if (Agents[v] == "Android")
+						if (userAgentInfo.indexOf("Mobile") == -1)
+							continue;
+					machine = 'mobile';
+					break;
 				}
 			}
 			if (machine == 'PC')
