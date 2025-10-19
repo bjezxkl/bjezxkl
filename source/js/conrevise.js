@@ -1097,8 +1097,6 @@ $(document).on('click', ".fa.fa-square-o", function () {
 
 function refreshHopeClassOfWrap()
 {
-	if (window.parent.grade == "" || window.parent.grade == null)
-		return $(".con-infos-row#hope-class-of").hide()
 	$('.hope-class-of-wrap .keep').attr('id', parseInt(localStorage.getItem("class_of")))
 	$('.hope-class-of-wrap .down').attr('id', Math.max(parseInt(localStorage.getItem("class_of")) + 1, 2027))
 
