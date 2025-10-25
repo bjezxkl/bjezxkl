@@ -383,10 +383,10 @@ function getMusicInfo(mid_type, mid, songtype, qqmsl, ncmsl)
 				dataType: 'json',	// 返回也得是json形式
 				success: async function(data)	// 这里data已经是解析后的JSON对象，直接赋值给results
 				{
-					var realname = data.inforesults.data.title;
-					var artist = data.artistresults.data.name;
+					var realname = data.inforesults.title;
+					var artist = data.inforesults.owner.name;
 					var music_url = "";	// bilibili API似乎封禁了这个IP，所以这个就没办法获取了
-					var cover_url_ori = data.inforesults.data.pic;
+					var cover_url_ori = data.inforesults.pic;
 					var cover_url_https = cover_url_ori.replace("http://", "https://");	// https网站获取http资源好像还不被浏览器允许，那就只好这样了
 					var cover_resource = await fetch(cover_url_https, { method: 'GET', referrerPolicy: 'no-referrer' });	// APlayer直接fetch时会带着referrer，所以只能手动fetch一下然后传给APlayer
 					var cover_resource_blob = await cover_resource.blob();
