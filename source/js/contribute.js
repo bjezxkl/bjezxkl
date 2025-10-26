@@ -1138,7 +1138,7 @@ function getContributionNumber()
 	{
 		con_num_text = "<a href='javascript:;' onclick='showLoginPanel()'>登录</a>后可以查看自己的<b>剩余投稿额度</b>哟~"
 		$(".req-text.con-num").html(con_num_text);
-		$("#req-test-newline").css("display", "");
+		$("#req-text-newline").css("display", "");
 		return;
 	}
 	$.ajax({
@@ -1171,14 +1171,14 @@ function getContributionNumber()
 					refreshLoginInfo()
 					con_num_text = "<a href='javascript:;' onclick='showLoginPanel()'>登录</a>后可以查看自己的<b>剩余投稿额度</b>哟~"
 					$(".req-text.con-num").html(con_num_text);
-					$("#req-test-newline").css("display", "");
+					$("#req-text-newline").css("display", "");
 					return;
 				}
 				alert('未知原因获取用户信息失败，请联系网站管理员');
 				if ($(".req-text.inline-num").html() != "" || $(".req-text.con-num").html() != "")
-					$("#req-test-newline").css("display", "");
+					$("#req-text-newline").css("display", "");
 				else
-					$("#req-test-newline").css("display", "none");
+					$("#req-text-newline").css("display", "none");
 				return console.log(data);
 			}
 			var con_num = 0;
@@ -1201,13 +1201,13 @@ function getContributionNumber()
 			else if (con_num_rest < 0)
 				con_num_text = "<b>剩余投稿额度：</b>你本月已经投了 " + con_num + " 个稿件嘞！"
 			$(".req-text.con-num").html(con_num_text);
-			$("#req-test-newline").css("display", "");
+			$("#req-text-newline").css("display", "");
 		},
 		error: function (data, err) {
 			if ($(".req-text.inline-num").html() != "" || $(".req-text.con-num").html() != "")
-				$("#req-test-newline").css("display", "");
+				$("#req-text-newline").css("display", "");
 			else
-				$("#req-test-newline").css("display", "none");
+				$("#req-text-newline").css("display", "none");
 			return console.log(err);
 		}
 	})
@@ -1230,9 +1230,9 @@ function getWaitingNumber()
 			if (data.code != 0)
 			{
 				if ($(".req-text.inline-num").html() != "" || $(".req-text.con-num").html() != "")
-					$("#req-test-newline").css("display", "");
+					$("#req-text-newline").css("display", "");
 				else
-					$("#req-test-newline").css("display", "none");
+					$("#req-text-newline").css("display", "none");
 				return console.log(data)
 			}
 			var waiting_num = data.data;
@@ -1244,13 +1244,13 @@ function getWaitingNumber()
 			else
 				inline_text = "<b>审核队列：</b>当前还有 " + waiting_num + " 个稿件正在等待审核，请耐心等待哟~"
 			$(".req-text.inline-num").html(inline_text);
-			$("#req-test-newline").css("display", "");
+			$("#req-text-newline").css("display", "");
 		},
 		error: function (data, err) {
 			if ($(".req-text.inline-num").html() != "" || $(".req-text.con-num").html() != "")
-				$("#req-test-newline").css("display", "");
+				$("#req-text-newline").css("display", "");
 			else
-				$("#req-test-newline").css("display", "none");
+				$("#req-text-newline").css("display", "none");
 			return console.log(err);
 		}
 	})
