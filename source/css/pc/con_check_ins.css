@@ -705,6 +705,40 @@
   top: -1px;
   position: relative;
 }
+
+.derivative-music-list.murl-list {
+  border: 2px solid #ededed;
+  margin: 0 5px 5px;
+  overflow-y: scroll;
+  max-height: 220px;
+  border-radius: 5px;
+  position: relative;
+  min-height: 75px;
+}
+.derivative-music-list .murl {
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid #ededed;
+  padding: 3px 0;
+  position: relative;
+  justify-content: space-between;
+}
+.derivative-music-list .murl:last-child {
+  border: none;
+}
+.derivative-music-list .murl-element {
+  margin: 0 10px;
+}
+.derivative-music-list .murl-label {
+  padding: 1.5px 0;
+  color: #6999d3;
+  display: inline-block;
+}
+.derivative-music-list .murl-content {
+  padding: 1.5px 0;
+  color: #1565c0;
+  display: inline;
+}
 .revisable-wrap .revisable-item .fa.fa-square-o.disable {
   color: #888;
 }
