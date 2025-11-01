@@ -380,24 +380,27 @@ function sortAcceptedContribution()
 					var revise_time_timestamp = data[i].revise_time
 					var revise_time = timestampToTime(parseInt(con_time_timestamp)).split(' ')[1]
 					var revise_date = timestampToTime(parseInt(con_time_timestamp)).split(' ')[0].split('-')
-					var check_type = data[i].check_type
-		
-					if (ncmid != "" && ncmid != undefined)
-						mid_type = "ncmid"
-					else if (qqmid != "" && qqmid != undefined)
-						mid_type = "qqmid"
-					else if (kgmid != "" && kgmid != undefined)
-						mid_type = "kgmid"
-					else if (BV != "" && BV != undefined)
-						mid_type = "BV"
-					else if (ytmid != "" && ytmid != undefined)
-						mid_type = "ytmid"
-					else if (ncrid != "" && ncrid != undefined)
-						mid_type = "ncrid"
-					else if (av != "" && av != undefined)
-						mid_type = "av"
-					else
-						mid_type = "links"
+				var check_type = data[i].check_type
+	
+				// 优先检查数据库中的 mid_type 字段
+				if (data[i].mid_type == "derivative" && data[i].mid_seq && data[i].mid_seq.indexOf("8") != -1)
+					mid_type = "derivative"
+				else if (ncmid != "" && ncmid != undefined)
+					mid_type = "ncmid"
+				else if (qqmid != "" && qqmid != undefined)
+					mid_type = "qqmid"
+				else if (kgmid != "" && kgmid != undefined)
+					mid_type = "kgmid"
+				else if (BV != "" && BV != undefined)
+					mid_type = "BV"
+				else if (ytmid != "" && ytmid != undefined)
+					mid_type = "ytmid"
+				else if (ncrid != "" && ncrid != undefined)
+					mid_type = "ncrid"
+				else if (av != "" && av != undefined)
+					mid_type = "av"
+				else
+					mid_type = "links"
 
 					var hope_showname_text = (hope_showname != "" && hope_showname != undefined) ? hope_showname : "<span class='con-infos-empty'>（未指定）</span>"
 					if (data[i].state == "ok")
@@ -408,39 +411,43 @@ function sortAcceptedContribution()
 //						var state_text = "<span class='state-error'>无版权</span>"
 						var state_text = "<span class='state-unknown'>可用性未知</span>"	// 或许应该叫 "版权状态未知" 🤔总之就是能不能非会员下载的区别
 
-					switch (mid_type)
-					{
-						case "ncmid":
+				switch (mid_type)
+				{
+					case "derivative":
 						var mid =
-								"<li class='obj ncmid'>" +ncmid + "</li>"
-							break;
-						case "qqmid":
-							var mid =
-								"<li class='obj qqmid'>" + qqmid + "</li>" +
-								"<li class='obj songtype'>" + songtype + "</li>"
-							break;
-						case "kgmid":
-							var mid =
-								"<li class='obj kgmid'>" + kgmid + "</li>"
-							break;
-						case "av":
-						case "BV":
-							var mid =
-								"<li class='obj BV'>" + ((BV != "" && BV != undefined) ? BV : av) + "</li>"
-							break;
-						case "ytmid":
-							var mid =
-								"<li class='obj ytmid'>" + ytmid + "</li>"
-							break;
-						case "ncrid":
-							var mid =
-								"<li class='obj ncrid'>" + ncrid + "</li>"
-							break;
-						case "links":
-							var mid =
-								"<li class='obj links'>" + links + "</li>"
-							break;
-					}
+							"<li class='obj derivative'>衍生ID: " + data[i].mid_seq + "</li>"
+						break;
+					case "ncmid":
+					var mid =
+							"<li class='obj ncmid'>" +ncmid + "</li>"
+						break;
+					case "qqmid":
+						var mid =
+							"<li class='obj qqmid'>" + qqmid + "</li>" +
+							"<li class='obj songtype'>" + songtype + "</li>"
+						break;
+					case "kgmid":
+						var mid =
+							"<li class='obj kgmid'>" + kgmid + "</li>"
+						break;
+					case "av":
+					case "BV":
+						var mid =
+							"<li class='obj BV'>" + ((BV != "" && BV != undefined) ? BV : av) + "</li>"
+						break;
+					case "ytmid":
+						var mid =
+							"<li class='obj ytmid'>" + ytmid + "</li>"
+						break;
+					case "ncrid":
+						var mid =
+							"<li class='obj ncrid'>" + ncrid + "</li>"
+						break;
+					case "links":
+						var mid =
+							"<li class='obj links'>" + links + "</li>"
+						break;
+				}
 
 					var time = date.split(' ')[1]
 					var date_split = date.split(' ')[0].split('-')
@@ -805,7 +812,10 @@ $(document).on('click', '.list-content .list-item', async function()
 
 function get_mid_type(con_info)
 {
-	if (con_info.ncmid != "" && con_info.ncmid != undefined)
+	// 优先检查 mid_type 字段
+	if (con_info.mid_type == "derivative" && con_info.mid_seq && con_info.mid_seq.indexOf("8") != -1)
+		mid_type = "derivative"
+	else if (con_info.ncmid != "" && con_info.ncmid != undefined)
 		mid_type = "ncmid"
 	else if (con_info.qqmid != "" && con_info.qqmid != undefined)
 		if (/^\d+$/.test(con_info.qqmid))	// 区分mid和id，因为服务端需要访问手机版的链接来获取信息
@@ -867,6 +877,51 @@ function fillConInfo(con_info, mid_type)
 
 	switch (mid_type)
 	{
+		case "derivative":
+			// 显示音乐链接大框
+			$('.derivative-music-wrap').css('display', '');
+			
+			// 解析 realname 和 artist（以$分隔）
+			var realnameList = con_info.realname ? con_info.realname.split('$').filter(n => n.trim() !== '') : [];
+			var artistList = con_info.artist ? con_info.artist.split('$').filter(a => a.trim() !== '') : [];
+			
+			// 解析 ncmid 中的多个音乐ID（以$分隔）- derivative类型的实际ID存在ncmid字段
+			var musicIds = con_info.ncmid ? con_info.ncmid.split('$').filter(id => id.trim() !== '') : [];
+			
+			var musicListHtml = '';
+			for (var k = 0; k < musicIds.length; k++) {
+				var musicId = musicIds[k].trim();
+				var realname = realnameList[k] ? realnameList[k].trim() : '未知';
+				var artist = artistList[k] ? artistList[k].trim() : '未知';
+				var murl = 'https://music.163.com/#/song?id=' + musicId;
+				
+				// 使用与 conupload 相同的 HTML 结构
+				musicListHtml += 
+					"<div class='murl'>" +
+						"<div class='murl-element'>" +
+							"<div class='murl-info'>" +
+								"<div class='murl-label'>真实名称：</div>" +
+								"<div class='murl-content'>" + realname + "</div>" +
+							"</div>" +
+							"<div class='murl-info'>" +
+								"<div class='murl-label'>音乐人：</div>" +
+								"<div class='murl-content'>" + artist + "</div>" +
+							"</div>" +
+							"<div class='murl-info'>" +
+								"<span class='murl-label'>网易云ID：</span>" +
+								"<span class='murl-content'>" +
+									"<a class='mid' href='" + murl + "' target='_blank'>" + musicId + "</a>" +
+								"</span>" +
+							"</div>" +
+						"</div>" +
+					"</div>";
+			}
+			$('#derivative-music-list').html(musicListHtml);
+			
+			// 隐藏原有的 realname 和 artist 字段（因为信息已经在音乐链接小框中显示）
+			$('.coninfos-text span.coninfos#realname').parent().css('display', 'none');
+			$('.coninfos-text span.coninfos#artist').parent().css('display', 'none');
+			break;
 		case "ncmid":
 			$('.coninfos-text span.coninfos#ncmid').parent().css('display', '');
 			$('.coninfos-text span.coninfos#ncmid').html("<a class='mid' href='https://music.163.com/#/song?id=" + ncmid + "' target='_blank'>" + ncmid + "</a>")
@@ -918,16 +973,22 @@ function fillConInfo(con_info, mid_type)
 			break;
 	}
 
-	// realname
-	if (con_info.realname != null && con_info.realname != "" && con_info.realname != undefined)
-	{
-		$('.coninfos-text span.coninfos#realname').html(con_info.realname);
-		var realname_status = 2;
-		$('.coninfos-text span.coninfos#realname').attr("data-status", 2);
-	}
-	else
-	{
-		$('.coninfos-text span.coninfos#realname').html("");	// 预填充为空，防止切换选择后 realname artist 更新较慢导致与其他内容不匹配
+	// realname（derivative 类型已在小框中显示，不重复显示）
+	if (mid_type !== "derivative") {
+		if (con_info.realname != null && con_info.realname != "" && con_info.realname != undefined)
+		{
+			$('.coninfos-text span.coninfos#realname').parent().css('display', '');
+			$('.coninfos-text span.coninfos#realname').html(con_info.realname);
+			var realname_status = 2;
+			$('.coninfos-text span.coninfos#realname').attr("data-status", 2);
+		}
+		else
+		{
+			$('.coninfos-text span.coninfos#realname').parent().css('display', '');
+			$('.coninfos-text span.coninfos#realname').html("");	// 预填充为空，防止切换选择后 realname artist 更新较慢导致与其他内容不匹配
+			var realname_status = 0;
+		}
+	} else {
 		var realname_status = 0;
 	}
 	// hope_showname
@@ -943,16 +1004,22 @@ function fillConInfo(con_info, mid_type)
 	else
 		$('.coninfos-text input#showname').val("");
 	$('.coninfos-text input#showname').trigger("blur");	// 切换显示状态，保证默认填充之后具有input-filled显示状态
-	// artist
-	if (con_info.artist != null && con_info.artist != "" && con_info.artist != undefined)
-	{
-		$('.coninfos-text span.coninfos#artist').html(con_info.artist);
-		var artist_status = 2;
-		$('.coninfos-text span.coninfos#artist').attr("data-status", 2);
-	}
-	else
-	{
-		$('.coninfos-text span.coninfos#artist').html("");
+	// artist（derivative 类型已在小框中显示，不重复显示）
+	if (mid_type !== "derivative") {
+		if (con_info.artist != null && con_info.artist != "" && con_info.artist != undefined)
+		{
+			$('.coninfos-text span.coninfos#artist').parent().css('display', '');
+			$('.coninfos-text span.coninfos#artist').html(con_info.artist);
+			var artist_status = 2;
+			$('.coninfos-text span.coninfos#artist').attr("data-status", 2);
+		}
+		else
+		{
+			$('.coninfos-text span.coninfos#artist').parent().css('display', '');
+			$('.coninfos-text span.coninfos#artist').html("");
+			var artist_status = 0;
+		}
+	} else {
 		var artist_status = 0;
 	}
 	// hope_artist
@@ -2035,6 +2102,9 @@ function resetConInfo()
 	$('.coninfos-text input#plan-date').trigger("blur");
 
 	// mid / vid
+	$('.derivative-music-wrap').css('display', 'none');
+	$('#derivative-music-list').html('');
+	$('.coninfos-text span.coninfos#mid_seq').parent().css('display', 'none');
 	$('.coninfos-text span.coninfos#ncmid').parent().css('display', 'none');
 	$('.coninfos-text span.coninfos#qqmid').parent().css('display', 'none');
 	$('.coninfos-text span.coninfos#songtype').parent().css('display', 'none');
@@ -2043,6 +2113,7 @@ function resetConInfo()
 	$('.coninfos-text span.coninfos#ytmid').parent().css('display', 'none');
 	$('.coninfos-text span.coninfos#ncrid').parent().css('display', 'none');
 	$('.coninfos-text span.coninfos#links').parent().css('display', 'none');
+	$('.coninfos-text span.coninfos#mid_seq').html("");
 	$('.coninfos-text span.coninfos#ncmid').html("");
 	$('.coninfos-text span.coninfos#qqmid').html("");
 	$('.coninfos-text span.coninfos#songtype').html("");
@@ -2054,6 +2125,7 @@ function resetConInfo()
 	$('.coninfos-text span.coninfos#state').html("");
 
 	// realname
+	$('.coninfos-text span.coninfos#realname').parent().css('display', '');  // 重置显示状态
 	$('.coninfos-text span.coninfos#realname').html("");
 	// hope_showname
 	$('.coninfos-text span.coninfos#hope-showname').html("");
@@ -2061,6 +2133,7 @@ function resetConInfo()
 	$('.coninfos-text input#showname').val("");
 	$('.coninfos-text input#showname').trigger("blur");
 	// artist
+	$('.coninfos-text span.coninfos#artist').parent().css('display', '');  // 重置显示状态
 	$('.coninfos-text span.coninfos#artist').html("");
 	// hope_artist
 	$('.coninfos-text span.coninfos#hope-artist').html("");
