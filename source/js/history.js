@@ -329,7 +329,7 @@ function sortMusic()
 								"<div class='music-showname'>" + data[i].showname + "</div>" +
 								"<div class='music-realname'>" + data[i].realname + "</div>" +
 								"<div class='music-artist'>" + data[i].artist + "</div>"
-					if (data[i].cid != "")
+					if (data[i].con_user != "")
 					{
 						musiclist +=
 								"<div class='music-user'>投稿人：<span class='music-user-span'>" + data[i].con_user + "</span></div>"

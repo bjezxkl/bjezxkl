@@ -266,7 +266,7 @@ function loadPlan(xmlContent)
 							"<div class='plan-day'>" + date_item[2] + "</div>" +
 						"</div>" +
 						"<div class='showname'>" + showname_text + "</div>"
-					if (this_data.cid != "")
+					if (this_data.con_user != "")
 					{
 						plan_content +=
 						"<div class='con-user'>投稿人：" + this_data.con_user + "</div>"
