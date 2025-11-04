@@ -1150,12 +1150,12 @@ async function getMusicLink(con_info, mid_type) { return new Promise((resolve, r
 				dataType: 'json',	// 返回也得是json形式
 				success: function(data)
 				{
-					if (data.songList && data.songList.length > 0)	// 获取到了详细信息
+					if (data.songinfo.code == 0)	// 获取到了详细信息
 					{
-						var realname = data.songList[0].title;
-						var artist = data.songList[0].singer.map(artist => artist.title).join(" / ");
-						var music_url = data.songList[0].url;
-						var cover_url = data.metaData.image;
+						var realname = data.songinfo.data.track_info.title;
+						var artist = data.songinfo.data.track_info.singer.map(artist => artist.title).join(" / ");
+						var music_url = data.songinfo.data.track_info.url;
+						var cover_url// = data.metaData.image;
 						resolve({ realname, artist, music_url, cover_url, murl, warning: false });
 					}
 					else
