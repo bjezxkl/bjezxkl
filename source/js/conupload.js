@@ -318,7 +318,7 @@ function checkMusic()
 	var kgmid_format = "kugou.com/mixsong/"	// www.kugou.com/mixsong/[kgmid].html 或 m.kugou.com/mixsong/[kgmid].html
 	var BV_av_format = "bilibili.com/video/"	// www.bilibili.com/video/[BV/av]/ 或 m.bilibili.com/video/[BV/av]
 	var ytmid_format = "youtube.com/watch"	// www.youtube.com/watch?v=[ytmid] 或 m.youtube.com/watch?v=[ytmid]
-	var ncmsl_format = "http://163cn.tv/"	// http://163cn.tv/[ncmsl]
+	var ncmsl_format = "163cn.tv/"	// 163cn.tv/[ncmsl]
 	if (music_url == "")
 	{
 		return $('.con-box .message#murl').html('请粘贴音乐平台链接');
