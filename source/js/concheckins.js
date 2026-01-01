@@ -1850,10 +1850,17 @@ function calculateTerm(selectedYearAndMonth, selectedDate)
 		term += week_in_term;
 	}
 	// 2025-2026-1
-	else if (year == 2025 && month >= 9 && month <= 12)
+	else if (year == 2025 && month >= 9 && month <= 12 ||
+			 year == 2026 && month <= 2)
 	{
 		var term = "2025-2026-1-";
 		var days = date;
+		if (year == 2026)
+		{
+			for (var i = month - 1; i >= 1; i--)
+				days += day_of_month[i-1];
+			month = 13;	// 先算清楚新一年的，再强制令为上一年
+		}
 		for (var i = month - 1; i >= 9; i--)
 			days += day_of_month[i-1];
 		days -= 1;	//	以到第一周的日子为计数
