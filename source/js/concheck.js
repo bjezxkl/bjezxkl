@@ -1755,23 +1755,23 @@ function calculateTerm(selectedYearAndMonth, selectedDate)
 	var date = parseInt(selectedDate);
 	
 	// 2024-2025-2
-	if (year == 2025 &&
-	   (month == 2 && date >= 17) ||	// 第一个月
-	   (month >= 3 && month <= 8)) 	// 中间的月，今年9月1号正好周一
+	if (year == 2025 && (month == 2 && date >= 17 ||	// 第一个月
+	                     month >= 3 && month <= 8)) 	// 中间的月，今年9月1号正好周一
 	{
 		var term = "2024-2025-2-";
 		var days = date;
 		for (var i = month - 1; i >= 2; i--)
 			days += day_of_month[i-1];
-		days -= 16;	//	以到第一周的日子为计数
+		days -= 17;	//	以到第一周的日子为计数
 		var week_in_term = Math.floor(days / 7) + 1;
 		if (week_in_term < 10)
 			week_in_term = "0" + week_in_term;
 		term += week_in_term;
 	}
 	// 2025-2026-1
-	else if (year == 2025 && month >= 9 && month <= 12 ||
-			 year == 2026 && month <= 2)
+	else if (year == 2025 && month >= 9 && month <= 12 ||	// 9月1日起
+			 year == 2026 && (month <= 2 ||
+			                  month == 3 && date == 1))		// 3月1日止
 	{
 		var term = "2025-2026-1-";
 		var days = date;
@@ -1784,6 +1784,20 @@ function calculateTerm(selectedYearAndMonth, selectedDate)
 		for (var i = month - 1; i >= 9; i--)
 			days += day_of_month[i-1];
 		days -= 1;	//	以到第一周的日子为计数
+		var week_in_term = Math.floor(days / 7) + 1;
+		if (week_in_term < 10)
+			week_in_term = "0" + week_in_term;
+		term += week_in_term;
+	}
+	// 2025-2026-2
+	else if (year == 2026 && (month == 3 && date >= 2 ||
+			                  month >= 4 && month <= 8))	// 依旧是到9月1日
+	{
+		var term = "2025-2026-2-";
+		var days = date;
+		for (var i = month - 1; i >= 3; i--)
+			days += day_of_month[i-1];
+		days -= 2;	//	以到第一周的日子为计数
 		var week_in_term = Math.floor(days / 7) + 1;
 		if (week_in_term < 10)
 			week_in_term = "0" + week_in_term;
