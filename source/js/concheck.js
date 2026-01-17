@@ -353,106 +353,157 @@ function sortWaitingContribution()
 				if ((grade_method == "senior3" && data[i].hope_class_of == "2026") || (grade_method == "all" && data[i].hope_class_of != "2026"))	// 和xrt沟通了一下，这里是“高三铃声”仅查看高三同学期待在周五周六播放的，“全校铃声”可查看所有的投稿
 				{
 					k++;	// 有数据写入
-
-					var cid = data[i].cid
-					var hope_date = data[i].hope_date
-					var ncmid = data[i].ncmid
-					var qqmid = data[i].qqmid
-					var songtype = data[i].songtype
-					var kgmid = data[i].kgmid
-					var BV = data[i].BV
-					var ytmid = data[i].ytmid
-					var ncrid = data[i].ncrid
-					var av = data[i].av
-					var links = data[i].links
-					var mid_type
-					var hope_showname = data[i].hope_showname
-					var realname = data[i].realname
-					var artist = data[i].artist
-					var hope_description = data[i].hope_description
-					var con_uid = data[i].con_uid
-					var con_user = data[i].con_user
-					var con_time_timestamp = data[i].con_time
-					var con_time = timestampToTime(parseInt(con_time_timestamp)).split(' ')[1]
-					var con_date = timestampToTime(parseInt(con_time_timestamp)).split(' ')[0].split('-')
-					var con_remark = data[i].con_remark
-					var revised = data[i].revised
-					var revise_time_timestamp = data[i].revise_time
-					var revise_time = timestampToTime(parseInt(con_time_timestamp)).split(' ')[1]
-					var revise_date = timestampToTime(parseInt(con_time_timestamp)).split(' ')[0].split('-')
-				var check_type = data[i].check_type
-	
-				// 优先检查数据库中的 mid_type 字段
-				if (data[i].mid_type == "derivative" && data[i].mid_seq && data[i].mid_seq.indexOf("8") != -1)
-					mid_type = "derivative"
-				else if (ncmid != "" && ncmid != undefined)
-					mid_type = "ncmid"
-				else if (qqmid != "" && qqmid != undefined)
-					mid_type = "qqmid"
-				else if (kgmid != "" && kgmid != undefined)
-					mid_type = "kgmid"
-				else if (BV != "" && BV != undefined)
-					mid_type = "BV"
-				else if (ytmid != "" && ytmid != undefined)
-					mid_type = "ytmid"
-				else if (ncrid != "" && ncrid != undefined)
-					mid_type = "ncrid"
-				else if (av != "" && av != undefined)
-					mid_type = "av"
-				else
-					mid_type = "links"
-
-					var hope_showname_text = (hope_showname != "" && hope_showname != undefined) ? hope_showname : "<span class='con-infos-empty'>（未指定）</span>"
-					if (data[i].state == "ok")
-						var state_text = "<span class='state-ok'>正常</span>"
-					else if (data[i].state == "vip")
-						var state_text = "<span class='state-vip'>会员</span>"
-					else
-//						var state_text = "<span class='state-error'>无版权</span>"
-						var state_text = "<span class='state-unknown'>可用性未知</span>"	// 或许应该叫 "版权状态未知" 🤔总之就是能不能非会员下载的区别
-
-				switch (mid_type)
-				{
-					case "derivative":
-						var mid =
-							"<li class='obj derivative'>衍生ID: " + data[i].mid_seq + "</li>"
-						break;
-					case "ncmid":
-					var mid =
-							"<li class='obj ncmid'>" +ncmid + "</li>"
-						break;
-					case "qqmid":
-						var mid =
-							"<li class='obj qqmid'>" + qqmid + "</li>" +
-							"<li class='obj songtype'>" + songtype + "</li>"
-						break;
-					case "kgmid":
-						var mid =
-							"<li class='obj kgmid'>" + kgmid + "</li>"
-						break;
-					case "av":
-					case "BV":
-						var mid =
-							"<li class='obj BV'>" + ((BV != "" && BV != undefined) ? BV : av) + "</li>"
-						break;
-					case "ytmid":
-						var mid =
-							"<li class='obj ytmid'>" + ytmid + "</li>"
-						break;
-					case "ncrid":
-						var mid =
-							"<li class='obj ncrid'>" + ncrid + "</li>"
-						break;
-					case "links":
-						var mid =
-							"<li class='obj links'>" + links + "</li>"
-						break;
-				}
-
-					var time = date.split(' ')[1]
-					var date_split = date.split(' ')[0].split('-')
+					if (data[i].mid_type == "derivative" && data[i].mid_seq && data[i].mid_seq.indexOf("8") != -1)
+					{
+						var cid = data[i].cid
+						var hope_date = data[i].hope_date
+						var mid_type = data[i].mid_type
+						var mid_seq = data[i].mid_seq
+						var hope_showname = data[i].hope_showname
+						var hope_description = data[i].hope_description
+						var con_uid = data[i].con_uid
+						var con_user = data[i].con_user
+						var con_time_timestamp = data[i].con_time
+						var con_time = timestampToTime(parseInt(con_time_timestamp)).split(' ')[1]
+						var con_date = timestampToTime(parseInt(con_time_timestamp)).split(' ')[0].split('-')
+						var con_remark = data[i].con_remark
+						var revised = data[i].revised
+						var revise_time_timestamp = data[i].revise_time
+						var revise_time = timestampToTime(parseInt(con_time_timestamp)).split(' ')[1]
+						var revise_date = timestampToTime(parseInt(con_time_timestamp)).split(' ')[0].split('-')
+						var check_type = data[i].check_type
+						
+						var hope_showname_text = (hope_showname != "" && hope_showname != undefined) ? hope_showname : "<span class='con-infos-empty'>（未指定）</span>"
+						var state_text = "<span class='state-ok'>本地文件</span>"
+						
+						var time = date.split(' ')[1]
+						var date_split = date.split(' ')[0].split('-')
 					
-					conlist += 
+						conlist += 
+					"<div class='list-item list-item-" + data[i].cid + "'>" +
+						"<div class='con-infos' style='display: none;'>" +
+							"<ul class='infos'>" +
+								"<li class='data'>" + JSON.stringify(data[i]) + "</li>" +
+								"<li class='obj cid'>" + data[i].cid + "</li>" +
+								"<li class='obj key-obj date-obj date'>" + date + "</li>" +
+								"<li class='obj state'>" + data[i].state + "</li>" +
+								"<li class='obj key-obj hope-showname'>" + data[i].hope_showname + "</li>" +
+								"<li class='obj key-obj hope-artist'>" + data[i].hope_artist + "</li>" +
+								"<li class='obj key-obj realname'>" + data[i].realname + "</li>" +
+								"<li class='obj key-obj artist'>" + data[i].artist + "</li>" +
+								"<li class='obj con-uid'>" + data[i].con_uid + "</li>" +
+								"<li class='obj con-user'>" + data[i].con_user + "</li>" +
+								"<li class='obj key-obj keyword'>" + data[i].keyword + "</li>" +
+							"</ul>" +
+						"</div>" +
+						"<div class='con-time'>" +
+							"<div class='con-month'>" + date_split[1] + "</div>" +
+							"<div class='con-line'></div>" +
+							"<div class='con-day'>" + date_split[2] + "</div>" +
+							"<div class='con-time-text'>" + time + "</div>" +
+							"</div>" +
+						"<div class='con-hope-showname'>" + hope_showname_text + "</div>" +
+						"<div class='con-state'>" + state_text + "</div>" +
+						"<div class='con-user'>投稿人：" +
+							"<span class='con-user-span'>" + data[i].con_user + "</span>" +
+						"</div>" +
+					"</div>"
+					}
+					else
+					{
+						var cid = data[i].cid
+						var hope_date = data[i].hope_date
+						var ncmid = data[i].ncmid
+						var qqmid = data[i].qqmid
+						var songtype = data[i].songtype
+						var kgmid = data[i].kgmid
+						var BV = data[i].BV
+						var ytmid = data[i].ytmid
+						var ncrid = data[i].ncrid
+						var av = data[i].av
+						var links = data[i].links
+						var mid_type
+						var hope_showname = data[i].hope_showname
+						var realname = data[i].realname
+						var artist = data[i].artist
+						var hope_description = data[i].hope_description
+						var con_uid = data[i].con_uid
+						var con_user = data[i].con_user
+						var con_time_timestamp = data[i].con_time
+						var con_time = timestampToTime(parseInt(con_time_timestamp)).split(' ')[1]
+						var con_date = timestampToTime(parseInt(con_time_timestamp)).split(' ')[0].split('-')
+						var con_remark = data[i].con_remark
+						var revised = data[i].revised
+						var revise_time_timestamp = data[i].revise_time
+						var revise_time = timestampToTime(parseInt(con_time_timestamp)).split(' ')[1]
+						var revise_date = timestampToTime(parseInt(con_time_timestamp)).split(' ')[0].split('-')
+						var check_type = data[i].check_type
+
+						// 优先检查数据库中的 mid_type 字段
+						if (ncmid != "" && ncmid != undefined)
+							mid_type = "ncmid"
+						else if (qqmid != "" && qqmid != undefined)
+							mid_type = "qqmid"
+						else if (kgmid != "" && kgmid != undefined)
+							mid_type = "kgmid"
+						else if (BV != "" && BV != undefined)
+							mid_type = "BV"
+						else if (ytmid != "" && ytmid != undefined)
+							mid_type = "ytmid"
+						else if (ncrid != "" && ncrid != undefined)
+							mid_type = "ncrid"
+						else if (av != "" && av != undefined)
+							mid_type = "av"
+						else
+							mid_type = "links"
+
+						var hope_showname_text = (hope_showname != "" && hope_showname != undefined) ? hope_showname : "<span class='con-infos-empty'>（未指定）</span>"
+						if (data[i].state == "ok")
+							var state_text = "<span class='state-ok'>正常</span>"
+						else if (data[i].state == "vip")
+							var state_text = "<span class='state-vip'>会员</span>"
+						else
+//							var state_text = "<span class='state-error'>无版权</span>"
+							var state_text = "<span class='state-unknown'>可用性未知</span>"	// 或许应该叫 "版权状态未知" 🤔总之就是能不能非会员下载的区别
+
+						switch (mid_type)
+						{
+							case "ncmid":
+								var mid =
+									"<li class='obj ncmid'>" + ncmid + "</li>"
+								break;
+							case "qqmid":
+								var mid =
+									"<li class='obj qqmid'>" + qqmid + "</li>" +
+									"<li class='obj songtype'>" + songtype + "</li>"
+								break;
+							case "kgmid":
+								var mid =
+									"<li class='obj kgmid'>" + kgmid + "</li>"
+								break;
+							case "av":
+							case "BV":
+								var mid =
+									"<li class='obj BV'>" + ((BV != "" && BV != undefined) ? BV : av) + "</li>"
+								break;
+							case "ytmid":
+								var mid =
+									"<li class='obj ytmid'>" + ytmid + "</li>"
+								break;
+							case "ncrid":
+								var mid =
+									"<li class='obj ncrid'>" + ncrid + "</li>"
+								break;
+							case "links":
+								var mid =
+									"<li class='obj links'>" + links + "</li>"
+								break;
+						}
+
+						var time = date.split(' ')[1]
+						var date_split = date.split(' ')[0].split('-')
+						
+						conlist += 
 					"<div class='list-item list-item-" + data[i].cid + "'>" +
 						"<div class='con-infos' style='display: none;'>" +
 							"<ul class='infos'>" +
@@ -463,7 +514,6 @@ function sortWaitingContribution()
 								"<li class='obj state'>" + data[i].state + "</li>" +
 								"<li class='obj key-obj hope-showname'>" + data[i].hope_showname + "</li>" +
 								"<li class='obj key-obj hope-artist'>" + data[i].hope_artist + "</li>" +
-								
 								"<li class='obj key-obj realname'>" + data[i].realname + "</li>" +
 								"<li class='obj key-obj artist'>" + data[i].artist + "</li>" +
 								"<li class='obj con-uid'>" + data[i].con_uid + "</li>" +
@@ -484,6 +534,7 @@ function sortWaitingContribution()
 							"<span class='con-user-span'>" + data[i].con_user + "</span>" +
 						"</div>" +
 					"</div>"
+					}
 				}
 			}
 		}
@@ -802,11 +853,23 @@ $(document).on('click', '.clear-span', function ()
 $(document).on('click', '.list-content .list-item', async function()
 {
 	var con_info = JSON.parse($(this).children('.con-infos').children('.infos').children('.data').html());
-	var { mid_type, realname_status, artist_status } = fillConInfo(con_info);
-	displayLinkIcon(mid_type);
-	$('.check-wrap').show();
-	var music_link = await getMusicLink(con_info, mid_type);
-	playMusic(music_link, realname_status, artist_status);
+	if (!(con_info.mid_type == "derivative" && con_info.mid_seq && con_info.mid_seq.indexOf("8") != -1))
+	{
+		var { mid_type, realname_status, artist_status } = fillConInfo(con_info);
+		displayLinkIcon(mid_type);
+		$('.check-wrap').show();
+		var music_link = await getMusicLink(con_info, mid_type);
+		playMusic(music_link, realname_status, artist_status);
+	}
+	else
+	{
+		fillFileConInfo(con_info);
+		$('.check-wrap').show();
+		ap.list.add([{name: "加载中...",}]);
+		var file = await getConFile(con_info);
+		ap.list.clear()
+		playMusic(file, 2, 2);
+	}
 })
 
 function fillConInfo(con_info)
@@ -839,19 +902,7 @@ function fillConInfo(con_info)
 	$('.plan-date-wrap input#plan-date').trigger("blur");	// 切换显示状态，保证默认填充之后具有input-filled显示状态
 
 	// mid / vid
-	$('.coninfos-text span.coninfos#ncmid').parent().css('display', 'none');
-	$('.coninfos-text span.coninfos#qqmid').parent().css('display', 'none');
-	$('.coninfos-text span.coninfos#songtype').parent().css('display', 'none');
-	$('.coninfos-text span.coninfos#kgmid').parent().css('display', 'none');
-	$('.coninfos-text span.coninfos#BV').parent().css('display', 'none');
-	$('.coninfos-text span.coninfos#ytmid').parent().css('display', 'none');
-	$('.coninfos-text span.coninfos#ncrid').parent().css('display', 'none');
-	$('.coninfos-text span.coninfos#links').parent().css('display', 'none');
-
-	// 优先检查 mid_type 字段
-	if (con_info.mid_type == "derivative" && con_info.mid_seq && con_info.mid_seq.indexOf("8") != -1)
-		mid_type = "derivative"
-	else if (ncmid != "" && ncmid != undefined)
+	if (ncmid != "" && ncmid != undefined)
 		mid_type = "ncmid"
 	else if (qqmid != "" && qqmid != undefined)
 		if (/^\d+$/.test(qqmid))	// 区分mid和id，因为服务端需要访问手机版的链接来获取信息
@@ -873,51 +924,6 @@ function fillConInfo(con_info)
 
 	switch (mid_type)
 	{
-		case "derivative":
-			// 显示音乐链接大框
-			$('.derivative-music-wrap').css('display', '');
-			
-			// 解析 realname 和 artist（以$分隔）
-			var realnameList = con_info.realname ? con_info.realname.split('$').filter(n => n.trim() !== '') : [];
-			var artistList = con_info.artist ? con_info.artist.split('$').filter(a => a.trim() !== '') : [];
-			
-			// 解析 ncmid 中的多个音乐ID（以$分隔）- derivative类型的实际ID存在ncmid字段
-			var musicIds = con_info.ncmid ? con_info.ncmid.split('$').filter(id => id.trim() !== '') : [];
-			
-			var musicListHtml = '';
-			for (var k = 0; k < musicIds.length; k++) {
-				var musicId = musicIds[k].trim();
-				var realname = realnameList[k] ? realnameList[k].trim() : '未知';
-				var artist = artistList[k] ? artistList[k].trim() : '未知';
-				var murl = 'https://music.163.com/#/song?id=' + musicId;
-				
-				// 使用与 conupload 相同的 HTML 结构
-				musicListHtml += 
-					"<div class='murl'>" +
-						"<div class='murl-element'>" +
-							"<div class='murl-info'>" +
-								"<div class='murl-label'>真实名称：</div>" +
-								"<div class='murl-content'>" + realname + "</div>" +
-							"</div>" +
-							"<div class='murl-info'>" +
-								"<div class='murl-label'>音乐人：</div>" +
-								"<div class='murl-content'>" + artist + "</div>" +
-							"</div>" +
-							"<div class='murl-info'>" +
-								"<span class='murl-label'>网易云ID：</span>" +
-								"<span class='murl-content'>" +
-									"<a class='mid' href='" + murl + "' target='_blank'>" + musicId + "</a>" +
-								"</span>" +
-							"</div>" +
-						"</div>" +
-					"</div>";
-			}
-			$('#derivative-music-list').html(musicListHtml);
-			
-			// 隐藏原有的 realname 和 artist 字段（因为信息已经在音乐链接小框中显示）
-			$('.coninfos-text span.coninfos#realname').parent().css('display', 'none');
-			$('.coninfos-text span.coninfos#artist').parent().css('display', 'none');
-			break;
 		case "ncmid":
 			$('.coninfos-text span.coninfos#ncmid').parent().css('display', '');
 			$('.coninfos-text span.coninfos#ncmid').html("<a class='mid' href='https://music.163.com/#/song?id=" + ncmid + "' target='_blank'>" + ncmid + "</a>")
@@ -969,22 +975,17 @@ function fillConInfo(con_info)
 			break;
 	}
 
-	// realname（derivative 类型已在小框中显示，不重复显示）
-	if (mid_type !== "derivative") {
-		if (con_info.realname != null && con_info.realname != "" && con_info.realname != undefined)
-		{
-			$('.coninfos-text span.coninfos#realname').parent().css('display', '');
-			$('.coninfos-text span.coninfos#realname').html(con_info.realname);
-			var realname_status = 2;
-			$('.coninfos-text span.coninfos#realname').attr("data-status", 2);
-		}
-		else
-		{
-			$('.coninfos-text span.coninfos#realname').parent().css('display', '');
-			$('.coninfos-text span.coninfos#realname').html("");	// 预填充为空，防止切换选择后 realname artist 更新较慢导致与其他内容不匹配
-			var realname_status = 0;
-		}
-	} else {
+	// realname
+	$('.coninfos-text span.coninfos#realname').parent().css('display', '');
+	if (con_info.realname != null && con_info.realname != "" && con_info.realname != undefined)
+	{
+		$('.coninfos-text span.coninfos#realname').html(con_info.realname);
+		var realname_status = 2;
+		$('.coninfos-text span.coninfos#realname').attr("data-status", 2);
+	}
+	else
+	{
+		$('.coninfos-text span.coninfos#realname').html("");	// 预填充为空，防止切换选择后 realname artist 更新较慢导致与其他内容不匹配
 		var realname_status = 0;
 	}
 	// hope_showname
@@ -1000,22 +1001,17 @@ function fillConInfo(con_info)
 	else
 		$('.coninfos-text input#showname').val("");
 	$('.coninfos-text input#showname').trigger("blur");	// 切换显示状态，保证默认填充之后具有input-filled显示状态
-	// artist（derivative 类型已在小框中显示，不重复显示）
-	if (mid_type !== "derivative") {
-		if (con_info.artist != null && con_info.artist != "" && con_info.artist != undefined)
-		{
-			$('.coninfos-text span.coninfos#artist').parent().css('display', '');
-			$('.coninfos-text span.coninfos#artist').html(con_info.artist);
-			var artist_status = 2;
-			$('.coninfos-text span.coninfos#artist').attr("data-status", 2);
-		}
-		else
-		{
-			$('.coninfos-text span.coninfos#artist').parent().css('display', '');
-			$('.coninfos-text span.coninfos#artist').html("");
-			var artist_status = 0;
-		}
-	} else {
+	// artist
+	$('.coninfos-text span.coninfos#artist').parent().css('display', '');
+	if (con_info.artist != null && con_info.artist != "" && con_info.artist != undefined)
+	{
+		$('.coninfos-text span.coninfos#artist').html(con_info.artist);
+		var artist_status = 2;
+		$('.coninfos-text span.coninfos#artist').attr("data-status", 2);
+	}
+	else
+	{
+		$('.coninfos-text span.coninfos#artist').html("");
 		var artist_status = 0;
 	}
 	// hope_artist
@@ -1333,6 +1329,873 @@ function displayLinkIcon(mid_type)
 			break;
 	}
 }
+
+function fillFileConInfo(con_info)
+{
+	resetConInfo();	// 先重置以去掉连续点击多个投稿时上一个投稿所残存的信息，以防未覆写造成的信息残存
+
+	// all con_info
+	$('.coninfos-text span.coninfos#infos').html(JSON.stringify(con_info));
+
+	if (con_info.mid_type == "derivative" && con_info.mid_seq && con_info.mid_seq.indexOf("8") != -1)
+	{
+		// hope_date
+		if (con_info.hope_date != null && con_info.hope_date != "" && con_info.hope_date != undefined)
+			$('.coninfos-text span.coninfos#hope-date').html(con_info.hope_date);
+		else
+			$('.coninfos-text span.coninfos#hope-date').html("<span class='con-infos-empty'>（未指定）</span>");
+		// plan_date
+		if (con_info.plan_date != null && con_info.plan_date != "" && con_info.plan_date != undefined)
+			$('.plan-date-wrap input#plan-date').val(con_info.plan_date);
+		$('.plan-date-wrap input#plan-date').trigger("blur");	// 切换显示状态，保证默认填充之后具有input-filled显示状态
+
+		// multi-murl-info-wrap
+		$('.multi-murl-info-wrap').css('display', '');
+		// parse mid_seq
+		var mid_seq = con_info.mid_seq;
+		var realname_list = con_info.realname.split('$');
+		var artist_list = con_info.artist.split('$');
+
+		for (var i = 0; i < mid_seq.length; i++)
+		{
+			let mid_type, type_text, mid, songtype, murl;
+			switch (mid_seq[i])
+			{
+				case '0':
+					mid_type = "ncmid";
+					type_text = "网易云ID";
+					mid = con_info.ncmid;
+					murl = "https://music.163.com/#/song?id=" + mid;
+					break;
+				case '1':
+					mid_type = "qqmid";
+					type_text = "QQ音乐ID";
+					mid = con_info.qqmid;
+					songtype = con_info.songtype;
+					murl = "https://y.qq.com/n/ryqq/songDetail/" + qqmid + "?songtype=" + songtype;
+					break;
+				case '2':
+					mid_type = "kgmid";
+					type_text = "酷狗音乐ID";
+					mid = con_info.kgmid;
+					murl = "https://m.kugou.com/mixsong/" + mid + ".html";
+					break; 
+				case '3':
+					mid_type = "BV";
+					type_text = "BV号";
+					mid = con_info.BV;
+					murl = "https://www.bilibili.com/video/" + mid + '/';
+					break;
+				case '4':
+					mid_type = "ytmid";
+					type_text = "Youtube ID";
+					mid = con_info.ytmid;
+					murl = "https://www.youtube.com/watch?v=" + mid;
+					break;
+				case '5':
+					mid_type = "ncrid";
+					type_text = "网易云声音ID";
+					mid = con_info.ncrid;
+					murl = "https://music.163.com/#/program?id=" + mid;
+					break;
+				case '6':
+					mid_type = "av";
+					type_text = "av号";
+					mid = con_info.av;
+					murl = "https://www.bilibili.com/video/" + mid + '/';
+					break;
+				case '7':
+					mid_type = "links";
+					type_text = "链接";
+					mid = con_info.links;
+					break;
+				case '8':
+					continue;
+			}
+
+			$('.coninfos-text .multi-murl-info-wrap .murl-list .empty').remove();
+
+			var data = 
+			{
+				mid_type: mid_type,
+				murl: murl,
+				mid: mid,
+				realname: realname_list[i-1],
+				artist: artist_list[i-1],
+				songtype: songtype
+			};
+			var html =						"<div class='murl'>" +
+												"<div class='murl-element'>" +
+													"<div class='murl-info' style='display: none;'>" +
+														"<ul class='infos'>" +
+															"<li class='data'>" + JSON.stringify(data) + "</li>" +
+															"<li class='mid_type'>" + mid_type + "</li>" +
+															"<li class='mid'>" + mid + "</li>" +
+															"<li class='murl'>" + murl + "</li>" +
+															"<li class='realname'>" + realname_list[i-1] + "</li>" +
+															"<li class='artist'>" + artist_list[i-1] + "</li>" +
+															"<li class='songtype'>" + songtype + "</li>" +
+														"</ul>" +
+													"</div>" +
+													"<p class='murl-info'>" +
+														"<span class='murl-label'>" + type_text + "：</span>" +
+														"<span class='murl-content'>" +
+															"<a class='mid' href='" + murl + "' target='_blank'>" + mid + "</a>" +
+														"</span>" +
+													"</p>" +
+													"<p class='murl-info'>" +
+														"<span class='murl-label'>版权状态：</span>" +
+														"<span class='murl-content'>" +
+															"<span class=state-unknown'>可用性未知</span>" +
+														"</span>" +
+													"</p>" +
+													"<p class='murl-info'>" +
+														"<span class='murl-label'>真实名称：</span>" +
+														"<span class='murl-content'>" + realname_list[i-1] + "</span>" +
+													"</p>" +
+													"<p class='murl-info'>" +
+														"<span class='murl-label'>音乐人：</span>" +
+														"<span class='murl-content'>" + artist_list[i-1] + "</span>" +
+													"</p>" +
+												"</div>" +
+												"<span class='fa fa-times-circle'></span>" +
+											"</div>"
+			$('.coninfos-text .multi-murl-info-wrap .murl-list').append(html);
+		}
+
+		// hope_showname
+		if (con_info.hope_showname != null && con_info.hope_showname != "" && con_info.hope_showname != undefined)
+			$('.coninfos-text span.coninfos#hope-showname').html(con_info.hope_showname);
+		else
+			$('.coninfos-text span.coninfos#hope-showname').html("<span class='con-infos-empty'>（未指定）</span>");
+		// plan_showname
+		if (con_info.plan_showname != null && con_info.plan_showname != "" && con_info.plan_showname != undefined)
+			$('.coninfos-text input#showname').val(con_info.plan_showname);	// 填写暂存的信息
+		else if (con_info.hope_showname != null && con_info.hope_showname != "" && con_info.hope_showname != undefined)
+			$('.coninfos-text input#showname').val(con_info.hope_showname);	// 用hope_showname初始化
+		else
+			$('.coninfos-text input#showname').val("");
+		$('.coninfos-text input#showname').trigger("blur");	// 切换显示状态，保证默认填充之后具有input-filled显示状态
+
+		// hope_artist
+		if (con_info.hope_artist != null && con_info.hope_artist != "" && con_info.hope_artist != undefined)
+			$('.coninfos-text span.coninfos#hope-artist').html(con_info.hope_artist);
+		else
+			$('.coninfos-text span.coninfos#hope-artist').html("<span class='con-infos-empty'>（未指定）</span>");
+		// plan_artist
+		if (con_info.plan_artist != null && con_info.plan_artist != "" && con_info.plan_artist != undefined)
+			$('.coninfos-text input#plan-artist').val(con_info.plan_artist);	// 填写暂存的信息
+		else if (con_info.hope_artist != null && con_info.hope_artist != "" && con_info.hope_artist != undefined)
+			$('.coninfos-text input#plan-artist').val(con_info.hope_artist);	// 用hope_artist初始化
+		else
+			$('.coninfos-text input#plan-artist').val("");
+		$('.coninfos-text input#plan-artist').trigger("blur");	// 切换显示状态，保证默认填充之后具有input-filled显示状态
+
+		// plan_description
+		if (con_info.plan_description != null && con_info.plan_description != "" && con_info.plan_description != undefined)
+			$('.coninfos-text textarea#plan-description').val(con_info.plan_description);	// 填写暂存的信息
+		else if (con_info.hope_description != null && con_info.hope_description != "" && con_info.hope_description != undefined)
+			$('.coninfos-text textarea#plan-description').val(con_info.hope_description);
+		else
+			$('.coninfos-text textarea#plan-description').val("");
+		$('.coninfos-text textarea#plan-description').trigger("blur");
+
+		// con_user
+		$('.coninfos-text span.coninfos#con-user').html(con_info.con_user);
+		// con_class_of
+		$('.coninfos-text span.coninfos#con-class-of').html(con_info.con_class_of);
+		// con_time
+		var con_time_text = timestampToTime(parseInt(con_info.con_time));
+		$('.coninfos-text span.coninfos#con-time').html(con_time_text);
+		// con_remark
+		if (con_info.con_remark != null && con_info.con_remark != "" && con_info.con_remark != undefined)
+			$('.coninfos-text span.coninfos#con-note').html(con_info.con_remark);
+		else
+			$('.coninfos-text span.coninfos#con-note').html("<span class='con-infos-empty'>（无备注）</span>");
+		// revise_time
+		if (con_info.revised == 1)
+		{
+			$('.coninfos-text span.coninfos#revise-time').parent().css('display', '');
+			var revise_time_text = timestampToTime(parseInt(con_info.revise_time));
+			$('.coninfos-text span.coninfos#revise-time').html(revise_time_text);
+		}
+		else
+		{
+			$('.coninfos-text span.coninfos#revise-time').parent().css('display', 'none');
+			$('.coninfos-text span.coninfos#revise-time').html("");
+		}
+
+		// check_remark
+		if (con_info.check_remark != null && con_info.check_remark != "" && con_info.check_remark != undefined)
+			$('.coninfos-text input#check-note').val(con_info.check_remark);	// 填写暂存的信息
+		$('.coninfos-text input#check-note').trigger("blur");	// 切换显示状态，保证默认填充之后具有input-filled显示状态
+		// keyword
+		if (con_info.keyword != null && con_info.keyword != "" && con_info.keyword != undefined)
+			$('.coninfos-text input#keyword').val(con_info.keyword);
+		$('.coninfos-text input#keyword').trigger("blur");	// 切换显示状态，保证默认填充之后具有input-filled显示状态
+	}
+}
+
+async function getConFile(con_info)
+{
+	var session =
+	{
+		uid: localStorage.getItem('uid'),
+		username: localStorage.getItem('username'),
+		type: localStorage.getItem('type'),
+		expire_time: localStorage.getItem('expire_time'),
+		class_of: localStorage.getItem("class_of")
+	}
+	var data =
+	{
+		path: con_info.path,
+		hash: con_info.hash
+	}
+	var postData =
+	{
+		session: session,
+		data: data
+	}
+	const response = await fetch('/admin',
+	{
+		method: 'PUT',
+		headers: {
+			'Content-Type': 'application/json'
+		},
+		body: JSON.stringify(postData)
+	});
+	const formData = await response.formData();
+	const code = parseInt(formData.get('code'));
+	if (code != 0)
+	{
+		if (data.code == -6 || data.code == -7)
+		{
+			alert('请先登录')
+			hidePopup()
+			return showLoginPanel()
+		}
+		else if (data.code == -18)
+		{
+			alert('您不是管理员，无法进行管理')
+			hidePopup()
+			return window.location.href='./'
+		}
+		else if (data.code == -34)
+		{
+			const new_session = formData.get('session');
+			localStorage.setItem("expire_time", new_session.expire_time);	// 其他三项都没变，所以只修改这个
+			return alert("这个投稿的文件不存在于数据库中，请联系管理员")
+		}
+	}
+	const new_session = formData.get('session');
+	localStorage.setItem("expire_time", new_session.expire_time);	// 其他三项都没变，所以只修改这个
+	const file = formData.get('file');
+	const music_url = URL.createObjectURL(file);
+	const realname = file.name;
+	return {
+		realname: file.name,
+		artist: con_info.con_user,
+		music_url: music_url
+	}
+}
+
+/* 按下添加时执行程序 */
+$(document).on('click', '.fa.fa-plus-circle', function()
+{
+	checkMusic();
+})
+
+async function checkMusic()
+{
+	/* 校验链接格式 */
+	var music_url = $('.con-box input#murl').val();
+	var ncmid_format = "music.163.com";	// music.163.com/#/song?id=[ncmid] 或 y.music.163.com/m/song?id=[ncmid]
+	var qqmid_format = "y.qq.com";	// y.qq.com/n/ryqq/songDetail/[qqmid/qqmid_mid]?songtype=[songtype] 或 i.y.qq.com/v8/playsong.html?ADTAG=ryqq.songDetail&songmid=[qqmid_mid]&songid=[qqmid]&songtype=[songtype]
+	var kgmid_format = "kugou.com/mixsong/"	// www.kugou.com/mixsong/[kgmid].html 或 m.kugou.com/mixsong/[kgmid].html
+	var BV_av_format = "bilibili.com/video/"	// www.bilibili.com/video/[BV/av]/ 或 m.bilibili.com/video/[BV/av]
+	var ytmid_format = "youtube.com/watch"	// www.youtube.com/watch?v=[ytmid] 或 m.youtube.com/watch?v=[ytmid]
+	var ncmsl_format = "163cn.tv/"	// 163cn.tv/[ncmsl]
+	if (music_url == "")
+	{
+		return $('.con-box .message#murl').html('请粘贴音乐平台链接');
+	}
+	/* 分平台读取信息 */
+	if (music_url.includes(ncmid_format) && music_url.includes("song"))
+	{
+		var ncmid = music_url.split("id=")[1];
+		ncmid = ncmid.split("&")[0];
+		var mid_type = "ncmid";
+		var music_link = await getMusicLink({ncmid}, mid_type);
+		addMusicInfoDisplay(mid_type, ncmid, music_link);
+		playMusic(music_link, 2, 2);
+	}
+	else if (music_url.includes(qqmid_format))
+	{
+		if (music_url.includes("/songDetail/"))	// 电脑端的链接
+		{
+			var qqmid = music_url.split("/songDetail/")[1];
+			var songtype = qqmid.split("songtype=")[1];
+			qqmid = qqmid.split("?")[0]
+			if (songtype)
+				songtype = songtype.split("&")[0];
+			else
+				songtype = "0";	// 默认为0
+			if (/^\d+$/.test(qqmid))	// 区分mid和id，因为服务端需要访问手机版的链接来获取信息
+				var mid_type = "qqmid-id";
+			else
+				var mid_type = "qqmid-mid";
+			var music_link = await getMusicLink({qqmid, songtype}, mid_type);
+			addMusicInfoDisplay(mid_type, qqmid, music_link, songtype);
+			playMusic(music_link, 2, 2);
+		}
+		else if (music_url.includes("playsong.html"))	// 手机端的链接
+		{
+			var req = music_url.split("?")[1];
+			req = req.split("&");
+			for (var i = 0;i < req.length; i++)
+			{
+				if (req[i].includes("songmid"))
+				{
+					if (req[i].split("=")[1] != "")
+						var qqmid = req[i].split("=")[1];
+					var mid_type = "qqmid-mid";
+				}
+				else if (req[i].includes("songid"))
+				{
+					if (req[i].split("=")[1] != "")
+						var qqmid = req[i].split("=")[1];
+					var mid_type = "qqmid-id";
+				}
+				else if (req[i].includes("songtype"))
+				{
+					if (req[i].split("=")[1] != "")
+						var songtype = req[i].split("=")[1];
+				}
+			}
+			songtype = songtype || "0";	// 默认为0
+			var music_link = await getMusicLink({qqmid, songtype}, mid_type);
+			addMusicInfoDisplay(mid_type, qqmid, music_link, songtype);
+			playMusic(music_link, 2, 2);
+		}
+		else	// 短链分享，格式为https://c6.y.qq.com/base/fcgi-bin/u?__=[qqmsl]
+		{
+			var mid_type = "qqmsl";
+			var req = music_url.split("?")[1];
+			var regex = /=([^\s@]+)/;
+			var match = req.match(regex);
+			var qqmsl = match ? match[1] : null;	// 到这里用正则表达式解析出qqmsl(=后、空格和"@"前的部分，因为分享时结尾会有" @QQ音乐")
+			getMusicInfo(mid_type, undefined, undefined, qqmsl);
+		}
+	}
+	else if (music_url.includes(kgmid_format))
+	{
+		var kgmid = music_url.split("/mixsong/")[1];
+		kgmid = kgmid.split(".html")[0];
+		var mid_type = "kgmid";
+		getMusicInfo(mid_type, kgmid);
+	}
+	else if (music_url.includes(BV_av_format))
+	{
+		var BV_av = music_url.split("?")[0];
+		let tempc = BV_av.split("/");
+		if (tempc[tempc.length - 1] == "")
+			BV_av = tempc[tempc.length - 2];
+		else
+			BV_av = tempc[tempc.length - 1];
+		if (/^\d+$/.test(BV_av))	// 区分mid和id，因为数据库内二者分别存储，且获取信息的API区分二者
+			var mid_type = "av";
+		else
+			var mid_type = "BV"
+		getMusicInfo(mid_type, BV_av);
+	}
+	else if (music_url.includes(ytmid_format))
+	{
+		var ytmid = music_url.split("v=")[1];
+		ytmid = ytmid.split("&")[0];
+		var mid_type = "ytmid";
+		getMusicInfo(mid_type, ytmid);
+	}
+	else if (music_url.includes(ncmid_format) && (music_url.includes("program") || music_url.includes("dj")))
+	{
+		var ncrid = music_url.split("id=")[1];
+		ncrid = ncrid.split("&")[0];
+		var mid_type = "ncrid";
+		getMusicInfo(mid_type, ncrid);
+	}
+	else if (music_url.includes(ncmsl_format))
+	{
+		var mid_type = "ncmsl";
+		var req = music_url.split("163cn.tv/")[1];
+		req = req.split("/")[0];
+		req = req.split("?")[0];
+		var ncmsl = req.split(" ")[0];	// 保证后面不管是链接还是参数还是已经结束了都能正确读取到ncmsl
+		getMusicInfo(mid_type, undefined, undefined, undefined, ncmsl);
+	}
+	else
+	{
+		var mid_type = "links";
+		addMusicInfoDisplay(mid_type, music_url, music_url);
+		return $('.message#murl').html('<div style="color:red;">链接格式可能有误 推荐直接从电脑端获取链接后重试</div>');
+	}
+}
+
+function getMusicInfo(mid_type, mid, songtype, qqmsl, ncmsl)
+{
+	// 网易云可以尝试读一下歌曲详情
+	switch (mid_type)
+	{
+		case "ncmid":
+			var murl = "https://music.163.com/#/song?id=" + mid;
+			var postData =
+			{
+				req: { operator: "detail", mid_type: "ncmid" },
+				data: { ncmid: mid }
+			};
+			$.ajax({
+				url: "/music_api",
+				type: 'POST',
+				data: JSON.stringify(postData),	// Cloudflare Functions不支持JavaScript对象，所以只能以json形式发送
+				dataType: 'json',	// 返回也得是json形式
+				success: function(data)	// 这里data已经是解析后的JSON对象，直接赋值给results
+				{
+					if (data.songs && data.songs.length > 0)	// 获取到了详细信息
+					{
+						var realname = data.songs[0].name;
+						var artist = data.songs[0].artists.map(artist => artist.name).join(" / ");
+						var music_url = "https://music.163.com/song/media/outer/url?id=" + mid + ".mp3";
+						var cover_url = data.songs[0].album.picUrl;
+						addMusicInfoDisplay(mid_type, murl, mid, realname, artist);
+						playMusic(realname, artist, music_url, cover_url);
+					}
+					else
+					{
+						alert("似乎找不到这首曲子呀（台台手忙脚乱ing）\n检查一下链接嘛？（建议按照下方教程方法获取链接捏）");
+						warning = true;
+					}
+				},
+				error: function(xhr, status, error)
+				{
+					console.error("Error occurred: " + error);
+				}
+			});
+			if (warning == true)
+				addMusicInfoDisplay(mid_type, murl, mid);
+			break;
+		case "ncmsl":
+			var postData =
+			{
+				req: { operator: "basic", mid_type: "ncmsl" },
+				data: { ncmsl: ncmsl }
+			};
+			$.ajax({
+				url: "/music_api",
+				type: 'POST',
+				data: JSON.stringify(postData),	// Cloudflare Functions不支持JavaScript对象，所以只能以json形式发送
+				dataType: 'json',	// 返回也得是json形式
+				success: function(data)
+				{
+					if (data.songs && data.songs.length > 0)	// 获取到了详细信息
+					{
+						var mid = data.songs[0].id;
+						var murl = "https://music.163.com/#/song?id=" + mid;
+						var realname = data.songs[0].name;
+						var artist = data.songs[0].artists.map(artist => artist.name).join(" / ");
+						var music_url = "https://music.163.com/song/media/outer/url?id=" + mid + ".mp3";
+						var cover_url = data.songs[0].album.picUrl;
+						addMusicInfoDisplay(mid_type, murl, mid, realname, artist);
+						playMusic(realname, artist, music_url, cover_url);
+					}
+					else
+					{
+						alert("似乎找不到这首曲子呀（台台手忙脚乱ing）\n检查一下链接嘛？（建议按照下方教程方法获取链接捏）");
+						warning = true;
+					}
+				},
+				error: function(xhr, status, error)
+				{
+					if (xhr.status == 404 && xhr.responseJSON.code == -16)
+						alert("由于平台对网易云电台音乐的支持尚不完全，请在浏览器中打开链接，然后复制新链接进行投稿，谢谢👉👈");
+					console.error("Error occurred: " + error);
+				}
+			});
+			if (warning == true)
+				addMusicInfoDisplay(mid_type, murl, mid);
+			break;
+		case "qqmid-id":
+		case "qqmid-mid":
+			switch (mid_type)
+			{
+				case "qqmid-id":
+					var req = { operator: "detail", mid_type: "qqmid-id" }
+					break;
+				case "qqmid-mid":
+					var req = { operator: "detail", mid_type: "qqmid-mid" }
+					break;
+			}
+			var postData =
+			{
+				req: req,
+				data: { qqmid: mid }
+			};
+			$.ajax({
+				url: "/music_api",
+				type: 'POST',
+				data: JSON.stringify(postData),	// Cloudflare Functions不支持JavaScript对象，所以只能以json形式发送
+				dataType: 'json',	// 返回也得是json形式
+				success: function(data)
+				{
+					if (data.songinfo.code == 0)	// 获取到了详细信息
+					{
+						var qqmid = data.songinfo.data.track_info.id;
+						var murl = "https://y.qq.com/n/ryqq/songDetail/" + qqmid + "?songtype=" + songtype;
+						var realname = data.songinfo.data.track_info.title;
+						var artist = data.songinfo.data.track_info.singer.map(artist => artist.title).join(" / ");
+						var music_url = data.songinfo.data.track_info.url;
+						var cover_url// = data.metaData.image;
+						addMusicInfoDisplay(mid_type, murl, qqmid, realname, artist, songtype);
+						playMusic(realname, artist, music_url, cover_url);
+					}
+					else
+					{
+						alert("似乎找不到这首曲子呀（台台手忙脚乱ing）\n检查一下链接嘛？（建议按照下方教程方法获取链接捏）");
+						warning = true;
+					}
+				},
+				error: function(xhr, status, error)
+				{
+					console.error("Error occurred: " + error);
+				}
+			});
+			if (warning == true)
+				addMusicInfoDisplay(mid_type, murl, mid);
+			break;
+		case "qqmsl":
+			var postData =
+			{
+				req: { operator: "basic", mid_type: "qqmsl" },
+				data: { qqmsl: qqmsl }
+			};
+			$.ajax({
+				url: "/music_api",
+				type: 'POST',
+				data: JSON.stringify(postData),	// Cloudflare Functions不支持JavaScript对象，所以只能以json形式发送
+				dataType: 'json',	// 返回也得是json形式
+				success: function(data)
+				{
+					// $.ajax是异步函数，如果直接var kgmid会使下面读取的时候仍未undefined，因此就在这里直接处理好了
+					if (data.songinfo.code == 0)	// 获取到了详细信息
+					{
+						var qqmid = data.songinfo.data.track_info.id;
+						var songtype = data.songinfo.data.track_info.type;
+						var murl = "https://y.qq.com/n/ryqq/songDetail/" + qqmid + "?songtype=" + songtype;
+						var realname = data.songinfo.data.track_info.title;
+						var artist = data.songinfo.data.track_info.singer.map(artist => artist.title).join(" / ");
+						var music_url = data.songinfo.data.track_info.url;
+						var cover_url// = data.metaData.image;
+						addMusicInfoDisplay(mid_type, murl, qqmid, realname, artist, songtype);
+						playMusic(realname, artist, music_url, cover_url);
+					}
+					else
+					{
+						alert("似乎找不到这首曲子呀（台台手忙脚乱ing）\n检查一下链接嘛？（建议按照下方教程方法获取链接捏）");
+						warning = true;
+					}
+				},
+				error: function(xhr, status, error)
+				{
+					console.error("Error occurred: " + error);
+				}
+			});
+			if (warning == true)
+				addMusicInfoDisplay(mid_type, murl, mid);
+			break;
+		case "kgmid":
+			var murl = "https://m.kugou.com/mixsong/" + mid + ".html";
+			var postData =
+			{
+				req: { operator: "detail", mid_type: "kgmid" },
+				data: { kgmid: mid }
+			};
+			$.ajax({
+				url: "/music_api",
+				type: 'POST',
+				data: JSON.stringify(postData),	// Cloudflare Functions不支持JavaScript对象，所以只能以json形式发送
+				dataType: 'json',	// 返回也得是json形式
+				success: function(data)
+				{
+					// $.ajax是异步函数，如果直接var qqmid和songtype会使下面读取的时候仍未undefined，因此就在这里直接处理好了
+					if (data.song_info)	// 获取到了详细信息
+					{
+						var filename = data.song_info.data.fileName;
+						var artist = data.song_info.data.singerName;
+						var regex = new RegExp(artist + ' - (.*)');
+						var match = filename.match(regex);
+						var realname = match ? match[1] : null;
+						var music_url = data.song_info.data.url;
+						var cover_url = data.song_info.data.imgUrl;
+						cover_url = cover_url.replace("{size}", "35876");
+						addMusicInfoDisplay(mid_type, murl, mid, realname, artist, songtype);
+						playMusic(realname, artist, music_url, cover_url);
+					}
+					else
+					{
+						alert("似乎找不到这首曲子呀（台台手忙脚乱ing）\n检查一下链接嘛？（建议按照下方教程方法获取链接捏）");
+						warning = true;
+					}
+				},
+				error: function(xhr, status, error)
+				{
+					console.error("Error occurred: " + error);
+				}
+			})
+			if (warning == true)
+				addMusicInfoDisplay(mid_type, murl, mid);
+			break;
+		case "av":
+		case "BV":
+			var murl = "https://www.bilibili.com/video/" + mid + '/';
+			var postData =
+			{
+				req: { operator: "detail", mid_type: mid_type },
+				data: { BV_av: mid }
+			};
+			$.ajax({
+				url: "/music_api",
+				type: 'POST',
+				data: JSON.stringify(postData),	// Cloudflare Functions不支持JavaScript对象，所以只能以json形式发送
+				dataType: 'json',	// 返回也得是json形式
+				success: async function(data)	// 这里data已经是解析后的JSON对象，直接赋值给results
+				{
+					var realname = data.inforesults.title;
+					var artist = data.inforesults.owner.name;
+					var music_url = "";	// bilibili API似乎封禁了这个IP，所以这个就没办法获取了
+					var cover_url_ori = data.inforesults.pic;
+					var cover_url_https = cover_url_ori.replace("http://", "https://");	// https网站获取http资源好像还不被浏览器允许，那就只好这样了
+					var cover_resource = await fetch(cover_url_https, { method: 'GET', referrerPolicy: 'no-referrer' });	// APlayer直接fetch时会带着referrer，所以只能手动fetch一下然后传给APlayer
+					var cover_resource_blob = await cover_resource.blob();
+					var cover_url = URL.createObjectURL(cover_resource_blob);
+					addMusicInfoDisplay(mid_type, murl, mid, realname, artist);
+					playMusic(realname, artist, music_url, cover_url);
+				},
+				error: function(xhr, status, error)
+				{
+					console.error("Error occurred: " + error);
+				}
+			})
+			addMusicInfoDisplay(mid_type, murl, mid);
+			// alert("由于平台目前尚不完全支持Bilibili视频作为投稿，请仔细核对 校验用链接 是否是您想要投稿的曲目，谢谢👉👈");
+			break;
+		case "ytmid":
+			var murl = "https://www.youtube.com/watch?v=" + mid;
+			var postData =
+			{
+				req: { operator: "detail", mid_type: "ytmid" },
+				data: { ytmid: mid }
+			};
+			$.ajax({
+				url: "/music_api",
+				type: 'POST',
+				data: JSON.stringify(postData),	// Cloudflare Functions不支持JavaScript对象，所以只能以json形式发送
+				dataType: 'json',	// 返回也得是json形式
+				success: function(data)	// 这里data已经是解析后的JSON对象，直接赋值给results
+				{
+					var realname = data.realname;
+					var artist = data.artist;
+					var cover_url = data.cover_url;
+					addMusicInfoDisplay(mid_type, murl, mid, realname, artist);
+
+					var music_url = data.music_url;
+					if (music_url != "" && music_url != undefined && music_url != null)
+					{
+						music_url = "https://api.fabdl.com" + music_url;
+						music_url = music_url.replace(/\\/g, '');
+						playMusic(realname, artist, music_url, cover_url);
+						return;
+					}
+					else
+					{
+						playMusic(realname, artist, "", cover_url, 0);
+						$('.aplayer-title').text(realname + " - 歌曲正在加载中")
+					}
+
+					// 每隔15s向服务端发起一次请求，直到获得music_url
+					var postData =
+					{
+						req: { operator: "music_url", mid_type: "ytmid" },
+						data: { get_music_url: data.get_music_url }
+					};
+					var try_times = 0;
+					var interval = setInterval(function()
+					{
+						$.ajax({
+							url: "/music_api",
+							type: 'POST',
+							data: JSON.stringify(postData),	// Cloudflare Functions不支持JavaScript对象，所以只能以json形式发送
+							dataType: 'json',	// 返回也得是json形式
+							success: function(data)	// 这里data已经是解析后的JSON对象，直接赋值给results			
+							{
+								var music_url = data.music_url
+								if (music_url != "" && music_url != undefined && music_url != null)
+								{
+									music_url = "https://api.fabdl.com" + music_url;
+									music_url = music_url.replace(/\\/g, '');
+									playMusic(realname, artist, music_url, cover_url);
+									clearInterval(interval);
+								}
+							},
+							error: function(xhr, status, error)
+							{
+								console.error("Error occurred: " + error);
+							}
+						});
+						try_times++;
+						if (try_times >= 5)
+						{
+							clearInterval(interval);	// 如果一分半钟还没有获取到，那大概率是获取不到了，直接停吧
+							$('.aplayer-title').text(realname + " - 该歌曲无法播放");	// 把"该歌曲无法播放"添加上
+							alert("这个Youtube视频不知道为什么找不到播放链接呢🤔\n过半个小时再来试试说不定就有了呢(ゝ∀･)");
+						}
+					}, 15000);
+				},
+				error: function(xhr, status, error)
+				{
+					console.error("Error occurred: " + error);
+				}
+			})
+			addMusicInfoDisplay(mid_type, murl, mid);
+			// alert("由于平台目前尚不完全支持Youtube视频作为投稿，请仔细核对 校验用链接 是否是您想要投稿的曲目，谢谢👉👈");
+			break;
+		case "ncrid":
+			var murl = "https://music.163.com/#/program?id=" + mid;
+			var postData =
+			{
+				req: { operator: "detail", mid_type: "ncrid" },
+				data: { ncrid: mid }
+			};
+			$.ajax({
+				url: "/music_api",
+				type: 'POST',
+				data: JSON.stringify(postData),	// Cloudflare Functions不支持JavaScript对象，所以只能以json形式发送
+				dataType: 'json',	// 返回也得是json形式
+				success: function(data)	// 这里data已经是解析后的JSON对象，直接赋值给results
+				{
+					if (data.program)	// 获取到了详细信息
+					{
+						var realname = data.program.mainSong.name;
+						var artist = data.program.mainSong.artists[0].name;
+						var music_url = ""	//"https://music.163.com/song/media/outer/url?id=" + mid + ".mp3";	//这个链接目前还找不到
+						var cover_url = data.program.mainSong.album.picUrl;
+						addMusicInfoDisplay(mid_type, murl, mid, realname, artist);
+						playMusic(realname, artist, music_url, cover_url)
+					}
+					else
+					{
+						alert("似乎找不到这首曲子呀（台台手忙脚乱ing）\n检查一下链接嘛？（建议按照下方教程方法获取链接捏）");
+						warning = true;
+					}
+				},
+				error: function(xhr, status, error)
+				{
+					console.error("Error occurred: " + error);
+				}
+			});
+			if (warning == true)
+				addMusicInfoDisplay(mid_type, murl, mid);
+			// alert("由于平台目前无法获取网易云电台的音频文件，请仔细核对是否是您想要投稿的曲目，谢谢👉👈");
+			break;
+	}
+}
+
+// 显示详细信息界面
+function addMusicInfoDisplay(mid_type, mid, music_link, songtype = "")
+{
+	$('.con-infos .con-infos-row#murl .murl-list .empty').remove();
+
+	switch (mid_type)
+	{
+		case "ncmid":
+		case "ncmsl":
+			var type_text = "网易云ID";
+			break;
+		case "qqmid-id":
+		case "qqmid-mid":
+		case "qqmsl":
+			var type_text = "QQ音乐ID";
+			break;
+		case "kgmid":
+			var type_text = "酷狗音乐ID";
+			break;
+		case "BV":
+			var type_text = "BV号";
+			break;
+		case "ytmid":
+			var type_text = "Youtube ID";
+			break;
+		case "ncrid":
+			var type_text = "网易云声音ID";
+			break;
+		case "av":
+			var type_text = "av号";
+			break;
+		default:
+			var type_text = "链接";
+			break;
+	}
+	var data = 
+	{
+		mid_type: mid_type,
+		murl: music_link.murl,
+		mid: mid,
+		realname: music_link.realname,
+		artist: music_link.artist,
+		songtype: songtype
+	};
+	var html =								"<div class='murl'>" +
+												"<div class='murl-element'>" +
+													"<div class='murl-info' style='display: none;'>" +
+														"<ul class='infos'>" +
+															"<li class='data'>" + JSON.stringify(data) + "</li>" +
+															"<li class='mid_type'>" + mid_type + "</li>" +
+															"<li class='mid'>" + mid + "</li>" +
+															"<li class='murl'>" + music_link.murl + "</li>" +
+															"<li class='realname'>" + music_link.realname + "</li>" +
+															"<li class='artist'>" + music_link.artist + "</li>" +
+															"<li class='songtype'>" + songtype + "</li>" +
+														"</ul>" +
+													"</div>" +
+													"<p class='murl-info'>" +
+														"<span class='murl-label'>" + type_text + "：</span>" +
+														"<span class='murl-content'>" +
+															"<a class='mid' href='" + music_link.murl + "' target='_blank'>" + mid + "</a>" +
+														"</span>" +
+													"</p>" +
+													"<p class='murl-info'>" +
+														"<span class='murl-label'>版权状态：</span>" +
+														"<span class='murl-content'>" +
+															"<span class=state-unknown'>可用性未知</span>" +
+														"</span>" +
+													"</p>" +
+													"<p class='murl-info'>" +
+														"<span class='murl-label'>真实名称：</span>" +
+														"<span class='murl-content'>" + music_link.realname + "</span>" +
+													"</p>" +
+													"<p class='murl-info'>" +
+														"<span class='murl-label'>音乐人：</span>" +
+														"<span class='murl-content'>" + music_link.artist + "</span>" +
+													"</p>" +
+												"</div>" +
+												"<span class='fa fa-times-circle'></span>" +
+											"</div>"
+			$('.coninfos-text .multi-murl-info-wrap .murl-list').append(html);
+}
+
+/* 按下移除时执行程序 */
+$(document).on('click', '.fa.fa-times-circle', function()
+{
+	if ($(this).parent().parent().children().length == 1)
+		$(this).parent().parent().append("<span class='empty'>请添加链接~</span>");
+	$(this).parent().remove();
+})
 
 $(document).on('click', '.open-in-ncm, .open-in-qqm, .open-in-kgm, .open-in-bilibili, .open-in-ytb', function()
 {
@@ -2059,9 +2922,11 @@ function resetConInfo()
 	$('.coninfos-text span.coninfos#ncrid').html("");
 	$('.coninfos-text span.coninfos#links').html("");
 	$('.coninfos-text span.coninfos#state').html("");
-
+	// murl
+	$('.multi-murl-info-wrap').css('display', 'none');
+	$('.multi-murl-info-wrap .murl-list').html("<span class='empty'>请添加链接~</span>")
 	// realname
-	$('.coninfos-text span.coninfos#realname').parent().css('display', '');  // 重置显示状态
+	$('.coninfos-text span.coninfos#realname').parent().css('display', '');
 	$('.coninfos-text span.coninfos#realname').html("");
 	// hope_showname
 	$('.coninfos-text span.coninfos#hope-showname').html("");
@@ -2069,7 +2934,7 @@ function resetConInfo()
 	$('.coninfos-text input#showname').val("");
 	$('.coninfos-text input#showname').trigger("blur");
 	// artist
-	$('.coninfos-text span.coninfos#artist').parent().css('display', '');  // 重置显示状态
+	$('.coninfos-text span.coninfos#artist').parent().css('display', '');
 	$('.coninfos-text span.coninfos#artist').html("");
 	// hope_artist
 	$('.coninfos-text span.coninfos#hope-artist').html("");
@@ -2108,6 +2973,8 @@ function resetConInfo()
 
 	// APlayer
 	ap.pause()
+	for (let i = 0; i < ap.list.audios.length; i++)
+		URL.revokeObjectURL(ap.list.audios[i].url)	// 释放资源
 	ap.list.clear()
 	ap.list.hide()
 	return;

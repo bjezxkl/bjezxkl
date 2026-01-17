@@ -720,3 +720,87 @@
   color: #1565c0;
   display: inline;
 }
+.con-box .message{
+    display: none;
+    color: #f25d64;
+    font-size: 11.5px;
+    line-height: 16px;
+    min-height: 20px;
+    word-break: break-all;
+    max-width: 280px;
+    margin: 0 auto;
+}
+.murl-list .murl-info {
+    /* font-size: 0.98em; */
+    margin: auto;
+}
+.murl-wrap {
+    display: flex;
+    margin: 0 auto;
+    justify-content: center;
+    align-items: center;
+    width: 200px;
+}
+.murl-wrap .input-wrap.column {
+    width: 170px;
+}
+.murl-wrap .input-filled.input-wrap.column::after {
+    width: 170px;
+}
+.murl-wrap .input-wrap.column input[type="text"] {
+    width: 130px;
+}
+.murl-wrap .fa.fa-plus-circle,
+.murl-list .fa.fa-times-circle{
+    min-width: 30px;
+    max-width: 30px;
+    display: flex;
+    justify-content: center;
+}
+.murl-list{
+    border: 2px solid #ededed;
+    margin: 5px 5px;
+    overflow-y: scroll;
+    max-height: 220px;
+    border-radius: 5px;
+    position: relative; /* empty用 */
+    min-height: 75px;   /* empty用 */
+}
+.murl-list .murl{
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid #ededed;
+    padding: 3px 0;
+    position: relative;
+    justify-content: space-between;
+}
+.murl-list .murl:last-child {
+    border: none;
+}
+.murl-list .murl-element{
+    margin: 0 10px;
+}
+.murl-list .murl-label{
+    padding: 1.5px 0;
+    /* color: #6999d3; */
+    display: inline-block;
+}
+.murl-list .murl-content{
+    padding: 1.5px 0;
+    color: #1565c0;
+    display: inline;
+    /* margin: 3px 0; */
+    color: #1565c0;
+}
+.murl-list .empty{
+    color: #999;
+    margin: auto;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 6px;
+    right: 0;
+    display: inline;
+    width: 86.14px;
+    height: 20px;
+}
