@@ -119,6 +119,8 @@ async function calculateSHA256(file) { return new Promise((resolve, reject) =>
 
 async function processFile(file)
 {
+	if (localStorage.getItem("class_of") != 2026)
+		return alert("目前投稿已暂停，开学前夕就会恢复的啦~")
 	/* 文件有效性检验 */
 	if (!file || typeof file != 'object' || !file.name)
 		return $('.upload-text-wrap').children().html("<span style='color:#f25d64;'>请选择或拖入有效的文件</span>");
@@ -1290,6 +1292,8 @@ $(document).on('click', '.clear-span', function ()
 
 $(document).on('click', '.btn.btn-submit#con-submit', function ()
 {
+	if (localStorage.getItem("class_of") != 2026)
+		return alert("目前投稿已暂停，开学前夕就会恢复的啦~")
 	if (warning == true)	// 提醒，如果仍然坚持的话就强制写入
 	{
 		alert("检查一下是不是有哪个链接输入错误了？\n如果你执意要投稿这个的话，那台台我也只好收着交给审核老师啦: (")
@@ -1476,6 +1480,7 @@ $(document).on('click', '.btn.btn-submit#con-submit', function ()
 
 function getContributionNumber()
 {
+	return $(".req-text.con-num").html("<b>目前投稿已暂停，开学前夕就会恢复的啦~</b>");
 	if (localStorage.uid == "")
 	{
 		con_num_text = "<a href='javascript:;' onclick='showLoginPanel()'>登录</a>后可以查看自己的<b>剩余投稿额度</b>哟~"
