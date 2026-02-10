@@ -1,0 +1,168 @@
+.condownload-wrap{
+	width: 900px;
+	height: calc(100vh - 100px);
+	margin: 76px auto; /* 20px + header的56px */
+	background-color: #fff;
+	border-radius: 3px;
+	box-shadow: 0 2px 4px 0 rgba(121, 146, 185, 0.5);
+	color: #174071;
+}
+.condownload-wrap .list i.fa-spinner {
+    margin: 150px auto;
+    width: 100%;
+}
+.condownload-wrap .title{
+	line-height: 35px;
+	text-align: center;
+	border-bottom: 1px solid #ededed;
+	user-select: none;
+}
+.condownload-wrap .list{
+	overflow-x: none;
+	overflow-y: auto;
+	height: calc(100% - 35px);
+}
+
+.list-item tr{
+	position: relative;
+	height: 40px;
+}
+.list-title th{
+	position: relative;
+	height: 30px;
+	color: #6999d3;
+	display: inline-block;
+	line-height: 30px;
+	padding: 0 1%;
+	text-align: center;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	font-size: 0.9em;
+	user-select: none;
+	font-weight: normal;
+	box-sizing: border-box;
+}
+.list-item td{
+	display: inline-block;
+	line-height: 40px;
+	padding: 0 1%;
+	text-align: center;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	box-sizing: border-box;
+}
+
+.list-title .file-path,
+.list-item .file-path{
+	width: 27%;
+}
+.list-item .file-path span {
+    overflow-x: scroll;
+    display: block;
+}
+.list-item .file-path span::-webkit-scrollbar {
+    display: none;
+}
+.list-title .file-hash,
+.list-item .file-hash{
+	width: 9.5%;
+}
+.list-title .file-cid,
+.list-item .file-cid{
+	width: 8%;
+}
+.list-title .file-upload-user,
+.list-item .file-upload-user{
+	width: 12%;
+}
+.list-item .file-upload-user span {
+    overflow-x: scroll;
+    display: block;
+}
+.list-item .file-upload-user span::-webkit-scrollbar {
+    display: none;
+}
+.list-title .file-original,
+.list-item .file-original{
+	width: 8%;
+}
+.list-title .file-public-access,
+.list-item .file-public-access{
+	width: 8%;
+}
+.list-title .file-state,
+.list-item .file-state{
+	width: 9.5%;
+}
+.list-item .file-state .state-local{
+	color: green;
+}
+.list-item .file-state .state-ok{
+	color: #888;
+}
+.list-item .file-state .state-vip{
+	color: darkorange;
+}
+.list-item .file-state .state-error{
+	color: red;
+}
+.list-title .file-size,
+.list-item .file-size{
+	width: 9%;
+}
+.list-title .btn-download,
+.list-item .btn-download{
+	width: 9%;
+}
+.btn-download span{
+	display: inline-block;
+    padding: 2px;
+    line-height: 20px;
+    width: 50px;
+    border: 1.5px solid #6999d3;
+	color: #1565c0;
+	cursor: pointer;
+	user-select: none;
+}
+.btn-download span:hover{
+	color: #fff;
+	background-color: #6999d3;
+}
+.condownload-wrap .list .not-open{
+	margin-top: 30px;
+	text-align: center;
+	color: #1565c0;
+	font-size: 1.1em;
+}
+.condownload-wrap .list .not-open p{
+	line-height: 30px;
+}
+.condownload-wrap .list .create-wrap{
+	margin: 20px 0;
+}
+.condownload-wrap .list .input-rows{
+	position: relative;
+	text-align: center;
+	width: 400px;
+	margin: 0 auto;
+}
+.condownload-wrap .list .input-rows div{
+	display: inline-block;
+	vertical-align: middle;
+}
+.condownload-wrap .list .input-rows .message {
+    color: #f25d64;
+    font-size: 11.5px;
+    line-height: 16px;
+    min-height: 18px;
+	word-break: break-all;
+	text-align: left;
+	margin-left: 50px;
+}
+td:not(:last-child), th:not(:last-child){
+	border-right: 1px solid #ededed;}
+td, th{
+	border-bottom: 1px solid #ededed;
+}
