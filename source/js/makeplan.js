@@ -316,14 +316,18 @@ function sortSchedulingContribution()
 	{
 		success_con_data.sort(function (a, b)
 		{
-			return a.cid - b.cid;	// 时间正序
+			const a_update_time = a.revised ? a.revise_time : a.con_time;
+			const b_update_time = b.revised ? b.revise_time : b.con_time;
+			return a_update_time - b_update_time;	// 时间正序
 		});
 	}
 	else if (order_method === "reverse")
 	{
 		success_con_data.sort(function (a, b)
 		{
-			return b.cid - a.cid;	// 时间倒序
+			const a_update_time = a.revised ? a.revise_time : a.con_time;
+			const b_update_time = b.revised ? b.revise_time : b.con_time;
+			return b_update_time - a_update_time;	// 时间倒序
 		});
 	}
 
@@ -365,100 +369,167 @@ function sortSchedulingContribution()
 				if ((grade_method_list == "senior3" && data[i].check_class_of == "2026") || (grade_method_list == "all" && data[i].check_class_of != "2026"))	// 这里就是分类显示了，高三的显示高三通过的，全校的显示高二通过的
 				{
 					k++;	// 有数据写入
-
-					var cid = data[i].cid
-					var hope_date = data[i].hope_date
-					var ncmid = data[i].ncmid
-					var qqmid = data[i].qqmid
-					var songtype = data[i].songtype
-					var kgmid = data[i].kgmid
-					var BV = data[i].BV
-					var ytmid = data[i].ytmid
-					var ncrid = data[i].ncrid
-					var av = data[i].av
-					var links = data[i].links
-					var mid_type
-					var realname = data[i].realname
-					var artist = data[i].artist
-					var con_uid = data[i].con_uid
-					var con_user = data[i].con_user
-					var con_time_timestamp = data[i].con_time
-					var con_time = timestampToTime(parseInt(con_time_timestamp)).split(' ')[1]
-					var con_date = timestampToTime(parseInt(con_time_timestamp)).split(' ')[0].split('-')
-					var con_remark = data[i].con_remark
-					var check_type = data[i].check_type
-					var plan_showname = data[i].plan_showname
-					var plan_artist = data[i].plan_artist
-					var plan_description = data[i].plan_description
-		
-					if (ncmid != "" && ncmid != undefined)
-						mid_type = "ncmid"
-					else if (qqmid != "" && qqmid != undefined)
-						mid_type = "qqmid"
-					else if (kgmid != "" && kgmid != undefined)
-						mid_type = "kgmid"
-					else if (BV != "" && BV != undefined)
-						mid_type = "BV"
-					else if (ytmid != "" && ytmid != undefined)
-						mid_type = "ytmid"
-					else if (ncrid != "" && ncrid != undefined)
-						mid_type = "ncrid"
-					else if (av != "" && av != undefined)
-						mid_type = "av"
-					else
-						mid_type = "links"
-
-					var plan_showname_text = (plan_showname != "" && plan_showname != undefined) ? plan_showname : "<span class='con-infos-empty'>（未指定）</span>"
-					if (data[i].state == "ok")
-						var state_text = "<span class='state-ok'>正常</span>"
-					else if (data[i].state == "vip")
-						var state_text = "<span class='state-vip'>会员</span>"
-					else
-//						var state_text = "<span class='state-error'>无版权</span>"
-						var state_text = "<span class='state-unknown'>可用性未知</span>"	// 或许应该叫 "版权状态未知" 🤔总之就是能不能非会员下载的区别
-					if (data[i].check_type == "success")
-						var type_text = "<span class='type-success'>待安排</span>"
-					else if (data[i].check_type == "ready")
-						var type_text = "<span class='type-ready'><b>安排中</b></span>"
-	
-					switch (mid_type)
+					if (data[i].mid_type == "derivative" && data[i].mid_seq && data[i].mid_seq.indexOf("8") != -1)
 					{
-						case "ncmid":
-						var mid =
-								"<li class='obj ncmid'>" +ncmid + "</li>"
-							break;
-						case "qqmid":
-							var mid =
-								"<li class='obj qqmid'>" + qqmid + "</li>" +
-								"<li class='obj songtype'>" + songtype + "</li>"
-							break;
-						case "kgmid":
-							var mid =
-								"<li class='obj kgmid'>" + kgmid + "</li>"
-							break;
-						case "av":
-						case "BV":
-							var mid =
-								"<li class='obj BV'>" + ((BV != "" && BV != undefined) ? BV : av) + "</li>"
-							break;
-						case "ytmid":
-							var mid =
-								"<li class='obj ytmid'>" + ytmid + "</li>"
-							break;
-						case "ncrid":
-							var mid =
-								"<li class='obj ncrid'>" + ncrid + "</li>"
-							break;
-						case "links":
-							var mid =
-								"<li class='obj links'>" + links + "</li>"
-							break;
-					}
+						var cid = data[i].cid
+						var hope_date = data[i].hope_date
+						var mid_type = data[i].mid_type
+						var mid_seq = data[i].mid_seq
+						var con_uid = data[i].con_uid
+						var con_user = data[i].con_user
+						var con_time_timestamp = data[i].con_time
+						var con_time = timestampToTime(parseInt(con_time_timestamp)).split(' ')[1]
+						var con_date = timestampToTime(parseInt(con_time_timestamp)).split(' ')[0].split('-')
+						var con_remark = data[i].con_remark
+						var check_type = data[i].check_type
+						var plan_showname = data[i].plan_showname
+						var plan_artist = data[i].plan_artist
+						var plan_description = data[i].plan_description
 
-					var time = date.split(' ')[1]
-					var date_split = date.split(' ')[0].split('-')
-					
-					conlist += 
+						var plan_showname_text = (plan_showname != "" && plan_showname != undefined) ? plan_showname : "<span class='con-infos-empty'>（未指定）</span>"
+						if (data[i].state == "ok")
+							var state_text = "<span class='state-ok'>正常</span>"
+						else if (data[i].state == "vip")
+							var state_text = "<span class='state-vip'>会员</span>"
+						else
+//							var state_text = "<span class='state-error'>无版权</span>"
+							var state_text = "<span class='state-unknown'>可用性未知</span>"	// 或许应该叫 "版权状态未知" 🤔总之就是能不能非会员下载的区别
+						if (data[i].check_type == "success")
+							var type_text = "<span class='type-success'>待安排</span>"
+						else if (data[i].check_type == "ready")
+							var type_text = "<span class='type-ready'><b>安排中</b></span>"
+
+						var time = date.split(' ')[1]
+						var date_split = date.split(' ')[0].split('-')
+
+						conlist += 
+					"<div class='list-item list-item-" + data[i].cid + "'>" +
+						"<div class='con-infos' style='display: none;'>" +
+							"<ul class='infos'>" +
+								"<li class='data'>" + JSON.stringify(data[i]) + "</li>" +
+								"<li class='obj cid'>" + data[i].cid + "</li>" +
+								"<li class='obj key-obj date-obj date'>" + date + "</li>" +
+								"<li class='obj state'>" + data[i].state + "</li>" +
+								"<li class='obj key-obj plan-showname'>" + data[i].plan_showname + "</li>" +
+								"<li class='obj key-obj plan-artist'>" + data[i].plan_artist + "</li>" +
+								"<li class='obj key-obj realname'>" + data[i].realname + "</li>" +
+								"<li class='obj key-obj artist'>" + data[i].artist + "</li>" +
+								"<li class='obj con-uid'>" + data[i].con_uid + "</li>" +
+								"<li class='obj con-user'>" + data[i].con_user + "</li>" +
+								"<li class='obj key-obj keyword'>" + data[i].keyword + "</li>" +
+							"</ul>" +
+						"</div>" +
+						"<div class='con-time'>" +
+							"<div class='con-month'>" + date_split[1] + "</div>" +
+							"<div class='con-line'></div>" +
+							"<div class='con-day'>" + date_split[2] + "</div>" +
+							"<div class='con-time-text'>" + time + "</div>" +
+						"</div>" +
+						"<div class='con-plan-showname'>" + plan_showname_text + "</div>" +
+						"<div class='con-realname'>" + data[i].realname + "</div>" +
+						"<div class='con-state'>" + state_text + "</div>" +
+						"<div class='con-type'>" + type_text + "</div>" +
+						"<div class='con-user'>cid：" +
+							"<span class='con-user-span'>" + data[i].cid + "</span>" +
+						"</div>" +
+					"</div>"
+					}
+					else
+					{
+						var cid = data[i].cid
+						var hope_date = data[i].hope_date
+						var ncmid = data[i].ncmid
+						var qqmid = data[i].qqmid
+						var songtype = data[i].songtype
+						var kgmid = data[i].kgmid
+						var BV = data[i].BV
+						var ytmid = data[i].ytmid
+						var ncrid = data[i].ncrid
+						var av = data[i].av
+						var links = data[i].links
+						var mid_type
+						var realname = data[i].realname
+						var artist = data[i].artist
+						var con_uid = data[i].con_uid
+						var con_user = data[i].con_user
+						var con_time_timestamp = data[i].con_time
+						var con_time = timestampToTime(parseInt(con_time_timestamp)).split(' ')[1]
+						var con_date = timestampToTime(parseInt(con_time_timestamp)).split(' ')[0].split('-')
+						var con_remark = data[i].con_remark
+						var check_type = data[i].check_type
+						var plan_showname = data[i].plan_showname
+						var plan_artist = data[i].plan_artist
+						var plan_description = data[i].plan_description
+
+						// 优先检查数据库中的 mid_type 字段
+						if (ncmid != "" && ncmid != undefined)
+							mid_type = "ncmid"
+						else if (qqmid != "" && qqmid != undefined)
+							mid_type = "qqmid"
+						else if (kgmid != "" && kgmid != undefined)
+							mid_type = "kgmid"
+						else if (BV != "" && BV != undefined)
+							mid_type = "BV"
+						else if (ytmid != "" && ytmid != undefined)
+							mid_type = "ytmid"
+						else if (ncrid != "" && ncrid != undefined)
+							mid_type = "ncrid"
+						else if (av != "" && av != undefined)
+							mid_type = "av"
+						else
+							mid_type = "links"
+
+						var plan_showname_text = (plan_showname != "" && plan_showname != undefined) ? plan_showname : "<span class='con-infos-empty'>（未指定）</span>"
+						if (data[i].state == "ok")
+							var state_text = "<span class='state-ok'>正常</span>"
+						else if (data[i].state == "vip")
+							var state_text = "<span class='state-vip'>会员</span>"
+						else
+//							var state_text = "<span class='state-error'>无版权</span>"
+							var state_text = "<span class='state-unknown'>可用性未知</span>"	// 或许应该叫 "版权状态未知" 🤔总之就是能不能非会员下载的区别
+						if (data[i].check_type == "success")
+							var type_text = "<span class='type-success'>待安排</span>"
+						else if (data[i].check_type == "ready")
+							var type_text = "<span class='type-ready'><b>安排中</b></span>"
+
+						switch (mid_type)
+						{
+							case "ncmid":
+								var mid =
+									"<li class='obj ncmid'>" + ncmid + "</li>"
+								break;
+							case "qqmid":
+								var mid =
+									"<li class='obj qqmid'>" + qqmid + "</li>" +
+									"<li class='obj songtype'>" + songtype + "</li>"
+								break;
+							case "kgmid":
+								var mid =
+									"<li class='obj kgmid'>" + kgmid + "</li>"
+								break;
+							case "av":
+							case "BV":
+								var mid =
+									"<li class='obj BV'>" + ((BV != "" && BV != undefined) ? BV : av) + "</li>"
+								break;
+							case "ytmid":
+								var mid =
+									"<li class='obj ytmid'>" + ytmid + "</li>"
+								break;
+							case "ncrid":
+								var mid =
+									"<li class='obj ncrid'>" + ncrid + "</li>"
+								break;
+							case "links":
+								var mid =
+									"<li class='obj links'>" + links + "</li>"
+								break;
+						}
+
+						var time = date.split(' ')[1]
+						var date_split = date.split(' ')[0].split('-')
+
+						conlist += 
 					"<div class='list-item list-item-" + data[i].cid + "'>" +
 						"<div class='con-infos' style='display: none;'>" +
 							"<ul class='infos'>" +
@@ -490,6 +561,7 @@ function sortSchedulingContribution()
 							"<span class='con-user-span'>" + data[i].cid + "</span>" +
 						"</div>" +
 					"</div>"
+					}
 				}
 			}
 		}
@@ -658,6 +730,8 @@ function displayPlan()
 				// break;	// 遍历到头，该显示的都得显示出来
 			}
 		}
+		if (scheduled == 1)
+			break;
 		// 然后遍历 scheduled_con_data , 这一部分不是已安排就是安排中
 		// 所有 used 都已进入 musics.xml , 因此没有必要再获取一遍
 		for (var i = 0; i < scheduled_con_data.length; i++)
@@ -1103,17 +1177,57 @@ $(document).on('click', '.plan-info .btn#next-week', function () {
 $(document).on('click', '.list-content .list-item', async function()
 {
 	var con_info = JSON.parse($(this).children('.con-infos').children('.infos').children('.data').html());
-	var { mid_type, realname_status, artist_status } = fillConInfo(con_info);
-	displayLinkIcon(mid_type);
-	$('.check-wrap').show();
-	var music_link = await getMusicLink(con_info, mid_type);
-	playMusic(music_link, realname_status, artist_status);
+	if (!(con_info.mid_type == "derivative" && con_info.mid_seq && con_info.mid_seq.indexOf("8") != -1))
+	{
+		var mid_type = get_mid_type(con_info);
+		var { realname_status, artist_status } = fillConInfo(con_info, mid_type);
+		displayLinkIcon(mid_type);
+		$('.check-wrap').show();
+		var music_link = await getMusicLink(con_info, mid_type);
+		playMusic(music_link, realname_status, artist_status);
+	}
+	else
+	{
+		fillFileConInfo(con_info);
+		$('.check-wrap').show();
+		ap.list.add([{name: "加载中...",}]);
+		var file = await getConFile(con_info);
+		ap.list.clear()
+		playMusic(file, 2, 2);
+	}
 })
 
-function fillConInfo(con_info)
+function get_mid_type(con_info)
+{
+	// 优先检查 mid_type 字段
+	if (con_info.mid_type == "derivative" && con_info.mid_seq && con_info.mid_seq.indexOf("8") != -1)
+		mid_type = "derivative"
+	else if (con_info.ncmid != "" && con_info.ncmid != undefined)
+		mid_type = "ncmid"
+	else if (con_info.qqmid != "" && con_info.qqmid != undefined)
+		if (/^\d+$/.test(con_info.qqmid))	// 区分mid和id，因为服务端需要访问手机版的链接来获取信息
+			mid_type = "qqmid-id";
+		else
+			mid_type = "qqmid-mid";
+	else if (con_info.kgmid != "" && con_info.kgmid != undefined)
+		mid_type = "kgmid"
+	else if (con_info.BV != "" && con_info.BV != undefined)
+		mid_type = "BV"
+	else if (con_info.ytmid != "" && con_info.ytmid != undefined)
+		mid_type = "ytmid"
+	else if (con_info.ncrid != "" && con_info.ncrid != undefined)
+		mid_type = "ncrid"
+	else if (con_info.av != "" && con_info.av != undefined)
+		mid_type = "av"
+	else
+		mid_type = "links"
+	return mid_type
+}
+
+function fillConInfo(con_info, mid_type)
 {
 	resetConInfo();	// 先重置以去掉连续点击多个投稿时上一个投稿所残存的信息，以防未覆写造成的信息残存
-	
+
 	// all con_info
 	$('.coninfos-text span.coninfos#infos').html(JSON.stringify(con_info));
 
@@ -1126,7 +1240,6 @@ function fillConInfo(con_info)
 	var ncrid = con_info.ncrid
 	var av = con_info.av
 	var links = con_info.links
-	var mid_type
 	var state = con_info.state
 
 	// hope_date
@@ -1150,35 +1263,6 @@ function fillConInfo(con_info)
 		$('.coninfos-text span.coninfos#plan-date').html("<span class='con-infos-empty'>（未指定）</span>");
 
 	// mid / vid
-	$('.coninfos-text span.coninfos#ncmid').parent().css('display', 'none');
-	$('.coninfos-text span.coninfos#qqmid').parent().css('display', 'none');
-	$('.coninfos-text span.coninfos#songtype').parent().css('display', 'none');
-	$('.coninfos-text span.coninfos#kgmid').parent().css('display', 'none');
-	$('.coninfos-text span.coninfos#BV').parent().css('display', 'none');
-	$('.coninfos-text span.coninfos#ytmid').parent().css('display', 'none');
-	$('.coninfos-text span.coninfos#ncrid').parent().css('display', 'none');
-	$('.coninfos-text span.coninfos#links').parent().css('display', 'none');
-
-	if (ncmid != "" && ncmid != undefined)
-		mid_type = "ncmid"
-	else if (qqmid != "" && qqmid != undefined)
-		if (/^\d+$/.test(qqmid))	// 区分mid和id，因为服务端需要访问手机版的链接来获取信息
-			mid_type = "qqmid-id";
-		else
-			mid_type = "qqmid-mid";
-	else if (kgmid != "" && kgmid != undefined)
-		mid_type = "kgmid"
-	else if (BV != "" && BV != undefined)
-		mid_type = "BV"
-	else if (ytmid != "" && ytmid != undefined)
-		mid_type = "ytmid"
-	else if (ncrid != "" && ncrid != undefined)
-		mid_type = "ncrid"
-	else if (av != "" && av != undefined)
-		mid_type = "av"
-	else
-		mid_type = "links"
-
 	switch (mid_type)
 	{
 		case "ncmid":
@@ -1233,6 +1317,7 @@ function fillConInfo(con_info)
 	}
 
 	// realname
+	$('.coninfos-text span.coninfos#realname').parent().css('display', '');
 	if (con_info.realname != null && con_info.realname != "" && con_info.realname != undefined)
 	{
 		$('.coninfos-text span.coninfos#realname').html(con_info.realname);
@@ -1253,6 +1338,7 @@ function fillConInfo(con_info)
 	$('.coninfos-text span.coninfos#plan-showname').html(con_info.plan_showname);	// 都审核过了它总得有了
 
 	// artist
+	$('.coninfos-text span.coninfos#artist').parent().css('display', '');
 	if (con_info.artist != null && con_info.artist != "" && con_info.artist != undefined)
 	{
 		$('.coninfos-text span.coninfos#artist').html(con_info.artist);
@@ -1339,13 +1425,13 @@ function fillConInfo(con_info)
 		$('.showartist-wrap input#showartist').val(con_info.plan_artist);	// 填写暂存的信息
 	$('.showartist-wrap input#showartist').trigger("blur");	// 切换显示状态，保证默认填充之后具有input-filled显示状态
 	// description
-	if (con_info.showname != null && con_info.showname != "" && con_info.showname != undefined)
+	if (con_info.description != null && con_info.description != "" && con_info.description != undefined)
 		$('.description-wrap textarea#description').val(con_info.description);	// 填写暂存的信息
 	else
 		$('.description-wrap textarea#description').val(con_info.plan_description);	// 填写暂存的信息
 	$('.description-wrap textarea#description').trigger("blur");	// 切换显示状态，保证默认填充之后具有input-filled显示状态
 
-	return { mid_type, realname_status, artist_status };
+	return { realname_status, artist_status };
 }
 
 //var music_link = [];	// 初始化在这里，后面会用到
@@ -1608,6 +1694,302 @@ $(document).on('click', '.open-in-ncm, .open-in-qqm, .open-in-kgm, .open-in-bili
 {
 	window.open(ap.list.audios[0].murl, '_blank');	// 这边没有将music_link作为全局变量，所以从APlayer拿一下murl
 })
+
+function fillFileConInfo(con_info)
+{
+	resetConInfo();	// 先重置以去掉连续点击多个投稿时上一个投稿所残存的信息，以防未覆写造成的信息残存
+
+	// all con_info
+	$('.coninfos-text span.coninfos#infos').html(JSON.stringify(con_info));
+
+	// hope_date
+	if (con_info.hope_date != null && con_info.hope_date != "" && con_info.hope_date != undefined)
+		$('.coninfos-text span.coninfos#hope-date').html(con_info.hope_date);
+	else
+		$('.coninfos-text span.coninfos#hope-date').html("<span class='con-infos-empty'>（未指定）</span>");
+	// plan_term
+	if (con_info.plan_term != null && con_info.plan_term != "" && con_info.plan_term != undefined)
+	{
+		var plan_term_array = con_info.plan_term.split('-');
+		var plan_term_text = plan_term_array[0] + '-' + plan_term_array[1] + "学年 第" + plan_term_array[2] + "学期 第" + plan_term_array[3] + "周";
+		$('.coninfos-text span.coninfos#plan-week').html(plan_term_text);
+	}
+	else
+		$('.coninfos-text span.coninfos#plan-week').html("<span class='con-infos-empty'>（未指定）</span>");
+	// plan_date
+	if (con_info.plan_date != null && con_info.plan_date != "" && con_info.plan_date != undefined)
+		$('.coninfos-text span.coninfos#plan-date').html(con_info.plan_date);
+	else
+		$('.coninfos-text span.coninfos#plan-date').html("<span class='con-infos-empty'>（未指定）</span>");
+
+	// multi-murl-info-wrap
+	$('.coninfos-text span.coninfos-label#murl').parent().css('display', '');
+	$('.multi-murl-info-wrap').css('display', '');
+	// parse mid_seq
+	var mid_seq = con_info.mid_seq;
+	var realname_list = con_info.realname.split('$');
+	var artist_list = con_info.artist.split('$');
+
+	for (var i = 0; i < mid_seq.length; i++)
+	{
+		let mid_type, type_text, mid, songtype, murl;
+		switch (mid_seq[i])
+		{
+			case '0':
+				mid_type = "ncmid";
+				type_text = "网易云ID";
+				mid = con_info.ncmid;
+				murl = "https://music.163.com/#/song?id=" + mid;
+				break;
+			case '1':
+				mid_type = "qqmid";
+				type_text = "QQ音乐ID";
+				mid = con_info.qqmid;
+				songtype = con_info.songtype;
+				murl = "https://y.qq.com/n/ryqq/songDetail/" + qqmid + "?songtype=" + songtype;
+				break;
+			case '2':
+				mid_type = "kgmid";
+				type_text = "酷狗音乐ID";
+				mid = con_info.kgmid;
+				murl = "https://m.kugou.com/mixsong/" + mid + ".html";
+				break; 
+			case '3':
+				mid_type = "BV";
+				type_text = "BV号";
+				mid = con_info.BV;
+				murl = "https://www.bilibili.com/video/" + mid + '/';
+				break;
+			case '4':
+				mid_type = "ytmid";
+				type_text = "Youtube ID";
+				mid = con_info.ytmid;
+				murl = "https://www.youtube.com/watch?v=" + mid;
+				break;
+			case '5':
+				mid_type = "ncrid";
+				type_text = "网易云声音ID";
+				mid = con_info.ncrid;
+				murl = "https://music.163.com/#/program?id=" + mid;
+				break;
+			case '6':
+				mid_type = "av";
+				type_text = "av号";
+				mid = con_info.av;
+				murl = "https://www.bilibili.com/video/" + mid + '/';
+				break;
+			case '7':
+				mid_type = "links";
+				type_text = "链接";
+				mid = con_info.links;
+				break;
+			case '8':
+				continue;
+		}
+
+		$('.coninfos-text .multi-murl-info-wrap .murl-list .empty').remove();
+
+		var data = 
+		{
+			mid_type: mid_type,
+			murl: murl,
+			mid: mid,
+			realname: realname_list[i-1],
+			artist: artist_list[i-1],
+			songtype: songtype
+		};
+		var html =							"<div class='murl'>" +
+												"<div class='murl-element'>" +
+													"<div class='murl-info' style='display: none;'>" +
+														"<ul class='infos'>" +
+															"<li class='data'>" + JSON.stringify(data) + "</li>" +
+															"<li class='mid_type'>" + mid_type + "</li>" +
+															"<li class='mid'>" + mid + "</li>" +
+															"<li class='murl'>" + murl + "</li>" +
+															"<li class='realname'>" + realname_list[i-1] + "</li>" +
+															"<li class='artist'>" + artist_list[i-1] + "</li>" +
+															"<li class='songtype'>" + songtype + "</li>" +
+														"</ul>" +
+													"</div>" +
+													"<p class='murl-info'>" +
+														"<span class='murl-label'>" + type_text + "：</span>" +
+														"<span class='murl-content'>" +
+															"<a class='mid' href='" + murl + "' target='_blank'>" + mid + "</a>" +
+														"</span>" +
+													"</p>" +
+													"<p class='murl-info'>" +
+														"<span class='murl-label'>版权状态：</span>" +
+														"<span class='murl-content'>" +
+															"<span class=state-unknown'>可用性未知</span>" +
+														"</span>" +
+													"</p>" +
+													"<p class='murl-info'>" +
+														"<span class='murl-label'>真实名称：</span>" +
+														"<span class='murl-content'>" + realname_list[i-1] + "</span>" +
+													"</p>" +
+													"<p class='murl-info'>" +
+														"<span class='murl-label'>音乐人：</span>" +
+														"<span class='murl-content'>" + artist_list[i-1] + "</span>" +
+													"</p>" +
+												"</div>" +
+											"</div>"
+		$('.coninfos-text .multi-murl-info-wrap .murl-list').append(html);
+	}
+
+	// state
+	$('.coninfos-text span.coninfos#state').html("<span class='state-ok'>本地文件</span>");
+
+	// hope_showname
+	if (con_info.hope_showname != null && con_info.hope_showname != "" && con_info.hope_showname != undefined)
+		$('.coninfos-text span.coninfos#hope-showname').html(con_info.hope_showname);
+	else
+		$('.coninfos-text span.coninfos#hope-showname').html("<span class='con-infos-empty'>（未指定）</span>");
+	// plan_showname
+	$('.coninfos-text span.coninfos#plan-showname').html(con_info.plan_showname);	// 都审核过了它总得有了
+
+	// hope_artist
+	if (con_info.hope_artist != null && con_info.hope_artist != "" && con_info.hope_artist != undefined)
+		$('.coninfos-text span.coninfos#hope-artist').html(con_info.hope_artist);
+	else
+		$('.coninfos-text span.coninfos#hope-artist').html("<span class='con-infos-empty'>（未指定）</span>");
+	// plan_artist
+	$('.coninfos-text span.coninfos#plan-artist').html(con_info.plan_artist);	// 都审核过了它也总得有了
+
+	// plan_description
+	if (con_info.plan_description != null && con_info.plan_description != "" && con_info.plan_description != undefined)
+		$('.coninfos-text textarea#plan-description').val(con_info.plan_description);	// 填写暂存的信息
+	else if (con_info.hope_description != null && con_info.hope_description != "" && con_info.hope_description != undefined)
+		$('.coninfos-text textarea#plan-description').val(con_info.hope_description);
+	else
+		$('.coninfos-text textarea#plan-description').val("");
+	$('.coninfos-text textarea#plan-description').trigger("blur");
+
+	// con_user
+	$('.coninfos-text span.coninfos#con-user').html(con_info.con_user);
+	// con_class_of
+	$('.coninfos-text span.coninfos#con-class-of').html(con_info.con_class_of);
+	// con_time
+	var con_time_text = timestampToTime(parseInt(con_info.con_time));
+	$('.coninfos-text span.coninfos#con-time').html(con_time_text);
+	// con_remark
+	if (con_info.con_remark != null && con_info.con_remark != "" && con_info.con_remark != undefined)
+		$('.coninfos-text span.coninfos#con-note').html(con_info.con_remark);
+	else
+		$('.coninfos-text span.coninfos#con-note').html("<span class='con-infos-empty'>（无备注）</span>");
+
+	// check_remark
+	if (con_info.check_remark != null && con_info.check_remark != "" && con_info.check_remark != undefined)
+		$('.coninfos-text span.coninfos#check-note').html(con_info.check_remark);	// 填写暂存的信息
+	else
+		$('.coninfos-text span.coninfos#check-note').html("<span class='con-infos-empty'>（无备注）</span>");
+
+	// date & term
+	if (con_info.date != null && con_info.date != "" && con_info.date != undefined)
+	{
+		$('.date-wrap input#date').val(con_info.date);
+		var planned_year_and_month = con_info.date.split('-')[0] + '-' + con_info.date.split('-')[1]
+		var planned_day = con_info.date.split('-')[2]
+		var term = calculateTerm(planned_year_and_month, planned_day)
+		var term_array = term.split('-');
+		var term_text = term_array[0] + '-' + term_array[1] + "学年 第" + term_array[2] + "学期 第" + term_array[3] + "周";
+		$('.planinfos-text span.coninfos#week').html(term_text)
+		$('.planinfos-text span.coninfos#term-database').html(term)
+	}
+	else if (con_info.plan_date != null && con_info.plan_date != "" && con_info.plan_date != undefined)
+	{
+		$('.date-wrap input#date').val(con_info.plan_date);
+		var plan_year_and_month = con_info.plan_date.split('-')[0] + '-' + con_info.plan_date.split('-')[1]
+		var plan_day = con_info.plan_date.split('-')[2]
+		var term = calculateTerm(plan_year_and_month, plan_day)
+		var term_array = term.split('-');
+		var term_text = term_array[0] + '-' + term_array[1] + "学年 第" + term_array[2] + "学期 第" + term_array[3] + "周";
+		$('.planinfos-text span.coninfos#week').html(term_text)
+		$('.planinfos-text span.coninfos#term-database').html(term)
+	}
+	else
+		$('.planinfos-text span.coninfos#week').html("<span class='con-infos-empty'>（未指定）</span>");
+	$('.date-wrap input#date').trigger("blur");	// 切换显示状态，保证默认填充之后具有input-filled显示状态
+	// showname
+	if (con_info.showname != null && con_info.showname != "" && con_info.showname != undefined)
+		$('.showname-wrap input#showname').val(con_info.showname);	// 填写暂存的信息
+	else
+		$('.showname-wrap input#showname').val(con_info.plan_showname);	// 填写暂存的信息
+	$('.showname-wrap input#showname').trigger("blur");	// 切换显示状态，保证默认填充之后具有input-filled显示状态
+	// showartist
+	if (con_info.showartist != null && con_info.showartist != "" && con_info.showartist != undefined)
+		$('.showartist-wrap input#showartist').val(con_info.showartist);	// 填写暂存的信息
+	else
+		$('.showartist-wrap input#showartist').val(con_info.plan_artist);	// 填写暂存的信息
+	$('.showartist-wrap input#showartist').trigger("blur");	// 切换显示状态，保证默认填充之后具有input-filled显示状态
+	// description
+	if (con_info.description != null && con_info.description != "" && con_info.description != undefined)
+		$('.description-wrap textarea#description').val(con_info.description);	// 填写暂存的信息
+	else
+		$('.description-wrap textarea#description').val(con_info.plan_description);	// 填写暂存的信息
+	$('.description-wrap textarea#description').trigger("blur");	// 切换显示状态，保证默认填充之后具有input-filled显示状态
+}
+
+async function getConFile(con_info)
+{
+	var session =
+	{
+		uid: localStorage.getItem('uid'),
+		username: localStorage.getItem('username'),
+		type: localStorage.getItem('type'),
+		expire_time: localStorage.getItem('expire_time'),
+		class_of: localStorage.getItem("class_of")
+	}
+	var data =
+	{
+		path: con_info.path,
+		hash: con_info.hash
+	}
+	var postData =
+	{
+		session: session,
+		data: data
+	}
+	const response = await fetch('/admin',
+	{
+		method: 'PUT',
+		headers: {
+			'Content-Type': 'application/json'
+		},
+		body: JSON.stringify(postData)
+	});
+	const formData = await response.formData();
+	const code = parseInt(formData.get('code'));
+	if (code != 0)
+	{
+		if (data.code == -6 || data.code == -7)
+		{
+			alert('请先登录')
+			hidePopup()
+			return showLoginPanel()
+		}
+		else if (data.code == -18)
+		{
+			alert('您不是管理员，无法进行管理')
+			hidePopup()
+			return window.location.href='./'
+		}
+		else if (data.code == -34)
+		{
+			const new_session = formData.get('session');
+			localStorage.setItem("expire_time", new_session.expire_time);	// 其他三项都没变，所以只修改这个
+			return alert("这个投稿的文件不存在于数据库中，请联系管理员")
+		}
+	}
+	const new_session = formData.get('session');
+	localStorage.setItem("expire_time", new_session.expire_time);	// 其他三项都没变，所以只修改这个
+	const file = formData.get('file');
+	const music_url = URL.createObjectURL(file);
+	return {
+		realname: file.name,
+		artist: con_info.con_user,
+		music_url: music_url
+	}
+}
 
 function addDateSelector(input)
 {
@@ -2319,15 +2701,21 @@ function resetConInfo()
 	$('.coninfos-text span.coninfos#ytmid').html("");
 	$('.coninfos-text span.coninfos#ncrid').html("");
 	$('.coninfos-text span.coninfos#links').html("");
+	// state
 	$('.coninfos-text span.coninfos#state').html("");
-
+	// murl
+	$('.coninfos-text span.coninfos-label#murl').parent().css('display', 'none');
+	$('.coninfos-text .multi-murl-info-wrap').css('display', 'none');
+	$('.coninfos-text .multi-murl-info-wrap .murl-list').html("<span class='empty'>请添加链接~</span>")
 	// realname
+	$('.coninfos-text span.coninfos#realname').parent().css('display', 'none');
 	$('.coninfos-text span.coninfos#realname').html("");
 	// hope_showname
 	$('.coninfos-text span.coninfos#hope-showname').html("");
 	// plan_showname
 	$('.coninfos-text span.coninfos#plan-showname').html("");
 	// artist
+	$('.coninfos-text span.coninfos#artist').parent().css('display', 'none');
 	$('.coninfos-text span.coninfos#artist').html("");
 	// hope_artist
 	$('.coninfos-text span.coninfos#hope-artist').html("");
@@ -2351,6 +2739,8 @@ function resetConInfo()
 
 	// APlayer
 	ap.pause()
+	for (let i = 0; i < ap.list.audios.length; i++)
+		URL.revokeObjectURL(ap.list.audios[i].url)	// 释放资源
 	ap.list.clear()
 	ap.list.hide()
 

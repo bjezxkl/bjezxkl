@@ -372,13 +372,13 @@ function sortWaitingContribution()
 						var revise_time = timestampToTime(parseInt(con_time_timestamp)).split(' ')[1]
 						var revise_date = timestampToTime(parseInt(con_time_timestamp)).split(' ')[0].split('-')
 						var check_type = data[i].check_type
-						
+
 						var hope_showname_text = (hope_showname != "" && hope_showname != undefined) ? hope_showname : "<span class='con-infos-empty'>（未指定）</span>"
 						var state_text = "<span class='state-ok'>本地文件</span>"
-						
+
 						var time = date.split(' ')[1]
 						var date_split = date.split(' ')[0].split('-')
-					
+
 						conlist += 
 					"<div class='list-item list-item-" + data[i].cid + "'>" +
 						"<div class='con-infos' style='display: none;'>" +
@@ -401,7 +401,7 @@ function sortWaitingContribution()
 							"<div class='con-line'></div>" +
 							"<div class='con-day'>" + date_split[2] + "</div>" +
 							"<div class='con-time-text'>" + time + "</div>" +
-							"</div>" +
+						"</div>" +
 						"<div class='con-hope-showname'>" + hope_showname_text + "</div>" +
 						"<div class='con-state'>" + state_text + "</div>" +
 						"<div class='con-user'>投稿人：" +
@@ -502,7 +502,7 @@ function sortWaitingContribution()
 
 						var time = date.split(' ')[1]
 						var date_split = date.split(' ')[0].split('-')
-						
+
 						conlist += 
 					"<div class='list-item list-item-" + data[i].cid + "'>" +
 						"<div class='con-infos' style='display: none;'>" +
@@ -526,7 +526,7 @@ function sortWaitingContribution()
 							"<div class='con-line'></div>" +
 							"<div class='con-day'>" + date_split[2] + "</div>" +
 							"<div class='con-time-text'>" + time + "</div>" +
-							"</div>" +
+						"</div>" +
 						"<div class='con-hope-showname'>" + hope_showname_text + "</div>" +
 						"<div class='con-realname'>" + data[i].realname + "</div>" +
 						"<div class='con-state'>" + state_text + "</div>" +
@@ -855,7 +855,8 @@ $(document).on('click', '.list-content .list-item', async function()
 	var con_info = JSON.parse($(this).children('.con-infos').children('.infos').children('.data').html());
 	if (!(con_info.mid_type == "derivative" && con_info.mid_seq && con_info.mid_seq.indexOf("8") != -1))
 	{
-		var { mid_type, realname_status, artist_status } = fillConInfo(con_info);
+		var mid_type = get_mid_type(con_info);
+		var { realname_status, artist_status } = fillConInfo(con_info, mid_type);
 		displayLinkIcon(mid_type);
 		$('.check-wrap').show();
 		var music_link = await getMusicLink(con_info, mid_type);
@@ -872,7 +873,34 @@ $(document).on('click', '.list-content .list-item', async function()
 	}
 })
 
-function fillConInfo(con_info)
+function get_mid_type(con_info)
+{
+	// 优先检查 mid_type 字段
+	if (con_info.mid_type == "derivative" && con_info.mid_seq && con_info.mid_seq.indexOf("8") != -1)
+		mid_type = "derivative"
+	else if (con_info.ncmid != "" && con_info.ncmid != undefined)
+		mid_type = "ncmid"
+	else if (con_info.qqmid != "" && con_info.qqmid != undefined)
+		if (/^\d+$/.test(con_info.qqmid))	// 区分mid和id，因为服务端需要访问手机版的链接来获取信息
+			mid_type = "qqmid-id";
+		else
+			mid_type = "qqmid-mid";
+	else if (con_info.kgmid != "" && con_info.kgmid != undefined)
+		mid_type = "kgmid"
+	else if (con_info.BV != "" && con_info.BV != undefined)
+		mid_type = "BV"
+	else if (con_info.ytmid != "" && con_info.ytmid != undefined)
+		mid_type = "ytmid"
+	else if (con_info.ncrid != "" && con_info.ncrid != undefined)
+		mid_type = "ncrid"
+	else if (con_info.av != "" && con_info.av != undefined)
+		mid_type = "av"
+	else
+		mid_type = "links"
+	return mid_type
+}
+
+function fillConInfo(con_info, mid_type)
 {
 	resetConInfo();	// 先重置以去掉连续点击多个投稿时上一个投稿所残存的信息，以防未覆写造成的信息残存
 
@@ -888,7 +916,6 @@ function fillConInfo(con_info)
 	var ncrid = con_info.ncrid
 	var av = con_info.av
 	var links = con_info.links
-	var mid_type
 	var state = con_info.state
 
 	// hope_date
@@ -902,26 +929,6 @@ function fillConInfo(con_info)
 	$('.plan-date-wrap input#plan-date').trigger("blur");	// 切换显示状态，保证默认填充之后具有input-filled显示状态
 
 	// mid / vid
-	if (ncmid != "" && ncmid != undefined)
-		mid_type = "ncmid"
-	else if (qqmid != "" && qqmid != undefined)
-		if (/^\d+$/.test(qqmid))	// 区分mid和id，因为服务端需要访问手机版的链接来获取信息
-			mid_type = "qqmid-id";
-		else
-			mid_type = "qqmid-mid";
-	else if (kgmid != "" && kgmid != undefined)
-		mid_type = "kgmid"
-	else if (BV != "" && BV != undefined)
-		mid_type = "BV"
-	else if (ytmid != "" && ytmid != undefined)
-		mid_type = "ytmid"
-	else if (ncrid != "" && ncrid != undefined)
-		mid_type = "ncrid"
-	else if (av != "" && av != undefined)
-		mid_type = "av"
-	else
-		mid_type = "links"
-
 	switch (mid_type)
 	{
 		case "ncmid":
@@ -1070,7 +1077,7 @@ function fillConInfo(con_info)
 	if (con_info.keyword != null && con_info.keyword != "" && con_info.keyword != undefined)
 		$('.coninfos-text input#keyword').val(con_info.keyword);
 	$('.coninfos-text input#keyword').trigger("blur");	// 切换显示状态，保证默认填充之后具有input-filled显示状态
-	return { mid_type, realname_status, artist_status };
+	return { realname_status, artist_status };
 }
 
 //var music_link = [];	// 初始化在这里，后面会用到
@@ -1337,94 +1344,93 @@ function fillFileConInfo(con_info)
 	// all con_info
 	$('.coninfos-text span.coninfos#infos').html(JSON.stringify(con_info));
 
-	if (con_info.mid_type == "derivative" && con_info.mid_seq && con_info.mid_seq.indexOf("8") != -1)
+	// hope_date
+	if (con_info.hope_date != null && con_info.hope_date != "" && con_info.hope_date != undefined)
+		$('.coninfos-text span.coninfos#hope-date').html(con_info.hope_date);
+	else
+		$('.coninfos-text span.coninfos#hope-date').html("<span class='con-infos-empty'>（未指定）</span>");
+	// plan_date
+	if (con_info.plan_date != null && con_info.plan_date != "" && con_info.plan_date != undefined)
+		$('.plan-date-wrap input#plan-date').val(con_info.plan_date);
+	$('.plan-date-wrap input#plan-date').trigger("blur");	// 切换显示状态，保证默认填充之后具有input-filled显示状态
+
+	// multi-murl-info-wrap
+	$('.coninfos-text span.coninfos-label#murl').parent().css('display', '');
+	$('.multi-murl-info-wrap').css('display', '');
+	// parse mid_seq
+	var mid_seq = con_info.mid_seq;
+	var realname_list = con_info.realname.split('$');
+	var artist_list = con_info.artist.split('$');
+
+	for (var i = 0; i < mid_seq.length; i++)
 	{
-		// hope_date
-		if (con_info.hope_date != null && con_info.hope_date != "" && con_info.hope_date != undefined)
-			$('.coninfos-text span.coninfos#hope-date').html(con_info.hope_date);
-		else
-			$('.coninfos-text span.coninfos#hope-date').html("<span class='con-infos-empty'>（未指定）</span>");
-		// plan_date
-		if (con_info.plan_date != null && con_info.plan_date != "" && con_info.plan_date != undefined)
-			$('.plan-date-wrap input#plan-date').val(con_info.plan_date);
-		$('.plan-date-wrap input#plan-date').trigger("blur");	// 切换显示状态，保证默认填充之后具有input-filled显示状态
-
-		// multi-murl-info-wrap
-		$('.multi-murl-info-wrap').css('display', '');
-		// parse mid_seq
-		var mid_seq = con_info.mid_seq;
-		var realname_list = con_info.realname.split('$');
-		var artist_list = con_info.artist.split('$');
-
-		for (var i = 0; i < mid_seq.length; i++)
+		let mid_type, type_text, mid, songtype, murl;
+		switch (mid_seq[i])
 		{
-			let mid_type, type_text, mid, songtype, murl;
-			switch (mid_seq[i])
-			{
-				case '0':
-					mid_type = "ncmid";
-					type_text = "网易云ID";
-					mid = con_info.ncmid;
-					murl = "https://music.163.com/#/song?id=" + mid;
-					break;
-				case '1':
-					mid_type = "qqmid";
-					type_text = "QQ音乐ID";
-					mid = con_info.qqmid;
-					songtype = con_info.songtype;
-					murl = "https://y.qq.com/n/ryqq/songDetail/" + qqmid + "?songtype=" + songtype;
-					break;
-				case '2':
-					mid_type = "kgmid";
-					type_text = "酷狗音乐ID";
-					mid = con_info.kgmid;
-					murl = "https://m.kugou.com/mixsong/" + mid + ".html";
-					break; 
-				case '3':
-					mid_type = "BV";
-					type_text = "BV号";
-					mid = con_info.BV;
-					murl = "https://www.bilibili.com/video/" + mid + '/';
-					break;
-				case '4':
-					mid_type = "ytmid";
-					type_text = "Youtube ID";
-					mid = con_info.ytmid;
-					murl = "https://www.youtube.com/watch?v=" + mid;
-					break;
-				case '5':
-					mid_type = "ncrid";
-					type_text = "网易云声音ID";
-					mid = con_info.ncrid;
-					murl = "https://music.163.com/#/program?id=" + mid;
-					break;
-				case '6':
-					mid_type = "av";
-					type_text = "av号";
-					mid = con_info.av;
-					murl = "https://www.bilibili.com/video/" + mid + '/';
-					break;
-				case '7':
-					mid_type = "links";
-					type_text = "链接";
-					mid = con_info.links;
-					break;
-				case '8':
-					continue;
-			}
+			case '0':
+				mid_type = "ncmid";
+				type_text = "网易云ID";
+				mid = con_info.ncmid;
+				murl = "https://music.163.com/#/song?id=" + mid;
+				break;
+			case '1':
+				mid_type = "qqmid";
+				type_text = "QQ音乐ID";
+				mid = con_info.qqmid;
+				songtype = con_info.songtype;
+				murl = "https://y.qq.com/n/ryqq/songDetail/" + qqmid + "?songtype=" + songtype;
+				break;
+			case '2':
+				mid_type = "kgmid";
+				type_text = "酷狗音乐ID";
+				mid = con_info.kgmid;
+				murl = "https://m.kugou.com/mixsong/" + mid + ".html";
+				break; 
+			case '3':
+				mid_type = "BV";
+				type_text = "BV号";
+				mid = con_info.BV;
+				murl = "https://www.bilibili.com/video/" + mid + '/';
+				break;
+			case '4':
+				mid_type = "ytmid";
+				type_text = "Youtube ID";
+				mid = con_info.ytmid;
+				murl = "https://www.youtube.com/watch?v=" + mid;
+				break;
+			case '5':
+				mid_type = "ncrid";
+				type_text = "网易云声音ID";
+				mid = con_info.ncrid;
+				murl = "https://music.163.com/#/program?id=" + mid;
+				break;
+			case '6':
+				mid_type = "av";
+				type_text = "av号";
+				mid = con_info.av;
+				murl = "https://www.bilibili.com/video/" + mid + '/';
+				break;
+			case '7':
+				mid_type = "links";
+				type_text = "链接";
+				mid = con_info.links;
+				break;
+			case '8':
+				continue;
+		}
 
-			$('.coninfos-text .multi-murl-info-wrap .murl-list .empty').remove();
+		$('.coninfos-text .multi-murl-info-wrap .murl-list .empty').remove();
 
-			var data = 
-			{
-				mid_type: mid_type,
-				murl: murl,
-				mid: mid,
-				realname: realname_list[i-1],
-				artist: artist_list[i-1],
-				songtype: songtype
-			};
-			var html =						"<div class='murl'>" +
+		var data = 
+		{
+			mid_type: mid_type,
+			murl: murl,
+			mid: mid,
+			realname: realname_list[i-1],
+			artist: artist_list[i-1],
+			songtype: songtype
+		};
+		var html =							"<div class='murl'>" +
 												"<div class='murl-element'>" +
 													"<div class='murl-info' style='display: none;'>" +
 														"<ul class='infos'>" +
@@ -1460,80 +1466,82 @@ function fillFileConInfo(con_info)
 												"</div>" +
 												"<span class='fa fa-times-circle'></span>" +
 											"</div>"
-			$('.coninfos-text .multi-murl-info-wrap .murl-list').append(html);
-		}
-
-		// hope_showname
-		if (con_info.hope_showname != null && con_info.hope_showname != "" && con_info.hope_showname != undefined)
-			$('.coninfos-text span.coninfos#hope-showname').html(con_info.hope_showname);
-		else
-			$('.coninfos-text span.coninfos#hope-showname').html("<span class='con-infos-empty'>（未指定）</span>");
-		// plan_showname
-		if (con_info.plan_showname != null && con_info.plan_showname != "" && con_info.plan_showname != undefined)
-			$('.coninfos-text input#showname').val(con_info.plan_showname);	// 填写暂存的信息
-		else if (con_info.hope_showname != null && con_info.hope_showname != "" && con_info.hope_showname != undefined)
-			$('.coninfos-text input#showname').val(con_info.hope_showname);	// 用hope_showname初始化
-		else
-			$('.coninfos-text input#showname').val("");
-		$('.coninfos-text input#showname').trigger("blur");	// 切换显示状态，保证默认填充之后具有input-filled显示状态
-
-		// hope_artist
-		if (con_info.hope_artist != null && con_info.hope_artist != "" && con_info.hope_artist != undefined)
-			$('.coninfos-text span.coninfos#hope-artist').html(con_info.hope_artist);
-		else
-			$('.coninfos-text span.coninfos#hope-artist').html("<span class='con-infos-empty'>（未指定）</span>");
-		// plan_artist
-		if (con_info.plan_artist != null && con_info.plan_artist != "" && con_info.plan_artist != undefined)
-			$('.coninfos-text input#plan-artist').val(con_info.plan_artist);	// 填写暂存的信息
-		else if (con_info.hope_artist != null && con_info.hope_artist != "" && con_info.hope_artist != undefined)
-			$('.coninfos-text input#plan-artist').val(con_info.hope_artist);	// 用hope_artist初始化
-		else
-			$('.coninfos-text input#plan-artist').val("");
-		$('.coninfos-text input#plan-artist').trigger("blur");	// 切换显示状态，保证默认填充之后具有input-filled显示状态
-
-		// plan_description
-		if (con_info.plan_description != null && con_info.plan_description != "" && con_info.plan_description != undefined)
-			$('.coninfos-text textarea#plan-description').val(con_info.plan_description);	// 填写暂存的信息
-		else if (con_info.hope_description != null && con_info.hope_description != "" && con_info.hope_description != undefined)
-			$('.coninfos-text textarea#plan-description').val(con_info.hope_description);
-		else
-			$('.coninfos-text textarea#plan-description').val("");
-		$('.coninfos-text textarea#plan-description').trigger("blur");
-
-		// con_user
-		$('.coninfos-text span.coninfos#con-user').html(con_info.con_user);
-		// con_class_of
-		$('.coninfos-text span.coninfos#con-class-of').html(con_info.con_class_of);
-		// con_time
-		var con_time_text = timestampToTime(parseInt(con_info.con_time));
-		$('.coninfos-text span.coninfos#con-time').html(con_time_text);
-		// con_remark
-		if (con_info.con_remark != null && con_info.con_remark != "" && con_info.con_remark != undefined)
-			$('.coninfos-text span.coninfos#con-note').html(con_info.con_remark);
-		else
-			$('.coninfos-text span.coninfos#con-note').html("<span class='con-infos-empty'>（无备注）</span>");
-		// revise_time
-		if (con_info.revised == 1)
-		{
-			$('.coninfos-text span.coninfos#revise-time').parent().css('display', '');
-			var revise_time_text = timestampToTime(parseInt(con_info.revise_time));
-			$('.coninfos-text span.coninfos#revise-time').html(revise_time_text);
-		}
-		else
-		{
-			$('.coninfos-text span.coninfos#revise-time').parent().css('display', 'none');
-			$('.coninfos-text span.coninfos#revise-time').html("");
-		}
-
-		// check_remark
-		if (con_info.check_remark != null && con_info.check_remark != "" && con_info.check_remark != undefined)
-			$('.coninfos-text input#check-note').val(con_info.check_remark);	// 填写暂存的信息
-		$('.coninfos-text input#check-note').trigger("blur");	// 切换显示状态，保证默认填充之后具有input-filled显示状态
-		// keyword
-		if (con_info.keyword != null && con_info.keyword != "" && con_info.keyword != undefined)
-			$('.coninfos-text input#keyword').val(con_info.keyword);
-		$('.coninfos-text input#keyword').trigger("blur");	// 切换显示状态，保证默认填充之后具有input-filled显示状态
+		$('.coninfos-text .multi-murl-info-wrap .murl-list').append(html);
 	}
+
+	// state
+	$('.coninfos-text span.coninfos#state').html("<span class='state-ok'>本地文件</span>");
+
+	// hope_showname
+	if (con_info.hope_showname != null && con_info.hope_showname != "" && con_info.hope_showname != undefined)
+		$('.coninfos-text span.coninfos#hope-showname').html(con_info.hope_showname);
+	else
+		$('.coninfos-text span.coninfos#hope-showname').html("<span class='con-infos-empty'>（未指定）</span>");
+	// plan_showname
+	if (con_info.plan_showname != null && con_info.plan_showname != "" && con_info.plan_showname != undefined)
+		$('.coninfos-text input#showname').val(con_info.plan_showname);	// 填写暂存的信息
+	else if (con_info.hope_showname != null && con_info.hope_showname != "" && con_info.hope_showname != undefined)
+		$('.coninfos-text input#showname').val(con_info.hope_showname);	// 用hope_showname初始化
+	else
+		$('.coninfos-text input#showname').val("");
+	$('.coninfos-text input#showname').trigger("blur");	// 切换显示状态，保证默认填充之后具有input-filled显示状态
+
+	// hope_artist
+	if (con_info.hope_artist != null && con_info.hope_artist != "" && con_info.hope_artist != undefined)
+		$('.coninfos-text span.coninfos#hope-artist').html(con_info.hope_artist);
+	else
+		$('.coninfos-text span.coninfos#hope-artist').html("<span class='con-infos-empty'>（未指定）</span>");
+	// plan_artist
+	if (con_info.plan_artist != null && con_info.plan_artist != "" && con_info.plan_artist != undefined)
+		$('.coninfos-text input#plan-artist').val(con_info.plan_artist);	// 填写暂存的信息
+	else if (con_info.hope_artist != null && con_info.hope_artist != "" && con_info.hope_artist != undefined)
+		$('.coninfos-text input#plan-artist').val(con_info.hope_artist);	// 用hope_artist初始化
+	else
+		$('.coninfos-text input#plan-artist').val("");
+	$('.coninfos-text input#plan-artist').trigger("blur");	// 切换显示状态，保证默认填充之后具有input-filled显示状态
+
+	// plan_description
+	if (con_info.plan_description != null && con_info.plan_description != "" && con_info.plan_description != undefined)
+		$('.coninfos-text textarea#plan-description').val(con_info.plan_description);	// 填写暂存的信息
+	else if (con_info.hope_description != null && con_info.hope_description != "" && con_info.hope_description != undefined)
+		$('.coninfos-text textarea#plan-description').val(con_info.hope_description);
+	else
+		$('.coninfos-text textarea#plan-description').val("");
+	$('.coninfos-text textarea#plan-description').trigger("blur");
+
+	// con_user
+	$('.coninfos-text span.coninfos#con-user').html(con_info.con_user);
+	// con_class_of
+	$('.coninfos-text span.coninfos#con-class-of').html(con_info.con_class_of);
+	// con_time
+	var con_time_text = timestampToTime(parseInt(con_info.con_time));
+	$('.coninfos-text span.coninfos#con-time').html(con_time_text);
+	// con_remark
+	if (con_info.con_remark != null && con_info.con_remark != "" && con_info.con_remark != undefined)
+		$('.coninfos-text span.coninfos#con-note').html(con_info.con_remark);
+	else
+		$('.coninfos-text span.coninfos#con-note').html("<span class='con-infos-empty'>（无备注）</span>");
+	// revise_time
+	if (con_info.revised == 1)
+	{
+		$('.coninfos-text span.coninfos#revise-time').parent().css('display', '');
+		var revise_time_text = timestampToTime(parseInt(con_info.revise_time));
+		$('.coninfos-text span.coninfos#revise-time').html(revise_time_text);
+	}
+	else
+	{
+		$('.coninfos-text span.coninfos#revise-time').parent().css('display', 'none');
+		$('.coninfos-text span.coninfos#revise-time').html("");
+	}
+
+	// check_remark
+	if (con_info.check_remark != null && con_info.check_remark != "" && con_info.check_remark != undefined)
+		$('.coninfos-text input#check-note').val(con_info.check_remark);	// 填写暂存的信息
+	$('.coninfos-text input#check-note').trigger("blur");	// 切换显示状态，保证默认填充之后具有input-filled显示状态
+	// keyword
+	if (con_info.keyword != null && con_info.keyword != "" && con_info.keyword != undefined)
+		$('.coninfos-text input#keyword').val(con_info.keyword);
+	$('.coninfos-text input#keyword').trigger("blur");	// 切换显示状态，保证默认填充之后具有input-filled显示状态
 }
 
 async function getConFile(con_info)
@@ -1591,7 +1599,6 @@ async function getConFile(con_info)
 	localStorage.setItem("expire_time", new_session.expire_time);	// 其他三项都没变，所以只修改这个
 	const file = formData.get('file');
 	const music_url = URL.createObjectURL(file);
-	const realname = file.name;
 	return {
 		realname: file.name,
 		artist: con_info.con_user,
@@ -1608,7 +1615,7 @@ $(document).on('click', '.fa.fa-plus-circle', function()
 async function checkMusic()
 {
 	/* 校验链接格式 */
-	var music_url = $('.con-box input#murl').val();
+	var music_url = $('.murl-wrap input#murl').val();
 	var ncmid_format = "music.163.com";	// music.163.com/#/song?id=[ncmid] 或 y.music.163.com/m/song?id=[ncmid]
 	var qqmid_format = "y.qq.com";	// y.qq.com/n/ryqq/songDetail/[qqmid/qqmid_mid]?songtype=[songtype] 或 i.y.qq.com/v8/playsong.html?ADTAG=ryqq.songDetail&songmid=[qqmid_mid]&songid=[qqmid]&songtype=[songtype]
 	var kgmid_format = "kugou.com/mixsong/"	// www.kugou.com/mixsong/[kgmid].html 或 m.kugou.com/mixsong/[kgmid].html
@@ -1617,7 +1624,7 @@ async function checkMusic()
 	var ncmsl_format = "163cn.tv/"	// 163cn.tv/[ncmsl]
 	if (music_url == "")
 	{
-		return $('.con-box .message#murl').html('请粘贴音乐平台链接');
+		return $('.murl-wrap .message#murl').html('请粘贴音乐平台链接');
 	}
 	/* 分平台读取信息 */
 	if (music_url.includes(ncmid_format) && music_url.includes("song"))
@@ -2901,9 +2908,6 @@ function resetConInfo()
 	$('.coninfos-text input#plan-date').trigger("blur");
 
 	// mid / vid
-	$('.derivative-music-wrap').css('display', 'none');
-	$('#derivative-music-list').html('');
-	$('.coninfos-text span.coninfos#mid_seq').parent().css('display', 'none');
 	$('.coninfos-text span.coninfos#ncmid').parent().css('display', 'none');
 	$('.coninfos-text span.coninfos#qqmid').parent().css('display', 'none');
 	$('.coninfos-text span.coninfos#songtype').parent().css('display', 'none');
@@ -2912,7 +2916,6 @@ function resetConInfo()
 	$('.coninfos-text span.coninfos#ytmid').parent().css('display', 'none');
 	$('.coninfos-text span.coninfos#ncrid').parent().css('display', 'none');
 	$('.coninfos-text span.coninfos#links').parent().css('display', 'none');
-	$('.coninfos-text span.coninfos#mid_seq').html("");
 	$('.coninfos-text span.coninfos#ncmid').html("");
 	$('.coninfos-text span.coninfos#qqmid').html("");
 	$('.coninfos-text span.coninfos#songtype').html("");
@@ -2921,12 +2924,14 @@ function resetConInfo()
 	$('.coninfos-text span.coninfos#ytmid').html("");
 	$('.coninfos-text span.coninfos#ncrid').html("");
 	$('.coninfos-text span.coninfos#links').html("");
+	// state
 	$('.coninfos-text span.coninfos#state').html("");
 	// murl
-	$('.multi-murl-info-wrap').css('display', 'none');
-	$('.multi-murl-info-wrap .murl-list').html("<span class='empty'>请添加链接~</span>")
+	$('.coninfos-text span.coninfos-label#murl').parent().css('display', 'none');
+	$('.coninfos-text .multi-murl-info-wrap').css('display', 'none');
+	$('.coninfos-text .multi-murl-info-wrap .murl-list').html("<span class='empty'>请添加链接~</span>")
 	// realname
-	$('.coninfos-text span.coninfos#realname').parent().css('display', '');
+	$('.coninfos-text span.coninfos#realname').parent().css('display', 'none');
 	$('.coninfos-text span.coninfos#realname').html("");
 	// hope_showname
 	$('.coninfos-text span.coninfos#hope-showname').html("");
@@ -2934,7 +2939,7 @@ function resetConInfo()
 	$('.coninfos-text input#showname').val("");
 	$('.coninfos-text input#showname').trigger("blur");
 	// artist
-	$('.coninfos-text span.coninfos#artist').parent().css('display', '');
+	$('.coninfos-text span.coninfos#artist').parent().css('display', 'none');
 	$('.coninfos-text span.coninfos#artist').html("");
 	// hope_artist
 	$('.coninfos-text span.coninfos#hope-artist').html("");
