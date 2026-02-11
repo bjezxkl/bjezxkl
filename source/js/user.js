@@ -899,8 +899,35 @@ $(document).on('click', '.btn.btn-login#submit', function ()
 		{
 			if (data.code != 0)
 			{
-				alert('未知原因修改失败，请联系网站管理员')
-				return console.log(data)
+				if (data.code == -6)
+				{
+					alert("用户未登录，请重新登录！");
+					localStorage.setItem("uid", "");
+					localStorage.setItem("username", "");
+					localStorage.setItem("type", "");
+					localStorage.setItem("expire_time", "");
+					localStorage.setItem("class_of", "");
+					return showLoginPanel();
+				}
+				else if (data.code == -7)
+				{
+					alert("用户登录过期，请重新登录！");
+					localStorage.setItem("uid", "");
+					localStorage.setItem("username", "");
+					localStorage.setItem("type", "");
+					localStorage.setItem("expire_time", "");
+					localStorage.setItem("class_of", "");
+					return showLoginPanel();
+				}
+				else if (data.code == -14) 
+				{
+					return alert('用户不存在！');
+				}
+				else
+				{
+					alert('未知原因修改失败，请联系网站管理员')
+					return console.log(data)	
+				}
 			}
 			hidePasswordPanel()
 			alert('修改成功')
