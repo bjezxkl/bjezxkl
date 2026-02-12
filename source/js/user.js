@@ -946,7 +946,7 @@ $(document).on('click', '.btn.btn-login#submit', function ()
 
 $(document).on('click', '.revise-contribute', function ()
 {
-	var con_info = JSON.parse($(this).siblings(".data").html())
+	var con_info = JSON.parse($(this).siblings(".data").text())
 	if (machine == "mobile")
 	{
 		alert("目前手机页面不支持修改投稿，请在电脑页面中修改");
