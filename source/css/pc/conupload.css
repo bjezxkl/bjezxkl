@@ -156,6 +156,12 @@
     max-width: 280px;
     margin: 0 auto;
 }
+.con-box .message a{
+    color: red;
+}
+.con-box .message a:hover{
+    color: inherit;
+}
 .con-box .infos-wrap .murl-wrap {
     display: flex;
     margin: 0 auto;

@@ -16,6 +16,12 @@
     min-height: 20px;
     word-break: break-all;
 }
+.con-box .message a{
+    color: red;
+}
+.con-box .message a:hover{
+    color: inherit;
+}
 .con-box .btn-get{
     margin-top: 10px;
 }

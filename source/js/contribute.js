@@ -61,7 +61,7 @@ function checkMusic()
 	var ncmsl_format = "163cn.tv/"	// 163cn.tv/[ncmsl]
 	if (music_url == "")
 	{
-		return $('.con-box .message#murl').html('请粘贴音乐平台链接');
+		return $('.con-box .message#murl').html('请粘贴音乐平台链接，或者<a class="link msg-link" href="./conupload">上传音频文件投稿</a>');
 	}
 	/* 分平台读取信息 */
 	if (music_url.includes(ncmid_format) && music_url.includes("song"))
