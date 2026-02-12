@@ -435,7 +435,7 @@ function checkMusic()
 	{
 		var mid_type = "links";
 		addMusicInfoDisplay(mid_type, music_url, music_url);
-		return $('.message#murl').html('<div style="color:red;">链接格式可能有误 推荐直接从电脑端获取链接后重试</div>');
+		return $('.message#murl').html('链接格式可能有误 推荐直接从电脑端获取链接后重试');
 	}
 }
 
@@ -882,7 +882,7 @@ function addMusicInfoDisplay(mid_type, murl, mid, realname = "", artist = "", so
 										"</div>"
 	$('.con-infos .con-infos-row#murl .murl-list').append(html);
 
-	$('.con-box .message#murl').html("<span style='color: red'>建议您单击校验用链接检查与您投稿的曲目是否一致~</span>")
+	$('.con-box .message#murl').html('建议您单击校验用链接检查与您投稿的曲目是否一致~')
 }
 
 function playMusic(realname, artist, music_url, cover_url = "", validCheck = 1, clear = 0)
@@ -1303,7 +1303,7 @@ $(document).on('click', '.btn.btn-submit#con-submit', function ()
 	if ($(".con-infos .con-infos-row#murl .murl-list").children().hasClass("empty"))
 	{
 		$(".con-infos .con-infos-row#murl .murl-list .empty").css("color", "red");
-		$('.message#murl').html('<div style="color:red;">请添加链接</div>');
+		$('.message#murl').html('请添加链接');
 		return;
 	}
 
@@ -1439,17 +1439,17 @@ $(document).on('click', '.btn.btn-submit#con-submit', function ()
 				if (data.code == -8)
 				{
 					localStorage.setItem("expire_time", data.session.expire_time);	// 其他三项都没变，所以只修改这个
-					$('.con-box .message#murl').html("<span style='color: red'>1个月内已投过该稿件</span>")
+					$('.con-box .message#murl').html('1个月内已投过该稿件')
 					return alert(data.message + "\n你在" + data.con_time + "时就已经投过这个稿了呦~\n换一个再投吧！")
 				}
 				if (data.code == -9)
 				{
 					localStorage.setItem("expire_time", data.session.expire_time);	// 其他三项都没变，所以只修改这个
-					$('.con-box .message#murl').html("<span style='color: red'>到达本月投稿上限</span>")
+					$('.con-box .message#murl').html('到达本月投稿上限')
 					return alert("你这个月都投了8个稿件了\n已经到达上限惹")
 				}
 //				if (data.code == -510) {
-//					$('.con-box .message#murl').html("<span style='color: red'>您已被封禁</span>")
+//					$('.con-box .message#murl').html('您已被封禁')
 //					return alert("您因某些原因已被封禁辽\n如有疑问请前往关于页联系管理员申诉")
 //				}
 				return console.log(data)

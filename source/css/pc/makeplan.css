@@ -281,10 +281,10 @@
   white-space: nowrap;
 }
 .list-item .con-type .type-success{
-	color: green;
+	color: #228B22;
 }
 .list-item .con-type .type-ready{
-	color: red;
+	color: #FF4500;
 }
 .list-item .con-user {
   position: absolute;

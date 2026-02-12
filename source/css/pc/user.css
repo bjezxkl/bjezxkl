@@ -137,10 +137,10 @@
 	color: #6999d3;
 }
 .check-type-text#fail{
-	color: red;
+	color: #FF4500;
 }
 .check-type-text#success,.check-type-text#ready,.check-type-text#planned{
-	color: green;
+	color: #228B22;
 }
 .check-type-text#used{
 	color: #888;

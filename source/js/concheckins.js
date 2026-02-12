@@ -1808,7 +1808,7 @@ async function checkMusic()
 	{
 		var mid_type = "links";
 		addMusicInfoDisplay(mid_type, music_url, music_url);
-		return $('.message#murl').html('<div style="color:red;">链接格式可能有误 推荐直接从电脑端获取链接后重试</div>');
+		return $('.message#murl').html('链接格式可能有误 推荐直接从电脑端获取链接后重试');
 	}
 }
 

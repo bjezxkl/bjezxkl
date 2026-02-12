@@ -153,7 +153,7 @@ function checkMusic()
 		getMusicInfo(mid_type, undefined, undefined, undefined, ncmsl);
 	}
 	else
-		return $('.message#murl').html('<div style="color:red;">链接格式可能有误 推荐直接从电脑端获取链接后重试</div>');
+		return $('.message#murl').html('链接格式可能有误 推荐直接从电脑端获取链接后重试');
 }
 
 function getMusicInfo(mid_type, mid, songtype, qqmsl, ncmsl)
@@ -586,7 +586,7 @@ function displayMusicInfo(mid_type, murl, mid, realname = "", artist = "", songt
 			break;
 	}
 
-	$('.con-box .message#murl').html("<span style='color: red'>建议您单击校验用链接检查与您投稿的曲目是否一致~</span>")
+	$('.con-box .message#murl').html('建议您单击校验用链接检查与您投稿的曲目是否一致~')
 }
 
 function playMusic(realname, artist, music_url, cover_url = "", validCheck = 1)
