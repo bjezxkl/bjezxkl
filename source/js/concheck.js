@@ -852,7 +852,7 @@ $(document).on('click', '.clear-span', function ()
 
 $(document).on('click', '.list-content .list-item', async function()
 {
-	var con_info = JSON.parse($(this).children('.con-infos').children('.infos').children('.data').html());
+	var con_info = JSON.parse($(this).children('.con-infos').children('.infos').children('.data').text());
 	if (!(con_info.mid_type == "derivative" && con_info.mid_seq && con_info.mid_seq.indexOf("8") != -1))
 	{
 		var mid_type = get_mid_type(con_info);
@@ -2741,7 +2741,7 @@ $(document).on('click', '.wrapper-popup .content', function (e) {
 
 function submitContributionCheck(same_cons_string)
 {
-	var con_info = JSON.parse($('.coninfos-text .coninfos#infos').html());
+	var con_info = JSON.parse($('.coninfos-text .coninfos#infos').text());
 	var plan_date = $('.plan-date-wrap input#plan-date').val();
 	var plan_term_database = $('.coninfos-text span.coninfos#plan-term-database').html();
 	var plan_showname = $('.coninfos-text input#showname').val();
@@ -3015,12 +3015,12 @@ function showSameConsWrap()
 		}); // 不区分大小写比较
 	}).parent(); // 选择ul标签
 
-	var this_con_info = JSON.parse($('.coninfos-text .coninfos#infos').html())
+	var this_con_info = JSON.parse($('.coninfos-text .coninfos#infos').text())
 	var same_cons = [];
 	if (this_con_info.same_cons)
 		same_cons = this_con_info.same_cons.split(',')	// 数据库中存储的被标记为相同的cid	
 	$matches_keyword.each(function() {
-		var coninfos = JSON.parse($(this).children('.data').html())
+		var coninfos = JSON.parse($(this).children('.data').text())
 		if (coninfos.cid == this_con_info.cid)
 			return
 		var coninfo = 
@@ -3066,7 +3066,7 @@ $(document).on('click', ".fa.fa-square-o", function () {
 
 function getSameCons()
 {
-	var same_cons = [JSON.parse($('.coninfos-text .coninfos#infos').html()).cid];
+	var same_cons = [JSON.parse($('.coninfos-text .coninfos#infos').text()).cid];
 	$('.fa-check-square').each(function() {
 		same_cons.push($(this).attr('id'));	// 存储所有cid
 	});

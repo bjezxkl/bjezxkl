@@ -134,7 +134,7 @@ function formatSize(size)
 
 $(document).on('click', 'span.btn#download', async function ()
 {
-	var file_info = JSON.parse($(this).parent().siblings('.data').html());
+	var file_info = JSON.parse($(this).parent().siblings('.data').text());
 	var session =
 	{
 		uid: localStorage.getItem('uid'),

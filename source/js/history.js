@@ -739,7 +739,7 @@ $(document).on('click', '.clear-span', function ()
 
 $(document).on('click', '.list-content .list-item', function()
 {
-	var music_info = JSON.parse($(this).children('.music-infos').children('.infos').children('.data').html());
+	var music_info = JSON.parse($(this).children('.music-infos').children('.infos').children('.data').text());
 	music_link = [];	// 重置
 	$('.musicinfos#remark').text('');	// 重置
 	addPlaylist(music_info);
@@ -1043,13 +1043,13 @@ $(function ()
 		switch (mid_type)
 		{
 			case "mid":
-				var music_info = JSON.parse($('.list .list-item-mid-' + ap.list.audios[ap.list.index].customAudioType.mid + ' .music-infos .infos .data').html())
+				var music_info = JSON.parse($('.list .list-item-mid-' + ap.list.audios[ap.list.index].customAudioType.mid + ' .music-infos .infos .data').text())
 				break;
 			case "serial":
-				var music_info = JSON.parse($('.list .list-item-serial-' + ap.list.audios[ap.list.index].customAudioType.mid + ' .music-infos .infos .data').html())
+				var music_info = JSON.parse($('.list .list-item-serial-' + ap.list.audios[ap.list.index].customAudioType.mid + ' .music-infos .infos .data').text())
 				break;
 			case "filename":
-				var music_info = JSON.parse($('.list .list-item-filename-' + ap.list.audios[ap.list.index].customAudioType.mid + ' .music-infos .infos .data').html())
+				var music_info = JSON.parse($('.list .list-item-filename-' + ap.list.audios[ap.list.index].customAudioType.mid + ' .music-infos .infos .data').text())
 		}
 		fillMusicInfo(music_info);
 		toggleMusicInfo("show");

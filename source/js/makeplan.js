@@ -1176,7 +1176,7 @@ $(document).on('click', '.plan-info .btn#next-week', function () {
 
 $(document).on('click', '.list-content .list-item', async function()
 {
-	var con_info = JSON.parse($(this).children('.con-infos').children('.infos').children('.data').html());
+	var con_info = JSON.parse($(this).children('.con-infos').children('.infos').children('.data').text());
 	if (!(con_info.mid_type == "derivative" && con_info.mid_seq && con_info.mid_seq.indexOf("8") != -1))
 	{
 		var mid_type = get_mid_type(con_info);
@@ -2463,7 +2463,7 @@ function calculateTerm(selectedYearAndMonth, selectedDate)
 
 /* 按下 提交预备安排 按钮时弹窗提示 */
 $(document).on('click', '.btn-plan-submit#submit', function () {
-	var con_info = JSON.parse($('.coninfos-text .coninfos#infos').html());
+	var con_info = JSON.parse($('.coninfos-text .coninfos#infos').text());
 	var check_type = con_info.check_type;
 	var plan_date = $('.date-wrap input#date').val();
 	var wrapper_popup_content = "是否确定提交预备安排"
@@ -2505,7 +2505,7 @@ $(document).on('click', '.wrapper-popup .content', function (e) {
 
 function submitContributionPlan()
 {
-	var con_info = JSON.parse($('.coninfos-text .coninfos#infos').html());
+	var con_info = JSON.parse($('.coninfos-text .coninfos#infos').text());
 	var date = $('.date-wrap input#date').val();
 	if (date != "")
 		var term = $('.planinfos-text span.planinfos#term-database').html();
@@ -2785,7 +2785,7 @@ function confirmPlan(msg) {
 	var data = [];
 	for (var i = 0; i < ready_day.length; i++)
 	{
-		var con_info = JSON.parse($(".plan-content .plan#" + ready_day[i] + " .plan-infos .infos .data").html())
+		var con_info = JSON.parse($(".plan-content .plan#" + ready_day[i] + " .plan-infos .infos .data").text())
 		var cid = con_info.cid;
 		var date = con_info.date;	// 二次校验当日下课铃状态用
 		var check_type = "planned"
