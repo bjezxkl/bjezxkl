@@ -38,7 +38,7 @@ function checkMusic()
 	var music_url = $('.con-box input#murl').val();
 	var ncmid_format = "music.163.com";	// music.163.com/#/song?id=[ncmid] 或 y.music.163.com/m/song?id=[ncmid]
 	var qqmid_format = "y.qq.com";	// y.qq.com/n/ryqq/songDetail/[qqmid/qqmid_mid]?songtype=[songtype] 或 i.y.qq.com/v8/playsong.html?ADTAG=ryqq.songDetail&songmid=[qqmid_mid]&songid=[qqmid]&songtype=[songtype]
-	var kgmid_format = "kugou.com/mixsong/"	// www.kugou.com/mixsong/[kgmid].html 或 m.kugou.com/mixsong/[kgmid].html
+	var kgmid_format = "kugou.com"	// www.kugou.com/mixsong/[kgmid].html 或 m.kugou.com/mixsong/[kgmid].html 或 m.kugou.com/kgmixsong/[kgmid].html
 	var BV_av_format = "bilibili.com/video/"	// www.bilibili.com/video/[BV/av]/ 或 m.bilibili.com/video/[BV/av]
 	var ytmid_format = "youtube.com/watch"	// www.youtube.com/watch?v=[ytmid] 或 m.youtube.com/watch?v=[ytmid]
 	var ncmsl_format = "163cn.tv/"	// 163cn.tv/[ncmsl]
@@ -110,7 +110,7 @@ function checkMusic()
 	}
 	else if (music_url.includes(kgmid_format))
 	{
-		var kgmid = music_url.split("/mixsong/")[1];
+		var kgmid = music_url.split("/mixsong/")[1] || music_url.split("/kgmixsong/")[1];
 		kgmid = kgmid.split(".html")[0];
 		var mid_type = "kgmid";
 		getMusicInfo(mid_type, kgmid);
@@ -327,46 +327,8 @@ function getMusicInfo(mid_type, mid, songtype, qqmsl, ncmsl)
 				displayMusicInfo(mid_type, murl, mid);
 			break;
 		case "kgmid":
-			var murl = "https://m.kugou.com/mixsong/" + mid + ".html";
-			var postData =
-			{
-				req: { operator: "detail", mid_type: "kgmid" },
-				data: { kgmid: mid }
-			};
-			$.ajax({
-				url: "https://bjezxkl.azurewebsites.net/api/proxy?path=music_api",
-				type: 'POST',
-				data: JSON.stringify(postData),	// Cloudflare Functions不支持JavaScript对象，所以只能以json形式发送
-				dataType: 'json',	// 返回也得是json形式
-				success: function(data)
-				{
-					// $.ajax是异步函数，如果直接var qqmid和songtype会使下面读取的时候仍未undefined，因此就在这里直接处理好了
-					if (data.song_info)	// 获取到了详细信息
-					{
-						var filename = data.song_info.data.fileName;
-						var artist = data.song_info.data.singerName;
-						var regex = new RegExp(artist + ' - (.*)');
-						var match = filename.match(regex);
-						var realname = match ? match[1] : null;
-						var music_url = data.song_info.data.url;
-						var cover_url = data.song_info.data.imgUrl;
-						cover_url = cover_url.replace("{size}", "35876");
-						displayMusicInfo(mid_type, murl, mid, realname, artist, songtype);
-						playMusic(realname, artist, music_url, cover_url);
-					}
-					else
-					{
-						alert("似乎找不到这首曲子呀（台台手忙脚乱ing）\n检查一下链接嘛？（建议按照下方教程方法获取链接捏）");
-						warning = true;
-					}
-				},
-				error: function(xhr, status, error)
-				{
-					console.error("Error occurred: " + error);
-				}
-			})
-			if (warning == true)
-				displayMusicInfo(mid_type, murl, mid);
+			alert("备用站目前不支持酷狗音乐投稿，到主站试试吧(☍﹏⁰。)");
+			$('.message#murl').html('备用站目前不支持酷狗音乐投稿，到<a class="link msg-link" href="https://bjezxkl.pages.dev/?port=2233">主站</a>试试吧(☍﹏⁰。)');
 			break;
 		case "av":
 		case "BV":
