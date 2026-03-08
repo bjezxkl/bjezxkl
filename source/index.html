@@ -32,6 +32,9 @@
 					{
 						if (userAgentInfo.indexOf(Agents[v]) > 0)
 						{
+							if (Agents[v] == "Android")
+								if (userAgentInfo.indexOf("Mobile") == -1)
+									continue;
 							mobile = true;
 							break;
 						}
