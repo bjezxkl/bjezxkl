@@ -11,40 +11,60 @@
 				s.parentNode.insertBefore(hm, s);
 			})();
 
+			// 访问鉴权
 			const req = window.location.search;
 			const params = new URLSearchParams(req);
-			var port = params.get('port');
-			if (port != 2233 && port != 1234)
-				window.location.href// = "https://localhost";
-			else
-			{
-				var mobile = mobileTest();
-				if (mobile == true)
-					window.location.href = "./html/mobile/index.html";
+			const userAgentInfo = window.navigator.userAgent;
+
+			(function () {
+				if (wechatTest(userAgentInfo))
+					return;
+
+				var port = params.get('port');
+				if (port != 2233 && port != 1234)
+					window.location.href// = "https://localhost";
 				else
-					window.location.href = "./html/pc/index.html";
-				function mobileTest()
 				{
-					var userAgentInfo = window.navigator.userAgent;
-					var Agents = ["Android", "iPhone", "SymbianOS", "Windows Phone", "iPod"];
-					var mobile = false;
-					for (var v = 0; v < Agents.length; v++)
-					{
-						if (userAgentInfo.indexOf(Agents[v]) > 0)
-						{
-							if (Agents[v] == "Android")
-								if (userAgentInfo.indexOf("Mobile") == -1)
-									continue;
-							mobile = true;
-							break;
-						}
-					}
-					return mobile;
+					var mobile = mobileTest(userAgentInfo);
+					if (mobile == true)
+						window.location.href = "./html/mobile/index.html";
+					else
+						window.location.href = "./html/pc/index.html";
 				}
+			})();
+
+			function mobileTest(userAgentInfo)
+			{
+				var Agents = ["Android", "iPhone", "SymbianOS", "Windows Phone", "iPod"];
+				var mobile = false;
+				for (var v = 0; v < Agents.length; v++)
+				{
+					if (userAgentInfo.indexOf(Agents[v]) > 0)
+					{
+						if (Agents[v] == "Android")
+							if (userAgentInfo.indexOf("Mobile") == -1)
+								continue;
+						mobile = true;
+						break;
+					}
+				}
+				return mobile;
+			}
+
+			function wechatTest(userAgentInfo)
+			{
+				return userAgentInfo.indexOf("MicroMessenger") != -1? true: false;
+			}
+			function wechatMessage(userAgentInfo)
+			{
+				if (!wechatTest(userAgentInfo))
+					return;
+				$message = document.getElementsByTagName("h1")[0];
+				$message.innerHTML = "请在系统原生浏览器中打开此页面";
 			}
 		</script>
 	</head>
-	<body>
+	<body onload="wechatMessage(userAgentInfo)">
 		<h1>404 Page Not Found</h1>
 	</body>	
 </html>
