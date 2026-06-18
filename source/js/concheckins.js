@@ -70,7 +70,7 @@ function initialize()
 	getUnreadMessageNumber()
 
 	/* 更新grade显示 */
-	if (grade == "2024" || grade == "2025" || grade == "2026" ||
+	if (grade == "2024" || grade == "2025" || grade == "2026" || grade == "2027" ||
 		localStorage.getItem("type") == "admin" || localStorage.getItem("type") == "super")
 		$('.grade-wrap').show()
 	else
@@ -99,6 +99,9 @@ function getMusic()	// 这个函数只负责获取music.xml并转换为js对象
 {
 	switch (grade)
 	{
+		case "2027":
+			var filePath = "https://bjezxkl.azurewebsites.net/api/proxy?path=music_2027.xml"; // XML文件路径
+			break;
 		case "2026":
 			var filePath = "https://bjezxkl.azurewebsites.net/api/proxy?path=music_2026.xml"; // XML文件路径
 			break;
@@ -138,7 +141,8 @@ function getDataFromXML(xmlContent, operator, limitationDate, limitationGrade)
 		/* 获取数据 */
 		if ((limitationGrade != '2024' && elements[i].getAttribute('type') == '1') || 
 			(limitationGrade != '2025' && elements[i].getAttribute('type') == '2') ||
-			(limitationGrade != '2026' && elements[i].getAttribute('type') == '3'))
+			(limitationGrade != '2026' && elements[i].getAttribute('type') == '3') ||
+			(limitationGrade != '2027' && elements[i].getAttribute('type') == '4'))
 			continue;
 		const currentChime = elements[i];
 		var csn = currentChime.getAttribute('csn');
@@ -183,7 +187,7 @@ function getDataFromXML(xmlContent, operator, limitationDate, limitationGrade)
 		switch(compareDate(c.date, limitationDate, operator))
 		{
 			case 1:
-				if (c.type == "1" || c.type == "2" || c.type == "3" || (c.showname != "" && c.showname != "001钟声1 / 08钟声1" && c.showname != "002钟声2" && c.term != "2014-2015-2-14"))
+				if (c.type == "1" || c.type == "2" || c.type == "3" || c.type == "4" || (c.showname != "" && c.showname != "001钟声1 / 08钟声1" && c.showname != "002钟声2" && c.term != "2014-2015-2-14"))
 				{
 					data.push(c);
 				}
@@ -350,7 +354,7 @@ function sortAcceptedContribution()
 			var date = timestampToTime(parseInt(data[i].con_time));
 			if (date.split('-')[0] == year)
 			{
-				if ((grade_method == "senior3" && data[i].check_class_of == "2026") || (grade_method == "all" && data[i].check_class_of != "2026"))	// 这里就是分类显示了，高三的显示高三通过的，全校的显示高二通过的
+				if ((grade_method == "senior3" && data[i].check_class_of == "2027") || (grade_method == "all" && data[i].check_class_of != "2027"))	// 这里就是分类显示了，高三的显示高三通过的，全校的显示高二通过的
 				{
 					k++;	// 有数据写入
 					if (data[i].mid_type == "derivative" && data[i].mid_seq && data[i].mid_seq.indexOf("8") != -1)
@@ -2636,7 +2640,7 @@ $(document).on('click', '.grade-wrap', function ()
 {
 	$('.clear-span.search-month-clear').trigger("click");
 	$('.clear-span.search-keyword-clear').trigger("click");
-	if ($(this).find('span').hasClass('all') && (grade == "2024" || grade == "2025" || grade == "2026" || localStorage.getItem("type") == "admin" || localStorage.getItem("type") == "super"))
+	if ($(this).find('span').hasClass('all') && (grade == "2024" || grade == "2025" || grade == "2026" || grade == "2027" || localStorage.getItem("type") == "admin" || localStorage.getItem("type") == "super"))
 	{
 		grade_method = "senior3"
 		$(this).find('span').removeClass('all')

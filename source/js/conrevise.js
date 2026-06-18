@@ -1060,9 +1060,9 @@ $(document).on('click', ".fa.fa-square-o", function () {
 function refreshHopeClassOfWrap()
 {
 	$('.hope-class-of-wrap .keep').attr('id', parseInt(localStorage.getItem("class_of")))
-	$('.hope-class-of-wrap .down').attr('id', Math.max(parseInt(localStorage.getItem("class_of")) + 1, 2027))
+	$('.hope-class-of-wrap .down').attr('id', Math.max(parseInt(localStorage.getItem("class_of")) + 1, 2028))
 
-	if (parseInt(localStorage.getItem("class_of")) <= 2026)
+	if (parseInt(localStorage.getItem("class_of")) <= 2027)
 		$(".con-infos-row#hope-class-of").show()
 	else
 		$(".con-infos-row#hope-class-of").hide()
