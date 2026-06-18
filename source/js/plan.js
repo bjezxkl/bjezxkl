@@ -193,13 +193,16 @@ function loadPlan(xmlContent)
 	switch (grade)
 	{
 		case "2024":
-			var grade_method_int = 1;
+			// var grade_method_int = 1;	// 现在高三不是它了，再看就得看正常的铃声了
+			var grade_method_int = 0;
 			break;
 		case "2025":
-			var grade_method_int = 2;
+			// var grade_method_int = 2;	// 现在高三不是它了，再看就得看正常的铃声了
+			var grade_method_int = 0;
 			break;
 		case "2026":
-			var grade_method_int = 3;
+			// var grade_method_int = 3;	// 现在高三不是它了，再看就得看正常的铃声了
+			var grade_method_int = 0;
 			break;
 		case "2027":
 			var grade_method_int = 4;
