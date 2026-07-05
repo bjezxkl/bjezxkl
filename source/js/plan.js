@@ -122,7 +122,7 @@ function compareDate(comparing_date_str, compared_date_str, operator)
 			else
 				return 0;
 		case '=':
-			if (comparing_date_Date = compared_date_Date)
+			if (comparing_date_Date == compared_date_Date)
 				return 1;
 			else
 				return 0;
@@ -137,7 +137,7 @@ function compareDate(comparing_date_str, compared_date_str, operator)
 			else
 				return 1;
 		case '≠':
-			if (comparing_date_Date = compared_date_Date)
+			if (comparing_date_Date == compared_date_Date)
 				return 0;
 			else
 				return 1;
