@@ -354,7 +354,7 @@ function sortAcceptedContribution()
 			var date = timestampToTime(parseInt(data[i].con_time));
 			if (date.split('-')[0] == year)
 			{
-				if ((grade_method == "senior3" && data[i].check_class_of == "2027") || (grade_method == "all" && data[i].check_class_of != "2027"))	// 这里就是分类显示了，高三的显示高三通过的，全校的显示高二通过的
+				if ((grade_method == "senior3" && data[i].con_class_of == "2027" && data[i].check_class_of == "2027") || (grade_method == "all" && data[i].check_class_of != "2027") || (grade_method == "all" && data[i].con_class_of != "2027"))	// 这里就是分类显示了，高三的显示高三投高三通过的，全校的显示高二通过的
 				{
 					k++;	// 有数据写入
 					if (data[i].mid_type == "derivative" && data[i].mid_seq && data[i].mid_seq.indexOf("8") != -1)
