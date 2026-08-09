@@ -249,14 +249,16 @@ function sortMusic()
 	{
 		music_data.sort(function (a, b)
 		{
-			return Date.parse(a.date) - Date.parse(b.date);	// 时间正序
+			return Date.parse(a.date) - Date.parse(b.date) ||	// 时间正序
+			      (a.serial && b.serial ? parseInt((a.serial).split('-')[0]) - parseInt((b.serial).split('-')[0]) : 0);	// 原始顺序
 		});
 	}
 	else if (order_method === "reverse")
 	{
 		music_data.sort(function (a, b)
 		{
-			return Date.parse(b.date) - Date.parse(a.date);	// 时间倒序
+			return Date.parse(b.date) - Date.parse(a.date) ||	// 时间倒序
+			      (a.serial && b.serial ? parseInt((b.serial).split('-')[0]) - parseInt((a.serial).split('-')[0]) : 0);	// 原始倒序
 		});
 	}
 
