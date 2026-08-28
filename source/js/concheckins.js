@@ -2717,6 +2717,41 @@ function calculateTerm(selectedYearAndMonth, selectedDate)
 			week_in_term = "0" + week_in_term;
 		term += week_in_term;
 	}
+	// 2026-2027-1
+	else if (year == 2026 && month >= 9 && month <= 12 ||	// 9月1日起
+			 year == 2027 && (month <= 1 ||
+			                  month == 2 && date <= 21))	// 2月21日止
+	{
+		var term = "2026-2027-1-";
+		var days = date;
+		if (year == 2027)
+		{
+			for (var i = month - 1; i >= 1; i--)
+				days += day_of_month[i-1];
+			month = 13;	// 先算清楚新一年的，再强制令为上一年
+		}
+		for (var i = month - 1; i >= 9; i--)
+			days += day_of_month[i-1];
+		days -= 0;	//	以到第一周所在的周一的日子为计数
+		var week_in_term = Math.floor(days / 7) + 1;
+		if (week_in_term < 10)
+			week_in_term = "0" + week_in_term;
+		term += week_in_term;
+	}
+	// 2026-2027-2
+	else if (year == 2027 && (month == 2 && date >= 22 ||
+			                  month >= 3 && month <= 8))	// 依旧是到9月1日
+	{
+		var term = "2026-2027-2-";
+		var days = date;
+		for (var i = month - 1; i >= 2; i--)
+			days += day_of_month[i-1];
+		days -= 22;	//	以到第一周的日子为计数
+		var week_in_term = Math.floor(days / 7) + 1;
+		if (week_in_term < 10)
+			week_in_term = "0" + week_in_term;
+		term += week_in_term;
+	}
 
 	else
 	{
