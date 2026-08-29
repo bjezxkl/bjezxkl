@@ -118,7 +118,7 @@ function getDataFromXML(xmlContent, operator, limitationDate, limitationGrade)
 		/* 新增日期校验 */
 		const currentTimestamp = Date.now();
 		const dateTimestamp = Date.parse(c.date);
-		var date_check = currentTimestamp > dateTimestamp;
+		var date_check = currentTimestamp > dateTimestamp && !isNaN(dateTimestamp);
 
 		/* 将对象添加到数据数组中 */
 		switch(compareDate(c.date, limitationDate, operator))

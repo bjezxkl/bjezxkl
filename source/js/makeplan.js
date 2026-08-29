@@ -687,7 +687,7 @@ function displayPlan()
 		// 首先遍历 music.xml , 这是已经播放完毕的部分
 		for (var i = music_data.length - 1; i >= 0; i--)	// 倒着处理，要不然真的太费时间了
 		{
-			if (music_data[i].date.split('/').join('-') < days[processing_date_index])
+			if (music_data[i].date && music_data[i].date.split('/').join('-') < days[processing_date_index])
 				break;	// music_data里毕竟是倒序存储的，既然这一个比当前的还要早那再往前肯定没有了
 			if (music_data[i].date.split('/').join('-') == days[processing_date_index] &&
 				((parseInt(music_data[i].type) != 0 && grade_method_plan == "senior3") ||

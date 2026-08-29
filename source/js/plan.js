@@ -31,15 +31,41 @@ function getPlan()
 	})
 }
 
-function getDataFromXML(xmlContent, operator, limitationDate, limitationGrade)
+function getWeekDataFromXML(xmlContent, firstDay, limitationGrade)
 {
 	// 使用 DOMParser 解析 xml
 	const parser = new DOMParser();
 	const xmlDoc = parser.parseFromString(xmlContent, 'application/xml');
 	const elements = xmlDoc.getElementsByTagName('c');
 	const data = [];
-		
-	for (let i = 0; i < elements.length; i++) {
+	
+	/* 查找该周的第一个下课铃 */
+	let i = 0;
+	for (; i < elements.length; i++)
+	{
+		if ((limitationGrade != '2024' && elements[i].getAttribute('type') == '1') || 
+			(limitationGrade != '2025' && elements[i].getAttribute('type') == '2') ||
+			(limitationGrade != '2026' && elements[i].getAttribute('type') == '3') ||
+			(limitationGrade != '2027' && elements[i].getAttribute('type') == '4'))
+			continue;
+
+		/* 对空值进行处理 */
+		if (!elements[i].getAttribute('date'))
+			continue;
+
+		/* 检查日期情况 */
+		dateInfo = compareDate(elements[i].getAttribute('date'), firstDay, '≥')
+		if (dateInfo == 1)
+			break;	// 找到该周的第一天
+		else if (dateInfo == -1)
+			console.log("本行数据出现错误。");
+	}
+
+	/* 记录该周的周数 */
+	const targetTerm = elements[i].getAttribute('term');
+
+	/* 获取该周的全部铃声 */
+	for (; i < elements.length; i++) {
 		/* 获取数据 */
 		if ((limitationGrade != '2024' && elements[i].getAttribute('type') == '1') || 
 			(limitationGrade != '2025' && elements[i].getAttribute('type') == '2') ||
@@ -86,18 +112,9 @@ function getDataFromXML(xmlContent, operator, limitationDate, limitationGrade)
 			c.type = "0"
 
 		/* 将对象添加到数据数组中 */
-		switch(compareDate(c.date, limitationDate, operator))
-		{
-			case 1:
-				if (c.type == "1" || c.type == "2" || c.type == "3" || c.type == "4" || (c.showname != "" && c.showname != "001钟声1 / 08钟声1" && c.showname != "002钟声2" && c.term != "2014-2015-2-14"))
-				{
-					data.push(c);
-				}
-				break;
-			case -1:
-				console.log("本行数据出现错误。");
-				break;
-		}
+		if (c.term == targetTerm &&
+		   (c.type == "1" || c.type == "2" || c.type == "3" || c.type == "4" || (c.showname != "" && c.showname != "001钟声1 / 08钟声1" && c.showname != "002钟声2" && c.term != "2014-2015-2-14")))
+			data.push(c);
 	}
 	return data;
 }
@@ -237,7 +254,7 @@ function loadPlan(xmlContent)
 	var weekdays = ["星期一","星期二","星期三","星期四","星期五","星期六","星期日"]
 	var plan_content = ""
 
-	var music_data = getDataFromXML(xmlContent, '≥', day_1, grade);
+	var music_data = getWeekDataFromXML(xmlContent, day_1, grade);
 	if (music_data.length == 0)
     {
 		plan_content = "<div class='plan' id='none'><p class='plan-empty' id='1'>—— 这周一个安排也没有呢 ——</p><div class='plan-empty' id='2'>是不是放假了呢？<s>（也有可能是要考试了呀）</s></div></div>"
@@ -250,6 +267,22 @@ function loadPlan(xmlContent)
 				"<div class='plan' id='title'>" +
 					"<p class='plan-title'>—— " + term + " ——</p>" +
 				"</div>"
+	
+	for (var i = 0; i < music_data.length; i++)
+	{
+		if (music_data[i].date || !music_data[i].term || !music_data[i].filename)
+			continue;
+		if (music_data[i].showname == "")
+			var showname_text = "<span class='plan-empty'>（不知道为什么没有名字呢）</span>"
+		else
+			var showname_text = music_data[i].showname
+		plan_content +=
+					"<div class='plan-content' id='exercise'>" +
+						"<div class='plan-exercise'>上操<br>铃声</div>" +
+						"<div class='showname'>" + showname_text + "</div>" +
+					"</div>"
+	}
+
 	for (var j = 0; j < 7; j++)
 	{
 		var this_date = days[j]

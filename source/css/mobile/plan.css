@@ -9,10 +9,28 @@
   background-color: #fff;
   padding: 0;
   height: 90px;
-  margin: 40px auto;
   box-shadow: 0 2px 4px 0 rgba(121, 146, 185, 0.54);
   margin: 30px auto 10px auto;
   border-radius: 2px;
+}
+.plan-content#exercise {
+  background-color: rgba(121, 146, 185, 0.08);
+  border: 1px solid rgba(121, 146, 185, 0.3);
+  box-shadow: 0 2px 4px 0 rgba(121, 146, 185, 0.54);
+  height: 88.667px;
+  width: calc(90vw - 1.333px);
+}
+.plan-content#exercise::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(to bottom, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0.3) 30%);
+  border-radius: inherit;
+  pointer-events: none;
+  z-index: 0;
 }
 
 .plan-wrap .plan#none{
@@ -39,6 +57,13 @@
 	font-size: 1.20em;
 }
 
+.plan-wrap .plan-exercise {
+  position: absolute;
+  top: 18px;
+  left: 30px;
+  font-size: 1.3em;
+  color: #1565c0;
+}
 .plan-wrap .plan-date {
   position: relative;
   top: 7px;
@@ -96,6 +121,10 @@
 .plan-wrap .showname .plan-empty{
 	color: #888;
 	font-size: 0.8em;
+}
+.plan-wrap #exercise .showname{
+  right: 12px;
+  top: 27px;
 }
 .plan-wrap .con-user {
   position: absolute;
