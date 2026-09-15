@@ -60,6 +60,8 @@ function getWeekDataFromXML(xmlContent, firstDay, limitationGrade)
 		else if (dateInfo == -1)
 			console.log("本行数据出现错误。");
 	}
+	if (i == elements.length)
+		return data;
 
 	/* 记录该周的周数 */
 	const targetTerm = elements[i].getAttribute('term');
