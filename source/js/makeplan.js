@@ -2935,7 +2935,7 @@ function confirmPlan(msg) {
 						error_content += 'cid: ' + data.data[i].cid + ' 的投稿不存在</div><div class="infos">'
 					else if (data.data[i].code == -24)
 						error_content += 'cid: ' + data.data[i].cid + ' 投稿的安排已被确认</div><div class="infos">'
-					else if (data/data[i].code == -25)
+					else if (data.data[i].code == -25)
 						error_content += 'cid: ' + data.data[i].cid + ' 对应 date: ' + data.data[i].date + ' 有已确认的安排</div><div class="infos">'
 				}
 				error_content +=		 '其余安排均已完成确认'
