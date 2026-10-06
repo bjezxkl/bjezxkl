@@ -501,6 +501,12 @@
 	border: 2px solid #1565C0;
 	cursor: pointer;
 }
+.coninfos-text .type-wrap .type-span#accepted:hover{
+	border: 2px solid #228B22;
+}】
+.coninfos-text .type-wrap .type-span#fail:hover{
+	border: 2px solid #E03C00;
+}
 .coninfos-text .type-wrap .type-span.choosing{
 	border: 2px solid #1565C0;
 	background-color: rgba(21,101,192,.7);
@@ -516,8 +522,8 @@
 	background-color: rgba(34,139,34,.7);
 }*/
 .coninfos-text .type-wrap .type-span.choosing#fail{
-	border: 2px solid #FF4500;
-	background-color: #FF6347;
+	border: 2px solid #E03C00;
+	background-color: rgba(224,60,0,.7);
 }
 
 .coninfos-text .input-wrap-btn{

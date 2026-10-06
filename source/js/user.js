@@ -496,7 +496,7 @@ function getContent()
 					else if (check_type == "used")
 						var check_type_text = "<span class='check-type-text' id='used'>已播放</span>"
 					else if	(check_type == "fail")
-						var check_type_text = "<span class='check-type-text' id='fail'>未录用</span>"
+						var check_type_text = "<span class='check-type-text' id='fail'>未录用/未过审</span>"
 					con_content +=
 								"<p class='check-type'>审核状态：" + check_type_text + "</p>"
 					if (check_timestamp != "" && check_timestamp != undefined)

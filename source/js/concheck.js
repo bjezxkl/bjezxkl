@@ -2708,7 +2708,7 @@ function confirmCheck(same_cons_string)
 		$('.wrapper-popup .infos').html('是否确定 <b style="color: #228B22;">录用</b> 该投稿')
 		$('.wrapper-popup .btn#ok').attr("onclick", "submitContributionCheck('" + same_cons_string + "')");
 	} else if (check_type == 'fail') {
-		$('.wrapper-popup .infos').html('是否确定 <b style="color: #FF4500;">不录用</b> 该投稿')
+		$('.wrapper-popup .infos').html('是否确定 <b style="color: #E03C00;">不录用</b> 该投稿')
 		$('.wrapper-popup .btn#ok').attr("onclick", "submitContributionCheck('" + same_cons_string + "')");	// 待测试
 	}
 }

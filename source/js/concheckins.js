@@ -2788,7 +2788,7 @@ function confirmCheckIns(same_cons_string)
 	}
 	else if (check_type == 'fail')
 	{
-		$('.wrapper-popup .infos').html('是否确定将该投稿标记为 <b style="color: #FF4500;">未过审</b>')
+		$('.wrapper-popup .infos').html('是否确定将该投稿标记为 <b style="color: #E03C00;">未过审</b>')
 		$('.wrapper-popup .btn#ok').attr("onclick", "submitContributionCheckInsert('" + same_cons_string + "')");	// 待测试
 	}
 	else if (check_type == "waiting")
