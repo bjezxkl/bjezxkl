@@ -2686,11 +2686,11 @@ function submitContributionPlan()
 				hidePopup()
 				showPopup()
 				$('.wrapper-popup .infos').html('安排已写入，但当天已存在下课铃，请仔细检查')
-				getSchedulingContribution()
-				getPlan()
 				$('.wrapper-popup .btn#cancel').hide()
 				$('.wrapper-popup .btn#ok').attr("onclick", "hidePopup();resetConInfo()");
 				$('.wrapper-popup').attr("onclick", "hidePopup();resetConInfo()");
+				getSchedulingContribution()
+				getPlan()
 			}
 			else
 			{
@@ -2698,11 +2698,11 @@ function submitContributionPlan()
 				hidePopup()
 				showPopup()
 				$('.wrapper-popup .infos').html('安排成功')
-				getSchedulingContribution()
-				getPlan()
 				$('.wrapper-popup .btn#cancel').hide()
 				$('.wrapper-popup .btn#ok').attr("onclick", "hidePopup();resetConInfo()");
 				$('.wrapper-popup').attr("onclick", "hidePopup();resetConInfo()");
+				getSchedulingContribution()
+				getPlan()
 			}
 		},
 		error: function(xhr, status, error)
@@ -2903,7 +2903,7 @@ function confirmPlan(msg) {
 		dataType: 'json',	// 返回也得是json形式
 		success: function(data)	// 这里data已经是解析后的JSON对象
 		{
-			if (data.code !== 0 && data.code !== -26)
+			if (data.code !== 0 && data.code !== -38)
 			{
 				if (data.code == -6 || data.code == -7)
 				{
@@ -2923,28 +2923,36 @@ function confirmPlan(msg) {
 					return
 				}
 			}
-			if (data.code == -26)
+			if (data.code == -38)
 			{
 				localStorage.setItem("expire_time", data.session.expire_time);	// 其他三项都没变，所以只修改这个
-				hidePopup()
-				showPopup()
-				var error_content = 	 '部分安排提交失败，请检查后重试：</div><div class="infos">'
+				var concheck_content = "";
+				var plan_content = "";
 				for (var i = 0; i < data.data.length; i++)
 				{
 					if (data.data[i].code == -19)
-						error_content += 'cid: ' + data.data[i].cid + ' 的投稿不存在</div><div class="infos">'
+						concheck_content += 'cid: ' + data.data[i].cid + ' 的投稿不存在于数据库中<br>'
+					else if (data.data[i].code == -20)
+						concheck_content += 'cid: ' + data.data[i].cid + ' 的投稿已经被人抢先审核完成<br>'
 					else if (data.data[i].code == -24)
-						error_content += 'cid: ' + data.data[i].cid + ' 投稿的安排已被确认</div><div class="infos">'
+						plan_content += 	'cid: ' + data.data[i].cid + ' 投稿的安排已被确认<br>'
 					else if (data.data[i].code == -25)
-						error_content += 'cid: ' + data.data[i].cid + ' 对应 date: ' + data.data[i].date + ' 有已确认的安排</div><div class="infos">'
+						plan_content += 	'cid: ' + data.data[i].cid + ' 对应 date: ' + data.data[i].date + ' 有已确认的安排<br>'
 				}
-				error_content +=		 '其余安排均已完成确认'
+				var error_content = 		'部分安排提交失败，请检查后重试：</div><div class="infos">'
+				if (concheck_content != "")
+					error_content += 		'稿件异常：<br>' + concheck_content + '</div><div class="infos">'
+				if (plan_content != "")
+					error_content += 		'安排问题：<br>' + plan_content + '</div><div class="infos">'
+				error_content += 			'其余安排均已完成确认'
+				hidePopup()
+				showPopup()
 				$('.wrapper-popup .infos').html(error_content)
-				getSchedulingContribution()
-				getPlan()
 				$('.wrapper-popup .btn#cancel').hide()
 				$('.wrapper-popup .btn#ok').attr("onclick", "hidePopup();");
 				$('.wrapper-popup').attr("onclick", "hidePopup();");
+				getSchedulingContribution()
+				getPlan()
 			}
 			else
 			{
@@ -2952,11 +2960,11 @@ function confirmPlan(msg) {
 				hidePopup()
 				showPopup()
 				$('.wrapper-popup .infos').html("确认完成")
-				getSchedulingContribution()
-				getPlan()
 				$('.wrapper-popup .btn#cancel').hide()
 				$('.wrapper-popup .btn#ok').attr("onclick", "hidePopup();");
 				$('.wrapper-popup').attr("onclick", "hidePopup();");
+				getSchedulingContribution()
+				getPlan()
 			}
 		},
 		error: function(xhr, status, error)

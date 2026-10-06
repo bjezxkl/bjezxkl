@@ -2924,7 +2924,7 @@ function submitContributionCheckInsert(same_cons_string)
 		dataType: 'json',	// 返回也得是json形式
 		success: function(data)	// 这里data已经是解析后的JSON对象
 		{
-			if (data.code !== 0)
+			if (data.code !== 0 && data.code !== -38)
 			{
 				if (data.code == -6 || data.code == -7)
 				{
@@ -2938,39 +2938,57 @@ function submitContributionCheckInsert(same_cons_string)
 					hidePopup()
 					return window.location.href='./'
 				}
-				else if (data.code == -19)
+				else
 				{
-					localStorage.setItem("expire_time", data.session.expire_time);	// 其他三项都没变，所以只修改这个
-					alert("这个投稿不存在于数据库中，请检查后重试")
-					hidePopup()
-					resetConInfo()
-					return getAcceptedContribution()
+					alert("未知错误，请联系网站管理员")
+					return
 				}
-				else if (data.code == -20)
+			}
+			if (data.code == -38)
+			{
+				localStorage.setItem("expire_time", data.session.expire_time);
+				var concheck_content = "";
+				var msgsending_content = "";
+				var emailsending_content = "";
+				for (var i = 0; i < data.data.concheck.length; i++)
 				{
-					localStorage.setItem("expire_time", data.session.expire_time);	// 其他三项都没变，所以只修改这个
-					alert("这个投稿已经被人抢先写入审核结果了呢！")
-					hidePopup()
-					resetConInfo()
-					return getAcceptedContribution()
+					if (data.data.concheck[i].code == -19)
+						concheck_content += 	'cid: ' + data.data.concheck[i].con_info.cid + ' 的投稿不存在于数据库中<br>'
+					else if (data.data.concheck[i].code == -20)
+						concheck_content += 	'cid: ' + data.data.concheck[i].con_info.cid + ' 的投稿已经被人抢先写入了审核结果<br>'
+					else if (data.data.msgsending && data.data.msgsending[i] == -24)
+						msgsending_content += 	'cid: ' + data.data.concheck[i].con_info.cid + ' 的站内信发送方式不受支持<br>'
+					else if (data.data.emailsending && data.data.emailsending[i].code == -24)
+						emailsending_content += 'cid: ' + data.data.concheck[i].con_info.cid + ' 的邮件发送方式不受支持<br>'
+					else if (data.data.emailsending && data.data.emailsending[i].code == -36)
+						emailsending_content += 'cid: ' + data.data.concheck[i].con_info.cid + ' 的投稿同学缺少邮箱，邮件未发送<br>'
+					else if (data.data.emailsending && data.data.emailsending[i].code == -37)
+						emailsending_content += 'cid: ' + data.data.concheck[i].con_info.cid + ' 的邮件发送失败<br>'
 				}
-				else if (data.code == -24)
-				{
-					localStorage.setItem("expire_time", data.session.expire_time);	// 其他三项都没变，所以只修改这个
-					alert("站内信发送失败，请检查")
-					hidePopup()
-					resetConInfo()
-					return getAcceptedContribution()
-				}
+				var error_content = 			'部分投稿审核失败，请检查后重试：</div><div class="infos">'
+				if (concheck_content != "")
+					error_content += 			'稿件异常：<br>' + concheck_content + '</div><div class="infos">'
+				if (msgsending_content != "")
+					error_content += 			'站内信问题：<br>' + msgsending_content + '</div><div class="infos">'
+				if (emailsending_content != "")
+					error_content += 			'邮件问题：<br>' + emailsending_content + '</div><div class="infos">'
+				error_content += 				'其余投稿均已完成审核'
+				hidePopup()
+				showPopup()
+				$('.wrapper-popup .infos').html(error_content)
+				$('.wrapper-popup .btn#cancel').hide()
+				$('.wrapper-popup .btn#ok').attr("onclick", "hidePopup()");
+				$('.wrapper-popup').attr("onclick", "hidePopup()");
+				return getAcceptedContribution()
 			}
 			localStorage.setItem("expire_time", data.session.expire_time);	// 其他三项都没变，所以只修改这个
 			hidePopup()
 			showPopup()
 			$('.wrapper-popup .infos').html('写入成功')
-			getAcceptedContribution()
 			$('.wrapper-popup .btn#cancel').hide()
 			$('.wrapper-popup .btn#ok').attr("onclick", "hidePopup();resetConInfo()");
 			$('.wrapper-popup').attr("onclick", "hidePopup();resetConInfo()");
+			getAcceptedContribution()
 		},
 		error: function(xhr, status, error)
 		{
