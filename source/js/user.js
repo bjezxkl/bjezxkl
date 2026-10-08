@@ -549,6 +549,94 @@ function getContent()
 			}
 		})
 	}
+	if (type == "message")
+	{
+		$(".user-center-content .title").html("消息设置")
+		$.ajax({
+			url: "https://bjezxkl.azurewebsites.net/api/proxy?path=user",
+			type: 'POST',
+			data: JSON.stringify(
+				{
+					req: { operator: "getinfo" },
+					session: {
+						uid: localStorage.getItem("uid"),
+						username: localStorage.getItem("username"),
+						type: localStorage.getItem("type"),
+						expire_time: localStorage.getItem("expire_time"),
+						class_of: localStorage.getItem("class_of")
+					}
+				}),
+			success: function (data, err)
+			{
+				if (data.code != 0)
+				{
+					if (data.code == -6)
+					{
+						alert("用户未登录，请重新登录！");
+						localStorage.setItem("uid", "");
+						localStorage.setItem("username", "");
+						localStorage.setItem("type", "");
+						localStorage.setItem("expire_time", "");
+						localStorage.setItem("class_of", "");
+						return showLoginPanel();
+					}
+					else if (data.code == -7)
+					{
+						alert("用户登录过期，请重新登录！");
+						localStorage.setItem("uid", "");
+						localStorage.setItem("username", "");
+						localStorage.setItem("type", "");
+						localStorage.setItem("expire_time", "");
+						localStorage.setItem("class_of", "");
+						return showLoginPanel();
+					}
+					else if (data.code == -14)
+					{
+						return alert('用户不存在！');
+					}
+					alert('未知原因获取用户信息失败，请联系网站管理员');
+					return console.log(data);
+				}
+				localStorage.setItem("expire_time", data.session.expire_time);	// 其他三项都没变，所以只修改这个
+				refreshLoginInfo();
+
+				var email_options = [
+					{ id: "autoconcheck", bit: 1, text: "接收投稿超时邮件通知" },
+					{ id: "waiting->fail", bit: 2, text: "接收未录用邮件通知" },
+					{ id: "accepted->fail", bit: 3, text: "接收未过审邮件通知" },
+					{ id: "accepted->success", bit: 4, text: "接收已过审邮件通知" }
+				];
+				var message_setting_content =
+						"<div class='revise email-setting-column'>" +
+							"<p class='email-setting-message'>请选择希望接收的投稿审核邮件，站内信不受此设置影响。</p>" +
+							"<div class='email-wrap'>";
+				for (var i = 0; i < email_options.length; i++)
+				{
+					var selected = !!data.data.email & (data.data.allow_checking_email >> email_options[i].bit);
+					message_setting_content +=
+								"<div class='email-item' id='" + email_options[i].id + "'>" +
+									"<span class='fa " + (selected ? "fa-check-square" : "fa-square-o") + (data.data.email ? "" : " disable") + "' aria-hidden='true'></span>" +
+									"<span class='message-text " + (selected ? "selected" : "unselected") + "'>" + email_options[i].text + "</span>" +
+								"</div>";
+				}
+				message_setting_content +=
+							"</div>" +
+							"<p class='message'>" + (!data.data.email ? "请先在“修改信息”中填写邮箱，再修改消息设置。" : "") + "</p>" +
+							"<div class='row btn-row clearfix'>" +
+								"<div class='input-wrap-btn middle'>" +
+									"<input type='button' class='btn btn-edit' value='修改设置' id='submit'" + (data.data.email ? "" : " disabled") + ">" +
+								"</div>" +
+							"</div>" +
+						"</div>";
+				$(".user-center-content .list").html(message_setting_content)
+			},
+			error: function (data, err)
+			{
+				alert('未知原因获取用户信息失败，请联系网站管理员');
+				console.log(err);
+			}
+		})
+	}
 	if (type == "revise")
 	{
 		$(".user-center-content .title").html("修改信息")
@@ -842,6 +930,116 @@ $(document).on('click', '.btn.btn-edit#submit-phone-edit', function ()
 	if ($('.user-center-content .list .revise .panel .message#phone').html() != "")
 		return;
 	showPasswordPanel("phone");
+})
+$(document).on('click', ".email-setting-column .email-wrap .fa.fa-check-square", function () {
+	$(this).addClass("fa-square-o")
+	$(this).removeClass("fa-check-square")
+	$(this).siblings().addClass("unselected")
+	$(this).siblings().removeClass("selected")
+})
+$(document).on('click', ".email-setting-column .email-wrap .fa.fa-square-o", function () {
+	if ($(this).hasClass("disable"))
+		return
+	$(this).addClass("fa-check-square")
+	$(this).removeClass("fa-square-o")
+	$(this).siblings().addClass("selected")
+	$(this).siblings().removeClass("unselected")
+})
+$(document).on('click', '.btn.btn-edit#submit', function ()
+{
+	if ($(this).prop("disabled"))
+		return;
+	var req =
+	{
+		operator: "edit",
+		content: "allow_checking_email"
+	}
+	var data = {};
+	data.allow_checking_email = 1;
+	$(".email-setting-column .email-wrap .email-item .fa.fa-check-square").each(function ()
+	{
+		switch ($(this).parent().attr("id"))
+		{
+			case "autoconcheck":
+				data.allow_checking_email |= 2;
+				break;
+			case "waiting->fail":
+				data.allow_checking_email |= 4;
+				break;
+			case "accepted->fail":
+				data.allow_checking_email |= 8;
+				break;
+			case "accepted->success":
+				data.allow_checking_email |= 16;
+				break;
+		}
+	})
+	var session =
+	{
+		uid: localStorage.getItem("uid"),
+		username: localStorage.getItem("username"),
+		type: localStorage.getItem("type"),
+		expire_time: localStorage.getItem("expire_time"),
+		class_of: localStorage.getItem("class_of")
+	}
+	var postData =
+	{
+		req: req,
+		data: data,
+		session: session
+	}
+	$.ajax({
+		url: 'https://bjezxkl.azurewebsites.net/api/proxy?path=user',
+		type: 'POST',
+		data: JSON.stringify(postData),
+		success: function (data, status)
+		{
+			if (data.code != 0)
+			{
+				if (data.code == -6)
+				{
+					alert("用户未登录，请重新登录！");
+					localStorage.setItem("uid", "");
+					localStorage.setItem("username", "");
+					localStorage.setItem("type", "");
+					localStorage.setItem("expire_time", "");
+					localStorage.setItem("class_of", "");
+					return showLoginPanel();
+				}
+				else if (data.code == -7)
+				{
+					alert("用户登录过期，请重新登录！");
+					localStorage.setItem("uid", "");
+					localStorage.setItem("username", "");
+					localStorage.setItem("type", "");
+					localStorage.setItem("expire_time", "");
+					localStorage.setItem("class_of", "");
+					return showLoginPanel();
+				}
+				else if (data.code == -14) 
+				{
+					return alert('用户不存在！');
+				}
+				else if (data.code == -29)
+				{
+					return alert('请先填写邮箱，再修改消息设置');
+				}
+				else
+				{
+					alert('未知原因修改失败，请联系网站管理员')
+					return console.log(data)	
+				}	
+			}
+			alert('修改成功')
+			localStorage.setItem("expire_time", data.session.expire_time);
+			refreshLoginInfo()
+			getContent()
+		},
+		error: function (data, err) {
+			alert('未知原因修改失败，请联系网站管理员')
+			return console.log(err);
+		}
+	})
 })
 $(document).on('click', '.btn.btn-login#submit', function ()
 {

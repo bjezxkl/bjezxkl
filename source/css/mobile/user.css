@@ -125,3 +125,50 @@
 .check-type-text#used{
 	color: #888;
 }
+.user-center-content .email-setting-column .email-setting-message,
+.user-center-content .email-setting-column .message{
+	padding: 10px 20px 10px;
+	font-size: 0.98em;
+	line-height: 25px;
+	color: #6999D3;
+}
+.user-center-content .email-setting-column .email-setting-message{
+	padding-top: 36px;
+	padding-bottom: 10px;
+}
+.user-center-content .email-setting-column .email-wrap{
+	display: flex;
+	flex-direction: column;
+	padding: 10px 30px;
+}
+.user-center-content .email-setting-column .email-item{
+	color: #1565C0;
+	margin: 6px 0;
+	width: fit-content;
+}
+.user-center-content .email-setting-column .btn-row{
+	padding: 10px 20px 36px;
+}
+.user-center-content .email-setting-column .email-item .fa.fa-check-square{
+	margin: 1.25px 3.125px 1px 3px;
+	font-size: 0.98em;
+	position: relative;
+	top: -1.0125px;
+}
+.user-center-content .email-setting-column .email-item .fa.fa-square-o{
+	margin: 2px 3px 0px 3px;
+	font-size: 1.08em;
+}
+.user-center-content .email-setting-column .email-item .message-text{
+	position: relative;
+	top: -1px;
+}
+.user-center-content .email-setting-column .email-item .fa.fa-square-o.disable{
+	color: #888;
+	cursor: default;
+}
+.user-center-content .email-setting-column input:disabled,
+.user-center-content .email-setting-column input:disabled:hover{
+	background-color: #888;
+	cursor: default;
+}
